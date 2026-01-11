@@ -5,7 +5,7 @@
 //  ISO 8601 Time-only representation
 //
 
-import StandardTime
+import Time_Primitives
 
 extension ISO_8601 {
     /// ISO 8601 Time-only representation
@@ -191,10 +191,10 @@ extension ISO_8601.Time {
             let sign = offsetSeconds >= 0 ? "+" : "-"
             let absOffset = abs(offsetSeconds)
             let hours =
-                absOffset / StandardTime.Time.Calendar.Gregorian.TimeConstants.secondsPerHour
+                absOffset / Time_Primitives.Time.Calendar.Gregorian.TimeConstants.secondsPerHour
             let minutes =
-                (absOffset % StandardTime.Time.Calendar.Gregorian.TimeConstants.secondsPerHour)
-                / StandardTime.Time.Calendar.Gregorian.TimeConstants.secondsPerMinute
+                (absOffset % Time_Primitives.Time.Calendar.Gregorian.TimeConstants.secondsPerHour)
+                / Time_Primitives.Time.Calendar.Gregorian.TimeConstants.secondsPerMinute
 
             let hoursStr = hours < 10 ? "0\(hours)" : "\(hours)"
             let minutesStr = minutes < 10 ? "0\(minutes)" : "\(minutes)"
@@ -427,8 +427,8 @@ extension ISO_8601.Time {
             }
 
             let offset =
-                hours * StandardTime.Time.Calendar.Gregorian.TimeConstants.secondsPerHour + minutes
-                * StandardTime.Time.Calendar.Gregorian.TimeConstants.secondsPerMinute
+                hours * Time_Primitives.Time.Calendar.Gregorian.TimeConstants.secondsPerHour + minutes
+                * Time_Primitives.Time.Calendar.Gregorian.TimeConstants.secondsPerMinute
             return positive ? offset : -offset
         }
     }

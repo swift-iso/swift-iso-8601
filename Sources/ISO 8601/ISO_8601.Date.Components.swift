@@ -5,7 +5,7 @@
 //  Date components with validation
 //
 
-import StandardTime
+import Time_Primitives
 
 extension ISO_8601.Date {
     /// Date components extracted from a date-time
@@ -152,11 +152,11 @@ extension ISO_8601.Date.Components {
 extension ISO_8601.Date.Components {
     public init(_ dateTime: ISO_8601.Date) {
         // Apply timezone offset to get local time components
-        let localTime = StandardTime.Time(
+        let localTime = Time_Primitives.Time(
             secondsSinceEpoch: dateTime.secondsSinceEpoch + dateTime.timezoneOffsetSeconds
         )
 
-        // Convert StandardTime.Time.Weekday enum to Int (0=Sunday)
+        // Convert Time_Primitives.Time.Weekday enum to Int (0=Sunday)
         let weekdayNumber: Int
         switch localTime.weekday {
         case .sunday: weekdayNumber = 0

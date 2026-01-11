@@ -8,15 +8,15 @@ extension String {
 
 extension Target.Dependency {
     static var iso8601: Self { .target(name: .iso8601) }
-    static var standards: Self { .product(name: "Standards", package: "swift-standards") }
+    static var standards: Self { .product(name: "Standard Library Extensions", package: "swift-standard-library-extensions") }
     static var time: Self {
         .product(
-            name: "StandardTime",
-            package: "swift-standards"
+            name: "Time Primitives",
+            package: "swift-time-primitives"
         )
     }
     static var incits_4_1986: Self { .product(name: "INCITS 4 1986", package: "swift-incits-4-1986") }
-    static var standardsTestSupport: Self { .product(name: "StandardsTestSupport", package: "swift-standards") }
+    static var standardsTestSupport: Self { .product(name: "Test Primitives", package: "swift-test-primitives") }
 }
 
 let package = Package(
@@ -32,8 +32,10 @@ let package = Package(
         .library(name: .iso8601, targets: [.iso8601]),
     ],
     dependencies: [
-        .package(url: "https://github.com/swift-standards/swift-standards", from: "0.10.0"),
-        .package(url: "https://github.com/swift-standards/swift-incits-4-1986", from: "0.6.3"),
+        .package(path: "../../swift-primitives/swift-standard-library-extensions"),
+        .package(path: "../../swift-primitives/swift-time-primitives"),
+        .package(path: "../../swift-primitives/swift-test-primitives"),
+        .package(path: "../swift-incits-4-1986"),
     ],
     targets: [
         .target(

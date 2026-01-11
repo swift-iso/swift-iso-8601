@@ -5,7 +5,7 @@
 //  ISO 8601 Week Date representation
 //
 
-import StandardTime
+import Time_Primitives
 
 extension ISO_8601 {
     /// ISO 8601 Week Date representation: YYYY-Www-D
@@ -87,7 +87,7 @@ extension ISO_8601.DateTime {
     /// The time components will be 00:00:00 UTC.
     public init(_ weekDate: ISO_8601.WeekDate) {
         // Find January 4th of the week-year (which is always in week 1)
-        let jan4Time = try! StandardTime.Time(
+        let jan4Time = try! Time_Primitives.Time(
             year: weekDate.weekYear,
             month: 1,
             day: 4,
@@ -97,7 +97,7 @@ extension ISO_8601.DateTime {
         )
         let jan4DaysSinceEpoch =
             jan4Time.secondsSinceEpoch
-            / StandardTime.Time.Calendar.Gregorian.TimeConstants.secondsPerDay
+            / Time_Primitives.Time.Calendar.Gregorian.TimeConstants.secondsPerDay
 
         // Find the weekday of January 4th
         let jan4WeekdayEnum = jan4Time.weekday
@@ -122,7 +122,7 @@ extension ISO_8601.DateTime {
         let daysSinceEpoch = mondayOfWeek1 + ((weekDate.week - 1) * 7) + (weekDate.weekday - 1)
 
         let totalSeconds =
-            daysSinceEpoch * StandardTime.Time.Calendar.Gregorian.TimeConstants.secondsPerDay
+            daysSinceEpoch * Time_Primitives.Time.Calendar.Gregorian.TimeConstants.secondsPerDay
 
         self.init(
             __unchecked: (),

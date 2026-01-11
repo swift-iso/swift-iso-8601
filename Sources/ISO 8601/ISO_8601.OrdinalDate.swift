@@ -5,7 +5,7 @@
 //  ISO 8601 Ordinal Date representation
 //
 
-import StandardTime
+import Time_Primitives
 
 extension ISO_8601 {
     /// ISO 8601 Ordinal Date representation: YYYY-DDD
@@ -38,7 +38,7 @@ extension ISO_8601 {
         ///   - day: Day of year (1-365 or 1-366 for leap years)
         /// - Throws: `ISO_8601.Date.Error` if day is out of valid range for the year
         public init(year: Int, day: Int) throws {
-            let maxDay = StandardTime.Time.Calendar.Gregorian.isLeapYear(year) ? 366 : 365
+            let maxDay = Time_Primitives.Time.Calendar.Gregorian.isLeapYear(year) ? 366 : 365
             guard (1...maxDay).contains(day) else {
                 throw ISO_8601.Date.Error.ordinalDayOutOfRange(day, year: year)
             }
@@ -75,7 +75,7 @@ extension ISO_8601.DateTime {
     /// The time components will be 00:00:00 UTC.
     public init(_ ordinalDate: ISO_8601.OrdinalDate) {
         // Calculate month and day from ordinal day
-        let monthDays = StandardTime.Time.Calendar.Gregorian.daysInMonths(year: ordinalDate.year)
+        let monthDays = Time_Primitives.Time.Calendar.Gregorian.daysInMonths(year: ordinalDate.year)
         var remainingDays = ordinalDate.day - 1  // 0-indexed for calculation
         var month = 1
 

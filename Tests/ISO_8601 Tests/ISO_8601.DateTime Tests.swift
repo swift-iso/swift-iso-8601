@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import StandardTime
+import Time_Primitives
 import Testing
 
 @testable import ISO_8601

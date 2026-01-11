@@ -5,8 +5,8 @@
 //  Core date-time representation following ISO 8601:2019
 //
 
-public import StandardTime
-import Standards
+public import Time_Primitives
+import Standard_Library_Extensions
 
 extension ISO_8601 {
 
@@ -33,20 +33,20 @@ extension ISO_8601 {
     /// ```
     public struct DateTime: Sendable, Equatable, Hashable, Comparable {
         /// The UTC time
-        public let time: StandardTime.Time
+        public let time: Time_Primitives.Time
 
         /// Timezone offset from UTC
         /// Positive values are east of UTC, negative values are west
         /// Example: +0100 = 1 hour, -0500 = -5 hours
-        public let timezoneOffset: StandardTime.Time.TimezoneOffset
+        public let timezoneOffset: Time_Primitives.Time.TimezoneOffset
 
         /// Create a date-time from Time and timezone offset
         /// - Parameters:
         ///   - time: The UTC time
         ///   - timezoneOffset: Timezone offset (default: UTC)
         public init(
-            time: StandardTime.Time,
-            timezoneOffset: StandardTime.Time.TimezoneOffset = .utc
+            time: Time_Primitives.Time,
+            timezoneOffset: Time_Primitives.Time.TimezoneOffset = .utc
         ) {
             self.time = time
             self.timezoneOffset = timezoneOffset
@@ -72,21 +72,21 @@ extension ISO_8601 {
             let microsecond = remaining / 1000
             let nanosecond = remaining % 1000
 
-            let baseTime = StandardTime.Time(secondsSinceEpoch: secondsSinceEpoch)
-            let time = StandardTime.Time(
+            let baseTime = Time_Primitives.Time(secondsSinceEpoch: secondsSinceEpoch)
+            let time = Time_Primitives.Time(
                 year: baseTime.year,
                 month: baseTime.month,
                 day: baseTime.day,
                 hour: baseTime.hour,
                 minute: baseTime.minute,
                 second: baseTime.second,
-                millisecond: try StandardTime.Time.Millisecond(millisecond),
-                microsecond: try StandardTime.Time.Microsecond(microsecond),
-                nanosecond: try StandardTime.Time.Nanosecond(nanosecond)
+                millisecond: try Time_Primitives.Time.Millisecond(millisecond),
+                microsecond: try Time_Primitives.Time.Microsecond(microsecond),
+                nanosecond: try Time_Primitives.Time.Nanosecond(nanosecond)
             )
             self.init(
                 time: time,
-                timezoneOffset: StandardTime.Time.TimezoneOffset(seconds: timezoneOffsetSeconds)
+                timezoneOffset: Time_Primitives.Time.TimezoneOffset(seconds: timezoneOffsetSeconds)
             )
         }
 
@@ -104,21 +104,21 @@ extension ISO_8601 {
             let microsecond = remaining / 1000
             let nanosecond = remaining % 1000
 
-            let baseTime = StandardTime.Time(secondsSinceEpoch: secondsEpoch)
-            let time = StandardTime.Time(
+            let baseTime = Time_Primitives.Time(secondsSinceEpoch: secondsEpoch)
+            let time = Time_Primitives.Time(
                 year: baseTime.year,
                 month: baseTime.month,
                 day: baseTime.day,
                 hour: baseTime.hour,
                 minute: baseTime.minute,
                 second: baseTime.second,
-                millisecond: try! StandardTime.Time.Millisecond(millisecond),
-                microsecond: try! StandardTime.Time.Microsecond(microsecond),
-                nanosecond: try! StandardTime.Time.Nanosecond(nanosecond)
+                millisecond: try! Time_Primitives.Time.Millisecond(millisecond),
+                microsecond: try! Time_Primitives.Time.Microsecond(microsecond),
+                nanosecond: try! Time_Primitives.Time.Nanosecond(nanosecond)
             )
             self.init(
                 time: time,
-                timezoneOffset: StandardTime.Time.TimezoneOffset(seconds: timezoneOffsetSeconds)
+                timezoneOffset: Time_Primitives.Time.TimezoneOffset(seconds: timezoneOffsetSeconds)
             )
         }
 
@@ -200,7 +200,7 @@ extension ISO_8601.DateTime {
 
         // Create Time with validation - Time.Error propagates naturally
         // This is correct: Time owns calendar validation, ISO 8601 delegates to it
-        let time = try StandardTime.Time(
+        let time = try Time_Primitives.Time(
             year: year,
             month: month,
             day: day,
@@ -214,7 +214,7 @@ extension ISO_8601.DateTime {
 
         self.init(
             time: time,
-            timezoneOffset: StandardTime.Time.TimezoneOffset(seconds: timezoneOffsetSeconds)
+            timezoneOffset: Time_Primitives.Time.TimezoneOffset(seconds: timezoneOffsetSeconds)
         )
     }
 }
@@ -249,7 +249,7 @@ extension ISO_8601.DateTime {
     /// This is the day number within the year, starting from 1 for January 1.
     public var ordinalDay: Int {
         let comp = components
-        let monthDays = StandardTime.Time.Calendar.Gregorian.daysInMonths(year: comp.year)
+        let monthDays = Time_Primitives.Time.Calendar.Gregorian.daysInMonths(year: comp.year)
         var days = comp.day
         for m in 0..<(comp.month - 1) {
             days += monthDays[m]
@@ -289,7 +289,7 @@ extension ISO_8601.DateTime {
         // ISO weekday: 1=Monday, 7=Sunday
         let isoDay = isoWeekday
         let daysSinceMonday = isoDay - 1
-        let currentTime = try! StandardTime.Time(
+        let currentTime = try! Time_Primitives.Time(
             year: comp.year,
             month: comp.month,
             day: comp.day,
@@ -299,11 +299,11 @@ extension ISO_8601.DateTime {
         )
         let mondayOfWeek =
             currentTime.secondsSinceEpoch
-            / StandardTime.Time.Calendar.Gregorian.TimeConstants.secondsPerDay
+            / Time_Primitives.Time.Calendar.Gregorian.TimeConstants.secondsPerDay
             - daysSinceMonday
 
         // Find January 4th of this year (which is always in week 1)
-        let jan4Time = try! StandardTime.Time(
+        let jan4Time = try! Time_Primitives.Time(
             year: comp.year,
             month: 1,
             day: 4,
@@ -313,7 +313,7 @@ extension ISO_8601.DateTime {
         )
         let jan4 =
             jan4Time.secondsSinceEpoch
-            / StandardTime.Time.Calendar.Gregorian.TimeConstants.secondsPerDay
+            / Time_Primitives.Time.Calendar.Gregorian.TimeConstants.secondsPerDay
 
         // Find the Monday of the week containing January 4th
         let jan4WeekdayEnum = jan4Time.weekday
@@ -353,7 +353,7 @@ extension ISO_8601.DateTime {
         // - January 1 is a Thursday, OR
         // - January 1 is a Wednesday and it's a leap year
 
-        let jan1Time = try! StandardTime.Time(
+        let jan1Time = try! Time_Primitives.Time(
             year: year,
             month: 1,
             day: 1,
@@ -379,7 +379,7 @@ extension ISO_8601.DateTime {
         }
 
         // Wednesday and leap year
-        if jan1ISOWeekday == 3 && StandardTime.Time.Calendar.Gregorian.isLeapYear(year) {
+        if jan1ISOWeekday == 3 && Time_Primitives.Time.Calendar.Gregorian.isLeapYear(year) {
             return 53
         }
 
