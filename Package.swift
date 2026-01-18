@@ -26,35 +26,25 @@ let package = Package(
         .iOS(.v26),
         .tvOS(.v26),
         .watchOS(.v26),
-        .visionOS(.v26),
+        .visionOS(.v26)
     ],
     products: [
-        .library(name: .iso8601, targets: [.iso8601]),
+        .library(name: "ISO 8601", targets: ["ISO 8601"])
     ],
     dependencies: [
         .package(path: "../../swift-primitives/swift-standard-library-extensions"),
         .package(path: "../../swift-primitives/swift-time-primitives"),
-        .package(path: "../../swift-primitives/swift-test-primitives"),
-        .package(path: "../../swift-foundations/swift-ascii"),
+        .package(path: "../../swift-foundations/swift-ascii")
     ],
     targets: [
         .target(
-            name: .iso8601,
+            name: "ISO 8601",
             dependencies: [
                 .standards,
                 .time,
                 .incits_4_1986
             ]
-        ),
-        .testTarget(
-            name: .iso8601.tests,
-            dependencies: [
-                .iso8601,
-                .time,  // Needed for Time.Error in test expectations
-                .incits_4_1986,
-                .standardsTestSupport
-            ]
-        ),
+        )
     ],
     swiftLanguageModes: [.v6]
 )
