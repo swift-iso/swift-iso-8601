@@ -38,7 +38,7 @@ extension ISO_8601 {
         /// Timezone offset from UTC
         /// Positive values are east of UTC, negative values are west
         /// Example: +0100 = 1 hour, -0500 = -5 hours
-        public let timezoneOffset: Time_Primitives.Time.TimezoneOffset
+        public let timezoneOffset: Time_Primitives.Time.Timezone.Offset
 
         /// Create a date-time from Time and timezone offset
         /// - Parameters:
@@ -46,7 +46,7 @@ extension ISO_8601 {
         ///   - timezoneOffset: Timezone offset (default: UTC)
         public init(
             time: Time_Primitives.Time,
-            timezoneOffset: Time_Primitives.Time.TimezoneOffset = .utc
+            timezoneOffset: Time_Primitives.Time.Timezone.Offset = .utc
         ) {
             self.time = time
             self.timezoneOffset = timezoneOffset
@@ -86,7 +86,7 @@ extension ISO_8601 {
             )
             self.init(
                 time: time,
-                timezoneOffset: Time_Primitives.Time.TimezoneOffset(seconds: timezoneOffsetSeconds)
+                timezoneOffset: Time_Primitives.Time.Timezone.Offset(seconds: timezoneOffsetSeconds)
             )
         }
 
@@ -118,7 +118,7 @@ extension ISO_8601 {
             )
             self.init(
                 time: time,
-                timezoneOffset: Time_Primitives.Time.TimezoneOffset(seconds: timezoneOffsetSeconds)
+                timezoneOffset: Time_Primitives.Time.Timezone.Offset(seconds: timezoneOffsetSeconds)
             )
         }
 
@@ -214,7 +214,7 @@ extension ISO_8601.DateTime {
 
         self.init(
             time: time,
-            timezoneOffset: Time_Primitives.Time.TimezoneOffset(seconds: timezoneOffsetSeconds)
+            timezoneOffset: Time_Primitives.Time.Timezone.Offset(seconds: timezoneOffsetSeconds)
         )
     }
 }
