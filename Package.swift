@@ -44,7 +44,13 @@ let package = Package(
                 .time,
                 .incits_4_1986
             ]
-        )
+        ),
+        .testTarget(
+            name: "ISO 8601 Tests",
+            dependencies: [
+                "ISO 8601",
+            ]
+        ),
     ],
     swiftLanguageModes: [.v6]
 )
@@ -60,6 +66,7 @@ for target in package.targets where ![.system, .binary, .plugin, .macro].contain
         .enableUpcomingFeature("ExistentialAny"),
         .enableUpcomingFeature("InternalImportsByDefault"),
         .enableUpcomingFeature("MemberImportVisibility"),
+        .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
         .enableExperimentalFeature("Lifetimes"),
         .enableExperimentalFeature("SuppressedAssociatedTypes"),
         .enableExperimentalFeature("SuppressedAssociatedTypesWithDefaults"),
