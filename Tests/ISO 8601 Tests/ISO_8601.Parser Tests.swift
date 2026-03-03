@@ -216,16 +216,14 @@ struct `ISO_8601.Parser Tests` {
 
     @Test
     func `Reject invalid month`() throws {
-        // Calendar validation delegated to Time - expect Time.Error
-        #expect(throws: Time.Error.self) {
+        #expect(throws: ISO_8601.Date.Error.self) {
             _ = try ISO_8601.DateTime.Parser.parse("2024-13-01")
         }
     }
 
     @Test
     func `Reject invalid day`() throws {
-        // Calendar validation delegated to Time - expect Time.Error
-        #expect(throws: Time.Error.self) {
+        #expect(throws: ISO_8601.Date.Error.self) {
             _ = try ISO_8601.DateTime.Parser.parse("2024-02-30")
         }
     }

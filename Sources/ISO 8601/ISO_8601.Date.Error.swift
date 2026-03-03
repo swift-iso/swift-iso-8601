@@ -5,6 +5,8 @@
 //  Error types for ISO 8601 date-time operations
 //
 
+public import Time_Primitives
+
 extension ISO_8601.Date {
     /// Errors that can occur when parsing ISO 8601 date-time strings or creating date components
     public enum Error: Swift.Error, Sendable, Equatable {
@@ -36,5 +38,8 @@ extension ISO_8601.Date {
         case weekNumberOutOfRange(Int, year: Int)  // Must be 1-53 and valid for year
         case weekdayOutOfRange(Int)  // Must be 1-7 (Monday=1, Sunday=7)
         case ordinalDayOutOfRange(Int, year: Int)  // Must be 1-365 (366 in leap years)
+
+        // Component validation delegation
+        case invalidComponents(Time_Primitives.Time.Error)
     }
 }

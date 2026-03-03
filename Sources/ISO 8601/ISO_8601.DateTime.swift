@@ -191,26 +191,30 @@ extension ISO_8601.DateTime {
         second: Int = 0,
         nanoseconds: Int = 0,
         timezoneOffsetSeconds: Int = 0
-    ) throws {
+    ) throws(ISO_8601.Date.Error) {
         // Convert total nanoseconds to millisecond/microsecond/nanosecond components
         let millisecond = nanoseconds / 1_000_000
         let remaining = nanoseconds % 1_000_000
         let microsecond = remaining / 1000
         let nanosecond = remaining % 1000
 
-        // Create Time with validation - Time.Error propagates naturally
-        // This is correct: Time owns calendar validation, ISO 8601 delegates to it
-        let time = try Time_Primitives.Time(
-            year: year,
-            month: month,
-            day: day,
-            hour: hour,
-            minute: minute,
-            second: second,
-            millisecond: millisecond,
-            microsecond: microsecond,
-            nanosecond: nanosecond
-        )
+        // Create Time with validation
+        let time: Time_Primitives.Time
+        do {
+            time = try Time_Primitives.Time(
+                year: year,
+                month: month,
+                day: day,
+                hour: hour,
+                minute: minute,
+                second: second,
+                millisecond: millisecond,
+                microsecond: microsecond,
+                nanosecond: nanosecond
+            )
+        } catch {
+            throw .invalidComponents(error)
+        }
 
         self.init(
             time: time,
@@ -648,21 +652,16 @@ extension ISO_8601.DateTime {
 
                 // Advance to next day at 00:00:00
                 hour = 0
-                let nextDayDateTime: ISO_8601.DateTime
-                do {
-                    nextDayDateTime = try ISO_8601.DateTime(
-                        year: year,
-                        month: month,
-                        day: day,
-                        hour: 0,
-                        minute: 0,
-                        second: 0,
-                        nanoseconds: 0,
-                        timezoneOffsetSeconds: timezoneOffset
-                    )
-                } catch {
-                    throw ISO_8601.Date.Error.invalidFormat("Invalid date components: \(error)")
-                }
+                let nextDayDateTime = try ISO_8601.DateTime(
+                    year: year,
+                    month: month,
+                    day: day,
+                    hour: 0,
+                    minute: 0,
+                    second: 0,
+                    nanoseconds: 0,
+                    timezoneOffsetSeconds: timezoneOffset
+                )
                 // Add one day (86400 seconds)
                 return try ISO_8601.DateTime(
                     secondsSinceEpoch: nextDayDateTime.secondsSinceEpoch
@@ -673,20 +672,16 @@ extension ISO_8601.DateTime {
             }
 
             // Create DateTime
-            do {
-                return try ISO_8601.DateTime(
-                    year: year,
-                    month: month,
-                    day: day,
-                    hour: hour,
-                    minute: minute,
-                    second: second,
-                    nanoseconds: nanoseconds,
-                    timezoneOffsetSeconds: timezoneOffset
-                )
-            } catch {
-                throw ISO_8601.Date.Error.invalidFormat("Invalid date components: \(error)")
-            }
+            return try ISO_8601.DateTime(
+                year: year,
+                month: month,
+                day: day,
+                hour: hour,
+                minute: minute,
+                second: second,
+                nanoseconds: nanoseconds,
+                timezoneOffsetSeconds: timezoneOffset
+            )
         }
 
         // MARK: - Date Parsing
