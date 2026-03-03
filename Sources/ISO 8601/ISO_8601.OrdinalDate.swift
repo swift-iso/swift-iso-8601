@@ -37,7 +37,7 @@ extension ISO_8601 {
         ///   - year: Calendar year
         ///   - day: Day of year (1-365 or 1-366 for leap years)
         /// - Throws: `ISO_8601.Date.Error` if day is out of valid range for the year
-        public init(year: Int, day: Int) throws {
+        public init(year: Int, day: Int) throws(ISO_8601.Date.Error) {
             let maxDay = Time_Primitives.Time.Calendar.Gregorian.isLeapYear(year) ? 366 : 365
             guard (1...maxDay).contains(day) else {
                 throw ISO_8601.Date.Error.ordinalDayOutOfRange(day, year: year)

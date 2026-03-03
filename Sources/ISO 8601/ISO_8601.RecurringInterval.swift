@@ -42,7 +42,7 @@ extension ISO_8601 {
         ///   - repetitions: Number of repetitions (nil for unlimited)
         ///   - interval: The interval to repeat
         /// - Throws: `ISO_8601.Date.Error` if repetitions is negative
-        public init(repetitions: Int?, interval: Interval) throws {
+        public init(repetitions: Int?, interval: Interval) throws(ISO_8601.Date.Error) {
             if let reps = repetitions {
                 guard reps >= 0 else {
                     throw ISO_8601.Date.Error.invalidFormat("Repetitions must be non-negative")
@@ -98,7 +98,7 @@ extension ISO_8601.RecurringInterval {
         /// - Parameter value: The R-format string (e.g., "R5/2019-01-01T00:00:00Z/P1D")
         /// - Returns: RecurringInterval instance
         /// - Throws: `ISO_8601.Date.Error` if parsing fails
-        public static func parse(_ value: String) throws -> ISO_8601.RecurringInterval {
+        public static func parse(_ value: String) throws(ISO_8601.Date.Error) -> ISO_8601.RecurringInterval {
             guard value.hasPrefix("R") else {
                 throw ISO_8601.Date.Error.invalidFormat("Recurring interval must start with 'R'")
             }

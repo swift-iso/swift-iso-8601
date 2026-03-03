@@ -36,7 +36,7 @@ extension ISO_8601.Date {
             minute: Int,
             second: Int,
             nanoseconds: Int = 0
-        ) throws {
+        ) throws(ISO_8601.Date.Error) {
             // Validate month
             guard (1...12).contains(month) else {
                 throw ISO_8601.Date.Error.monthOutOfRange(month)

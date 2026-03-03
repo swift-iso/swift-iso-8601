@@ -63,7 +63,7 @@ extension ISO_8601 {
             second: Int? = nil,
             nanoseconds: Int = 0,
             timezoneOffsetSeconds: Int? = nil
-        ) throws {
+        ) throws(ISO_8601.Date.Error) {
             // Validate hour (0-24)
             guard (0...24).contains(hour) else {
                 throw ISO_8601.Date.Error.hourOutOfRange(hour)
@@ -218,7 +218,7 @@ extension ISO_8601.Time {
         /// - Parameter value: The time string (e.g., "12:30:45", "123045Z", "12:30")
         /// - Returns: Time instance
         /// - Throws: `ISO_8601.Date.Error` if parsing fails
-        public static func parse(_ value: String) throws -> ISO_8601.Time {
+        public static func parse(_ value: String) throws(ISO_8601.Date.Error) -> ISO_8601.Time {
             // Extract timezone portion (Z, +HH:MM, -HH:MM, etc.)
             var timePart = value
             var timezoneOffset: Int?
@@ -330,7 +330,7 @@ extension ISO_8601.Time {
 
         private static func parseFractionalSeconds(
             _ value: String
-        ) throws -> (seconds: Int, nanoseconds: Int) {
+        ) throws(ISO_8601.Date.Error) -> (seconds: Int, nanoseconds: Int) {
             // Check for decimal point or comma
             let separator: Character
             if value.contains(".") {
@@ -358,7 +358,7 @@ extension ISO_8601.Time {
             return (sec, nano)
         }
 
-        private static func parseFractionalPart(_ fracStr: String) throws -> Int {
+        private static func parseFractionalPart(_ fracStr: String) throws(ISO_8601.Date.Error) -> Int {
             // Pad or truncate to 9 digits (nanoseconds)
             var paddedFrac = fracStr
             if fracStr.count < 9 {
@@ -386,7 +386,7 @@ extension ISO_8601.Time {
             }
         }
 
-        private static func parseTimezoneOffset(_ value: String, positive: Bool) throws -> Int {
+        private static func parseTimezoneOffset(_ value: String, positive: Bool) throws(ISO_8601.Date.Error) -> Int {
             let hours: Int
             let minutes: Int
 

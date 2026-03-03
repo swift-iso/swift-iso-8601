@@ -41,7 +41,7 @@ extension ISO_8601 {
         ///   - week: Week number (1-53, validated for the year)
         ///   - weekday: Weekday (1=Monday, 7=Sunday)
         /// - Throws: `ISO_8601.Date.Error` if any component is out of valid range
-        public init(weekYear: Int, week: Int, weekday: Int) throws {
+        public init(weekYear: Int, week: Int, weekday: Int) throws(ISO_8601.Date.Error) {
             // Validate weekday
             guard (1...7).contains(weekday) else {
                 throw ISO_8601.Date.Error.weekdayOutOfRange(weekday)

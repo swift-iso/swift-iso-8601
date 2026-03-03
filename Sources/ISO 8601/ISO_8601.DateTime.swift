@@ -62,7 +62,7 @@ extension ISO_8601 {
             secondsSinceEpoch: Int = 0,
             nanoseconds: Int = 0,
             timezoneOffsetSeconds: Int = 0
-        ) throws {
+        ) throws(ISO_8601.Date.Error) {
             guard (0..<1_000_000_000).contains(nanoseconds) else {
                 throw ISO_8601.Date.Error.invalidFractionalSecond(String(nanoseconds))
             }
@@ -80,9 +80,9 @@ extension ISO_8601 {
                 hour: baseTime.hour,
                 minute: baseTime.minute,
                 second: baseTime.second,
-                millisecond: try Time_Primitives.Time.Millisecond(millisecond),
-                microsecond: try Time_Primitives.Time.Microsecond(microsecond),
-                nanosecond: try Time_Primitives.Time.Nanosecond(nanosecond)
+                millisecond: try! Time_Primitives.Time.Millisecond(millisecond),
+                microsecond: try! Time_Primitives.Time.Microsecond(microsecond),
+                nanosecond: try! Time_Primitives.Time.Nanosecond(nanosecond)
             )
             self.init(
                 time: time,
@@ -612,7 +612,7 @@ extension ISO_8601.DateTime {
         /// - Parameter value: The ISO 8601 formatted string
         /// - Returns: DateTime instance
         /// - Throws: `ISO_8601.Date.Error` if parsing fails
-        public static func parse(_ value: String) throws -> ISO_8601.DateTime {
+        public static func parse(_ value: String) throws(ISO_8601.Date.Error) -> ISO_8601.DateTime {
             // Split on 'T' to separate date and time portions
             let parts = value.split(separator: "T", maxSplits: 1).map(String.init)
 
@@ -648,16 +648,21 @@ extension ISO_8601.DateTime {
 
                 // Advance to next day at 00:00:00
                 hour = 0
-                let nextDayDateTime = try ISO_8601.DateTime(
-                    year: year,
-                    month: month,
-                    day: day,
-                    hour: 0,
-                    minute: 0,
-                    second: 0,
-                    nanoseconds: 0,
-                    timezoneOffsetSeconds: timezoneOffset
-                )
+                let nextDayDateTime: ISO_8601.DateTime
+                do {
+                    nextDayDateTime = try ISO_8601.DateTime(
+                        year: year,
+                        month: month,
+                        day: day,
+                        hour: 0,
+                        minute: 0,
+                        second: 0,
+                        nanoseconds: 0,
+                        timezoneOffsetSeconds: timezoneOffset
+                    )
+                } catch {
+                    throw ISO_8601.Date.Error.invalidFormat("Invalid date components: \(error)")
+                }
                 // Add one day (86400 seconds)
                 return try ISO_8601.DateTime(
                     secondsSinceEpoch: nextDayDateTime.secondsSinceEpoch
@@ -668,21 +673,25 @@ extension ISO_8601.DateTime {
             }
 
             // Create DateTime
-            return try ISO_8601.DateTime(
-                year: year,
-                month: month,
-                day: day,
-                hour: hour,
-                minute: minute,
-                second: second,
-                nanoseconds: nanoseconds,
-                timezoneOffsetSeconds: timezoneOffset
-            )
+            do {
+                return try ISO_8601.DateTime(
+                    year: year,
+                    month: month,
+                    day: day,
+                    hour: hour,
+                    minute: minute,
+                    second: second,
+                    nanoseconds: nanoseconds,
+                    timezoneOffsetSeconds: timezoneOffset
+                )
+            } catch {
+                throw ISO_8601.Date.Error.invalidFormat("Invalid date components: \(error)")
+            }
         }
 
         // MARK: - Date Parsing
 
-        private static func parseDate(_ value: String) throws -> (year: Int, month: Int, day: Int) {
+        private static func parseDate(_ value: String) throws(ISO_8601.Date.Error) -> (year: Int, month: Int, day: Int) {
             // Detect format by looking for specific patterns
             if value.contains("W") {
                 return try parseWeekDate(value)
@@ -713,7 +722,7 @@ extension ISO_8601.DateTime {
 
         private static func parseCalendarDate(
             _ value: String
-        ) throws -> (year: Int, month: Int, day: Int) {
+        ) throws(ISO_8601.Date.Error) -> (year: Int, month: Int, day: Int) {
             if value.contains("-") {
                 // Extended format: YYYY-MM-DD
                 let parts = value.split(separator: "-").map(String.init)
@@ -758,7 +767,7 @@ extension ISO_8601.DateTime {
 
         private static func parseWeekDate(
             _ value: String
-        ) throws -> (year: Int, month: Int, day: Int) {
+        ) throws(ISO_8601.Date.Error) -> (year: Int, month: Int, day: Int) {
             if value.contains("-") {
                 // Extended format: YYYY-Www-D
                 let parts = value.split(separator: "-").map(String.init)
@@ -831,7 +840,7 @@ extension ISO_8601.DateTime {
 
         private static func parseOrdinalDate(
             _ value: String
-        ) throws -> (year: Int, month: Int, day: Int) {
+        ) throws(ISO_8601.Date.Error) -> (year: Int, month: Int, day: Int) {
             if value.contains("-") {
                 // Extended format: YYYY-DDD
                 let parts = value.split(separator: "-").map(String.init)
@@ -877,7 +886,7 @@ extension ISO_8601.DateTime {
 
         private static func parseTime(
             _ value: String
-        ) throws -> (hour: Int, minute: Int, second: Int, nanoseconds: Int, timezoneOffset: Int) {
+        ) throws(ISO_8601.Date.Error) -> (hour: Int, minute: Int, second: Int, nanoseconds: Int, timezoneOffset: Int) {
             // Extract timezone portion (Z, +HH:MM, -HH:MM, etc.)
             var timePart = value
             var timezoneOffset = 0
@@ -961,7 +970,7 @@ extension ISO_8601.DateTime {
 
         private static func parseFractionalSeconds(
             _ value: String
-        ) throws -> (seconds: Int, nanoseconds: Int) {
+        ) throws(ISO_8601.Date.Error) -> (seconds: Int, nanoseconds: Int) {
             // Check for decimal point or comma
             let separator: Character
             if value.contains(".") {
@@ -1001,7 +1010,7 @@ extension ISO_8601.DateTime {
             return (sec, nano)
         }
 
-        private static func parseTimezoneOffset(_ value: String, positive: Bool) throws -> Int {
+        private static func parseTimezoneOffset(_ value: String, positive: Bool) throws(ISO_8601.Date.Error) -> Int {
             if value.contains(":") {
                 // Extended format: HH:MM
                 let parts = value.split(separator: ":").map(String.init)

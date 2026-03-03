@@ -96,7 +96,7 @@ extension ISO_8601.Interval {
         /// - Parameter value: The interval string (e.g., "2019-08-27/2019-08-29", "P3D", "2019-08-27/P3D")
         /// - Returns: Interval instance
         /// - Throws: `ISO_8601.Date.Error` if parsing fails
-        public static func parse(_ value: String) throws -> ISO_8601.Interval {
+        public static func parse(_ value: String) throws(ISO_8601.Date.Error) -> ISO_8601.Interval {
             // Check if it's a duration-only interval (starts with P, no slash)
             if value.hasPrefix("P") && !value.contains("/") {
                 let duration = try ISO_8601.Duration.Parser.parse(value)

@@ -68,7 +68,7 @@ extension ISO_8601 {
             minutes: Int = 0,
             seconds: Int = 0,
             nanoseconds: Int = 0
-        ) throws {
+        ) throws(ISO_8601.Date.Error) {
             guard (0..<1_000_000_000).contains(nanoseconds) else {
                 throw ISO_8601.Date.Error.invalidFractionalSecond(String(nanoseconds))
             }
@@ -183,7 +183,7 @@ extension ISO_8601.Duration {
         /// - Parameter value: The P-format duration string (e.g., "P1Y2M3DT4H5M6.789S")
         /// - Returns: Duration instance
         /// - Throws: `ISO_8601.Date.Error` if parsing fails
-        public static func parse(_ value: String) throws -> ISO_8601.Duration {
+        public static func parse(_ value: String) throws(ISO_8601.Date.Error) -> ISO_8601.Duration {
             guard value.hasPrefix("P") else {
                 throw ISO_8601.Date.Error.invalidFormat("Duration must start with 'P'")
             }
@@ -243,7 +243,7 @@ extension ISO_8601.Duration {
 
         private static func parseDateComponents(
             _ datePart: String
-        ) throws -> (years: Int, months: Int, days: Int) {
+        ) throws(ISO_8601.Date.Error) -> (years: Int, months: Int, days: Int) {
             var years = 0
             var months = 0
             var days = 0
@@ -283,7 +283,7 @@ extension ISO_8601.Duration {
 
         private static func parseTimeComponents(
             _ timePart: String
-        ) throws -> (hours: Int, minutes: Int, seconds: Int, nanoseconds: Int) {
+        ) throws(ISO_8601.Date.Error) -> (hours: Int, minutes: Int, seconds: Int, nanoseconds: Int) {
             var hours = 0
             var minutes = 0
             var seconds = 0
