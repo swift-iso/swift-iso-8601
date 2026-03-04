@@ -37,7 +37,6 @@ extension ISO_8601.Timezone.Offset.Parse {
 }
 
 extension ISO_8601.Timezone.Offset.Parse: Parser.`Protocol` {
-    public typealias ParseOutput = Output
     public typealias Failure = ISO_8601.Parse.Error
 
     @inlinable

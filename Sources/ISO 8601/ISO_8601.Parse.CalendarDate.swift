@@ -37,7 +37,6 @@ extension ISO_8601.Parse.CalendarDate {
 }
 
 extension ISO_8601.Parse.CalendarDate: Parser.`Protocol` {
-    public typealias ParseOutput = Output
     public typealias Failure = ISO_8601.Parse.Error
 
     @inlinable

@@ -35,7 +35,6 @@ extension ISO_8601.OrdinalDate.Parse {
 }
 
 extension ISO_8601.OrdinalDate.Parse: Parser.`Protocol` {
-    public typealias ParseOutput = Output
     public typealias Failure = ISO_8601.Parse.Error
 
     @inlinable

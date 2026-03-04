@@ -51,7 +51,6 @@ extension ISO_8601.RecurringInterval.Parse {
 }
 
 extension ISO_8601.RecurringInterval.Parse: Parser.`Protocol` {
-    public typealias ParseOutput = Output
     public typealias Failure = ISO_8601.RecurringInterval.Parse<Input>.Error
 
     @inlinable

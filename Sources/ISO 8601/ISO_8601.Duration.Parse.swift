@@ -60,7 +60,6 @@ extension ISO_8601.Duration.Parse {
 }
 
 extension ISO_8601.Duration.Parse: Parser.`Protocol` {
-    public typealias ParseOutput = Output
     public typealias Failure = ISO_8601.Duration.Parse<Input>.Error
 
     @inlinable

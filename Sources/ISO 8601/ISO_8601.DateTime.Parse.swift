@@ -51,7 +51,6 @@ extension ISO_8601.DateTime.Parse {
 }
 
 extension ISO_8601.DateTime.Parse: Parser.`Protocol` {
-    public typealias ParseOutput = Output
     public typealias Failure = ISO_8601.DateTime.Parse<Input>.Error
 
     @inlinable

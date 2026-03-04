@@ -52,7 +52,6 @@ extension ISO_8601.Interval.Parse {
 }
 
 extension ISO_8601.Interval.Parse: Parser.`Protocol` {
-    public typealias ParseOutput = Output
     public typealias Failure = ISO_8601.Interval.Parse<Input>.Error
 
     @inlinable

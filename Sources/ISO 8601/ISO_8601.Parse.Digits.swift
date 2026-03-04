@@ -25,7 +25,7 @@ extension ISO_8601.Parse {
 }
 
 extension ISO_8601.Parse.Digits: Parser.`Protocol` {
-    public typealias ParseOutput = Int
+    public typealias Output = Int
     public typealias Failure = ISO_8601.Parse.Error
 
     @inlinable

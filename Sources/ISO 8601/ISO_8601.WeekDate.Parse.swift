@@ -39,7 +39,6 @@ extension ISO_8601.WeekDate.Parse {
 }
 
 extension ISO_8601.WeekDate.Parse: Parser.`Protocol` {
-    public typealias ParseOutput = Output
     public typealias Failure = ISO_8601.Parse.Error
 
     @inlinable
