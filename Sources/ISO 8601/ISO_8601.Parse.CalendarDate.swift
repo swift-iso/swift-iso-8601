@@ -13,7 +13,7 @@ extension ISO_8601.Parse {
     /// Extended format: `YYYY-MM-DD`
     /// Basic format: `YYYYMMDD`
     ///
-    /// Validates month (1–12) and day (1–31) ranges.
+    /// Validates month (1-12) and day (1-31) ranges.
     public struct CalendarDate<Input: Collection.Slice.`Protocol`>: Sendable
     where Input: Sendable, Input.Element == UInt8 {
         @inlinable

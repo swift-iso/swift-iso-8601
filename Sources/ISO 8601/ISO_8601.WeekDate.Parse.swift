@@ -1,5 +1,5 @@
 //
-//  ISO_8601.Parse.WeekDate.swift
+//  ISO_8601.WeekDate.Parse.swift
 //  swift-iso-8601
 //
 //  ISO 8601 week date: YYYY-Www-d (extended) or YYYYWwwd (basic)
@@ -7,23 +7,23 @@
 
 public import Parser_Primitives
 
-extension ISO_8601.Parse {
+extension ISO_8601.WeekDate {
     /// Parses an ISO 8601 week date.
     ///
     /// Extended format: `YYYY-Www-d`
     /// Basic format: `YYYYWwwd`
     ///
     /// - `W` (0x57) is the literal week designator
-    /// - `ww` is the week number (01–53)
+    /// - `ww` is the week number (01-53)
     /// - `d` is the weekday (1=Monday, 7=Sunday)
-    public struct WeekDate<Input: Collection.Slice.`Protocol`>: Sendable
+    public struct Parse<Input: Collection.Slice.`Protocol`>: Sendable
     where Input: Sendable, Input.Element == UInt8 {
         @inlinable
         public init() {}
     }
 }
 
-extension ISO_8601.Parse.WeekDate {
+extension ISO_8601.WeekDate.Parse {
     public struct Output: Sendable, Equatable {
         public let weekYear: Int
         public let week: Int
@@ -38,7 +38,7 @@ extension ISO_8601.Parse.WeekDate {
     }
 }
 
-extension ISO_8601.Parse.WeekDate: Parser.`Protocol` {
+extension ISO_8601.WeekDate.Parse: Parser.`Protocol` {
     public typealias ParseOutput = Output
     public typealias Failure = ISO_8601.Parse.Error
 

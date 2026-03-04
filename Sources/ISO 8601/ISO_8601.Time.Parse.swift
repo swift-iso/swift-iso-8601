@@ -1,5 +1,5 @@
 //
-//  ISO_8601.Parse.TimeOfDay.swift
+//  ISO_8601.Time.Parse.swift
 //  swift-iso-8601
 //
 //  ISO 8601 time: HH:MM:SS (extended) or HHMMSS (basic) with optional fractional seconds
@@ -7,7 +7,7 @@
 
 public import Parser_Primitives
 
-extension ISO_8601.Parse {
+extension ISO_8601.Time {
     /// Parses an ISO 8601 time of day.
     ///
     /// Extended format: `HH:MM:SS` or `HH:MM:SS.sss`
@@ -15,19 +15,19 @@ extension ISO_8601.Parse {
     ///
     /// Supports both `.` and `,` as fractional second separator (ISO 8601 allows both).
     /// Fractional seconds are normalized to nanoseconds.
-    public struct TimeOfDay<Input: Collection.Slice.`Protocol`>: Sendable
+    public struct Parse<Input: Collection.Slice.`Protocol`>: Sendable
     where Input: Sendable, Input.Element == UInt8 {
         @inlinable
         public init() {}
     }
 }
 
-extension ISO_8601.Parse.TimeOfDay {
+extension ISO_8601.Time.Parse {
     public struct Output: Sendable, Equatable {
         public let hour: Int
         public let minute: Int
         public let second: Int
-        /// Fractional seconds as nanoseconds (0–999_999_999).
+        /// Fractional seconds as nanoseconds (0-999_999_999).
         public let nanoseconds: Int
 
         @inlinable
@@ -40,7 +40,7 @@ extension ISO_8601.Parse.TimeOfDay {
     }
 }
 
-extension ISO_8601.Parse.TimeOfDay: Parser.`Protocol` {
+extension ISO_8601.Time.Parse: Parser.`Protocol` {
     public typealias ParseOutput = Output
     public typealias Failure = ISO_8601.Parse.Error
 

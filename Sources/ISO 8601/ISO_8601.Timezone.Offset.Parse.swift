@@ -1,5 +1,5 @@
 //
-//  ISO_8601.Parse.TimezoneOffset.swift
+//  ISO_8601.Timezone.Offset.Parse.swift
 //  swift-iso-8601
 //
 //  ISO 8601 timezone offset: Z, +HH:MM, -HH:MM, +HHMM, -HHMM, +HH, -HH
@@ -7,24 +7,24 @@
 
 public import Parser_Primitives
 
-extension ISO_8601.Parse {
+extension ISO_8601.Timezone.Offset {
     /// Parses an ISO 8601 timezone designator.
     ///
     /// Formats:
-    /// - `Z` — UTC
-    /// - `+HH:MM` or `-HH:MM` — Extended offset
-    /// - `+HHMM` or `-HHMM` — Basic offset
-    /// - `+HH` or `-HH` — Hour-only offset
+    /// - `Z` -- UTC
+    /// - `+HH:MM` or `-HH:MM` -- Extended offset
+    /// - `+HHMM` or `-HHMM` -- Basic offset
+    /// - `+HH` or `-HH` -- Hour-only offset
     ///
     /// Returns the offset from UTC in total seconds.
-    public struct TimezoneOffset<Input: Collection.Slice.`Protocol`>: Sendable
+    public struct Parse<Input: Collection.Slice.`Protocol`>: Sendable
     where Input: Sendable, Input.Element == UInt8 {
         @inlinable
         public init() {}
     }
 }
 
-extension ISO_8601.Parse.TimezoneOffset {
+extension ISO_8601.Timezone.Offset.Parse {
     public struct Output: Sendable, Equatable {
         /// Offset from UTC in seconds. Zero for `Z`.
         public let totalSeconds: Int
@@ -36,7 +36,7 @@ extension ISO_8601.Parse.TimezoneOffset {
     }
 }
 
-extension ISO_8601.Parse.TimezoneOffset: Parser.`Protocol` {
+extension ISO_8601.Timezone.Offset.Parse: Parser.`Protocol` {
     public typealias ParseOutput = Output
     public typealias Failure = ISO_8601.Parse.Error
 
