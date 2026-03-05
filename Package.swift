@@ -44,8 +44,7 @@ let package = Package(
                 .standards,
                 .time,
                 .incits_4_1986,
-                .product(name: "Parser Primitives", package: "swift-parser-primitives"),
-                .product(name: "Parser ASCII Integer Primitives", package: "swift-parser-primitives")
+                .product(name: "Parser Primitives", package: "swift-parser-primitives")
             ]
         ),
         .testTarget(

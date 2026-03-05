@@ -6,7 +6,6 @@
 //
 
 import Parser_Primitives
-import Parser_ASCII_Integer_Primitives
 
 extension ISO_8601 {
     public enum Parse {}

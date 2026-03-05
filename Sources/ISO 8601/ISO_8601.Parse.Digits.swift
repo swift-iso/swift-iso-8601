@@ -10,7 +10,7 @@ public import Parser_Primitives
 extension ISO_8601.Parse {
     /// Parses exactly `count` ASCII decimal digits into an Int.
     ///
-    /// Unlike `Parser.ASCII.Integer.Decimal` which greedily consumes all digits,
+    /// Unlike `ASCII.Decimal.Parser` which greedily consumes all digits,
     /// this parser consumes exactly the specified number, enabling fixed-width
     /// parsing of ISO 8601 components (e.g., 4-digit year, 2-digit month).
     public struct Digits<Input: Collection.Slice.`Protocol`>: Sendable
