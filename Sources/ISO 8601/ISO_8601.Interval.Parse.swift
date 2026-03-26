@@ -7,6 +7,14 @@
 
 public import Parser_Primitives
 
+public enum __ISO_8601IntervalParseError: Swift.Error, Sendable, Equatable {
+    case dateTimeError(__ISO_8601DateTimeParseError)
+    case durationError(__ISO_8601DurationParseError)
+    case expectedSlash
+    case twoDateTimes
+    case twoDurations
+}
+
 extension ISO_8601.Interval {
     /// Parses an ISO 8601 interval.
     ///
@@ -42,13 +50,7 @@ extension ISO_8601.Interval.Parse {
         case duration(ISO_8601.Duration.Parse<Input>.Output)
     }
 
-    public enum Error: Swift.Error, Sendable, Equatable {
-        case dateTimeError(ISO_8601.DateTime.Parse<Input>.Error)
-        case durationError(ISO_8601.Duration.Parse<Input>.Error)
-        case expectedSlash
-        case twoDateTimes
-        case twoDurations
-    }
+    public typealias Error = __ISO_8601IntervalParseError
 }
 
 extension ISO_8601.Interval.Parse: Parser.`Protocol` {

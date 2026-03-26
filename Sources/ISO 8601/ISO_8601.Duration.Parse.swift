@@ -7,6 +7,13 @@
 
 public import Parser_Primitives
 
+public enum __ISO_8601DurationParseError: Swift.Error, Sendable, Equatable {
+    case expectedP
+    case emptyDuration
+    case expectedComponentDesignator
+    case invalidDigit
+}
+
 extension ISO_8601.Duration {
     /// Parses an ISO 8601 duration string.
     ///
@@ -51,12 +58,7 @@ extension ISO_8601.Duration.Parse {
         }
     }
 
-    public enum Error: Swift.Error, Sendable, Equatable {
-        case expectedP
-        case emptyDuration
-        case expectedComponentDesignator
-        case invalidDigit
-    }
+    public typealias Error = __ISO_8601DurationParseError
 }
 
 extension ISO_8601.Duration.Parse: Parser.`Protocol` {

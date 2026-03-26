@@ -7,6 +7,12 @@
 
 public import Parser_Primitives
 
+public enum __ISO_8601RecurringIntervalParseError: Swift.Error, Sendable, Equatable {
+    case expectedR
+    case expectedSlash
+    case intervalError(__ISO_8601IntervalParseError)
+}
+
 extension ISO_8601.RecurringInterval {
     /// Parses an ISO 8601 recurring interval.
     ///
@@ -43,11 +49,7 @@ extension ISO_8601.RecurringInterval.Parse {
         }
     }
 
-    public enum Error: Swift.Error, Sendable, Equatable {
-        case expectedR
-        case expectedSlash
-        case intervalError(ISO_8601.Interval.Parse<Input>.Error)
-    }
+    public typealias Error = __ISO_8601RecurringIntervalParseError
 }
 
 extension ISO_8601.RecurringInterval.Parse: Parser.`Protocol` {
