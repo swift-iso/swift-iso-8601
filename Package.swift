@@ -15,7 +15,7 @@ extension Target.Dependency {
             package: "swift-time-primitives"
         )
     }
-    static var incits_4_1986: Self { .product(name: "ASCII", package: "swift-ascii") }
+    static var incits_4_1986: Self { .product(name: "ASCII Primitives", package: "swift-ascii-primitives") }
     static var standardsTestSupport: Self { .product(name: "Test Primitives", package: "swift-test-primitives") }
 }
 
@@ -34,7 +34,7 @@ let package = Package(
     dependencies: [
         .package(path: "../../swift-primitives/swift-standard-library-extensions"),
         .package(path: "../../swift-primitives/swift-time-primitives"),
-        .package(path: "../../swift-foundations/swift-ascii"),
+        .package(path: "../../swift-primitives/swift-ascii-primitives"),
         .package(path: "../../swift-primitives/swift-parser-primitives")
     ],
     targets: [
