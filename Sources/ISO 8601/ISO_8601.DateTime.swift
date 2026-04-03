@@ -51,91 +51,99 @@ extension ISO_8601 {
             self.time = time
             self.timezoneOffset = timezoneOffset
         }
+    }
+}
 
-        /// Create a date-time from seconds since epoch
-        /// - Parameters:
-        ///   - secondsSinceEpoch: Seconds since Unix epoch (UTC)
-        ///   - nanoseconds: Nanoseconds component (0-999,999,999, default: 0)
-        ///   - timezoneOffsetSeconds: Timezone offset in seconds (default: 0 for UTC)
-        /// - Throws: `ISO_8601.Date.Error` if nanoseconds is out of range
-        public init(
-            secondsSinceEpoch: Int = 0,
-            nanoseconds: Int = 0,
-            timezoneOffsetSeconds: Int = 0
-        ) throws(ISO_8601.Date.Error) {
-            guard (0..<1_000_000_000).contains(nanoseconds) else {
-                throw ISO_8601.Date.Error.invalidFractionalSecond(String(nanoseconds))
-            }
-            // Convert total nanoseconds to millisecond/microsecond/nanosecond components
-            let millisecond = nanoseconds / 1_000_000
-            let remaining = nanoseconds % 1_000_000
-            let microsecond = remaining / 1000
-            let nanosecond = remaining % 1000
+// MARK: - Additional Initializers
 
-            let baseTime = Time_Primitives.Time(secondsSinceEpoch: secondsSinceEpoch)
-            let time = Time_Primitives.Time(
-                year: baseTime.year,
-                month: baseTime.month,
-                day: baseTime.day,
-                hour: baseTime.hour,
-                minute: baseTime.minute,
-                second: baseTime.second,
-                millisecond: try! Time_Primitives.Time.Millisecond(millisecond),
-                microsecond: try! Time_Primitives.Time.Microsecond(microsecond),
-                nanosecond: try! Time_Primitives.Time.Nanosecond(nanosecond)
-            )
-            self.init(
-                time: time,
-                timezoneOffset: Time_Primitives.Time.Timezone.Offset(seconds: timezoneOffsetSeconds)
-            )
+extension ISO_8601.DateTime {
+    /// Create a date-time from seconds since epoch
+    /// - Parameters:
+    ///   - secondsSinceEpoch: Seconds since Unix epoch (UTC)
+    ///   - nanoseconds: Nanoseconds component (0-999,999,999, default: 0)
+    ///   - timezoneOffsetSeconds: Timezone offset in seconds (default: 0 for UTC)
+    /// - Throws: `ISO_8601.Date.Error` if nanoseconds is out of range
+    public init(
+        secondsSinceEpoch: Int = 0,
+        nanoseconds: Int = 0,
+        timezoneOffsetSeconds: Int = 0
+    ) throws(ISO_8601.Date.Error) {
+        guard (0..<1_000_000_000).contains(nanoseconds) else {
+            throw ISO_8601.Date.Error.invalidFractionalSecond(String(nanoseconds))
         }
+        // Convert total nanoseconds to millisecond/microsecond/nanosecond components
+        let millisecond = nanoseconds / 1_000_000
+        let remaining = nanoseconds % 1_000_000
+        let microsecond = remaining / 1000
+        let nanosecond = remaining % 1000
 
-        /// Create a date-time without validation (internal use only)
-        /// - Warning: Using this with invalid nanoseconds will create an invalid DateTime
-        internal init(
-            __unchecked: Void = (),
-            secondsEpoch: Int,
-            nanoseconds: Int = 0,
-            timezoneOffsetSeconds: Int = 0
-        ) {
-            // Convert total nanoseconds to millisecond/microsecond/nanosecond components
-            let millisecond = nanoseconds / 1_000_000
-            let remaining = nanoseconds % 1_000_000
-            let microsecond = remaining / 1000
-            let nanosecond = remaining % 1000
+        let baseTime = Time_Primitives.Time(secondsSinceEpoch: secondsSinceEpoch)
+        let time = Time_Primitives.Time(
+            year: baseTime.year,
+            month: baseTime.month,
+            day: baseTime.day,
+            hour: baseTime.hour,
+            minute: baseTime.minute,
+            second: baseTime.second,
+            millisecond: try! Time_Primitives.Time.Millisecond(millisecond),
+            microsecond: try! Time_Primitives.Time.Microsecond(microsecond),
+            nanosecond: try! Time_Primitives.Time.Nanosecond(nanosecond)
+        )
+        self.init(
+            time: time,
+            timezoneOffset: Time_Primitives.Time.Timezone.Offset(seconds: timezoneOffsetSeconds)
+        )
+    }
 
-            let baseTime = Time_Primitives.Time(secondsSinceEpoch: secondsEpoch)
-            let time = Time_Primitives.Time(
-                year: baseTime.year,
-                month: baseTime.month,
-                day: baseTime.day,
-                hour: baseTime.hour,
-                minute: baseTime.minute,
-                second: baseTime.second,
-                millisecond: try! Time_Primitives.Time.Millisecond(millisecond),
-                microsecond: try! Time_Primitives.Time.Microsecond(microsecond),
-                nanosecond: try! Time_Primitives.Time.Nanosecond(nanosecond)
-            )
-            self.init(
-                time: time,
-                timezoneOffset: Time_Primitives.Time.Timezone.Offset(seconds: timezoneOffsetSeconds)
-            )
-        }
+    /// Create a date-time without validation (internal use only)
+    /// - Warning: Using this with invalid nanoseconds will create an invalid DateTime
+    internal init(
+        __unchecked: Void = (),
+        secondsEpoch: Int,
+        nanoseconds: Int = 0,
+        timezoneOffsetSeconds: Int = 0
+    ) {
+        // Convert total nanoseconds to millisecond/microsecond/nanosecond components
+        let millisecond = nanoseconds / 1_000_000
+        let remaining = nanoseconds % 1_000_000
+        let microsecond = remaining / 1000
+        let nanosecond = remaining % 1000
 
-        /// Seconds since Unix epoch (computed property for compatibility)
-        public var secondsSinceEpoch: Int {
-            time.secondsSinceEpoch
-        }
+        let baseTime = Time_Primitives.Time(secondsSinceEpoch: secondsEpoch)
+        let time = Time_Primitives.Time(
+            year: baseTime.year,
+            month: baseTime.month,
+            day: baseTime.day,
+            hour: baseTime.hour,
+            minute: baseTime.minute,
+            second: baseTime.second,
+            millisecond: try! Time_Primitives.Time.Millisecond(millisecond),
+            microsecond: try! Time_Primitives.Time.Microsecond(microsecond),
+            nanosecond: try! Time_Primitives.Time.Nanosecond(nanosecond)
+        )
+        self.init(
+            time: time,
+            timezoneOffset: Time_Primitives.Time.Timezone.Offset(seconds: timezoneOffsetSeconds)
+        )
+    }
+}
 
-        /// Nanoseconds component (computed property for compatibility)
-        public var nanoseconds: Int {
-            time.totalNanoseconds
-        }
+// MARK: - Computed Properties
 
-        /// Timezone offset in seconds (computed property for compatibility)
-        public var timezoneOffsetSeconds: Int {
-            timezoneOffset.seconds
-        }
+extension ISO_8601.DateTime {
+    /// Seconds since Unix epoch (computed property for compatibility)
+    public var secondsSinceEpoch: Int {
+        time.secondsSinceEpoch
+    }
+
+    /// Nanoseconds component (computed property for compatibility)
+    public var nanoseconds: Int {
+        time.totalNanoseconds
+    }
+
+    /// Timezone offset in seconds (computed property for compatibility)
+    public var timezoneOffsetSeconds: Int {
+        timezoneOffset.seconds
     }
 }
 
@@ -166,7 +174,7 @@ extension ISO_8601.DateTime {
     }
 }
 
-// MARK: - Additional Initializers
+// MARK: - Calendar Initializer
 
 extension ISO_8601.DateTime {
     /// Create a date-time from calendar date components with validation
