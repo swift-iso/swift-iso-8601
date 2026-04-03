@@ -7,13 +7,6 @@
 
 public import Parser_Primitives
 
-public enum __ISO_8601DateTimeParseError: Swift.Error, Sendable, Equatable {
-    case expectedT
-    case dateError(ISO_8601.Parse.Error)
-    case timeError(ISO_8601.Parse.Error)
-    case timezoneError(ISO_8601.Parse.Error)
-}
-
 extension ISO_8601.DateTime {
     /// Parses an ISO 8601 date-time.
     ///
@@ -29,27 +22,6 @@ extension ISO_8601.DateTime {
         @inlinable
         public init() {}
     }
-}
-
-extension ISO_8601.DateTime.Parse {
-    public struct Output: Sendable, Equatable {
-        public let date: ISO_8601.Parse.CalendarDate<Input>.Output
-        public let time: ISO_8601.Time.Parse<Input>.Output
-        public let timezone: ISO_8601.Timezone.Offset.Parse<Input>.Output?
-
-        @inlinable
-        public init(
-            date: ISO_8601.Parse.CalendarDate<Input>.Output,
-            time: ISO_8601.Time.Parse<Input>.Output,
-            timezone: ISO_8601.Timezone.Offset.Parse<Input>.Output?
-        ) {
-            self.date = date
-            self.time = time
-            self.timezone = timezone
-        }
-    }
-
-    public typealias Error = __ISO_8601DateTimeParseError
 }
 
 extension ISO_8601.DateTime.Parse: Parser.`Protocol` {

@@ -21,21 +21,6 @@ extension ISO_8601.Parse {
     }
 }
 
-extension ISO_8601.Parse.CalendarDate {
-    public struct Output: Sendable, Equatable {
-        public let year: Int
-        public let month: Int
-        public let day: Int
-
-        @inlinable
-        public init(year: Int, month: Int, day: Int) {
-            self.year = year
-            self.month = month
-            self.day = day
-        }
-    }
-}
-
 extension ISO_8601.Parse.CalendarDate: Parser.`Protocol` {
     public typealias Failure = ISO_8601.Parse.Error
 

@@ -24,18 +24,6 @@ extension ISO_8601.Timezone.Offset {
     }
 }
 
-extension ISO_8601.Timezone.Offset.Parse {
-    public struct Output: Sendable, Equatable {
-        /// Offset from UTC in seconds. Zero for `Z`.
-        public let totalSeconds: Int
-
-        @inlinable
-        public init(totalSeconds: Int) {
-            self.totalSeconds = totalSeconds
-        }
-    }
-}
-
 extension ISO_8601.Timezone.Offset.Parse: Parser.`Protocol` {
     public typealias Failure = ISO_8601.Parse.Error
 

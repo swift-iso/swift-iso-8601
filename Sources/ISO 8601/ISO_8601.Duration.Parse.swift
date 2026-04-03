@@ -7,13 +7,6 @@
 
 public import Parser_Primitives
 
-public enum __ISO_8601DurationParseError: Swift.Error, Sendable, Equatable {
-    case expectedP
-    case emptyDuration
-    case expectedComponentDesignator
-    case invalidDigit
-}
-
 extension ISO_8601.Duration {
     /// Parses an ISO 8601 duration string.
     ///
@@ -30,35 +23,6 @@ extension ISO_8601.Duration {
         @inlinable
         public init() {}
     }
-}
-
-extension ISO_8601.Duration.Parse {
-    public struct Output: Sendable, Equatable {
-        public let years: Int
-        public let months: Int
-        public let days: Int
-        public let hours: Int
-        public let minutes: Int
-        public let seconds: Int
-        public let nanoseconds: Int
-
-        @inlinable
-        public init(
-            years: Int, months: Int, days: Int,
-            hours: Int, minutes: Int, seconds: Int,
-            nanoseconds: Int
-        ) {
-            self.years = years
-            self.months = months
-            self.days = days
-            self.hours = hours
-            self.minutes = minutes
-            self.seconds = seconds
-            self.nanoseconds = nanoseconds
-        }
-    }
-
-    public typealias Error = __ISO_8601DurationParseError
 }
 
 extension ISO_8601.Duration.Parse: Parser.`Protocol` {
