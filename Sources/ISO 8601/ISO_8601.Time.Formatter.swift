@@ -52,7 +52,7 @@ extension ISO_8601.Time {
             }
 
             // Add timezone if present
-            if let offset = value.timezoneOffsetSeconds {
+            if let offset = value.timezone.offsetSeconds {
                 if offset == 0 {
                     result += "Z"
                 } else {

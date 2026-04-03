@@ -75,7 +75,7 @@ extension ISO_8601.DateTime {
                 )
                 // Add one day (86400 seconds)
                 return try ISO_8601.DateTime(
-                    secondsSinceEpoch: nextDayDateTime.secondsSinceEpoch
+                    secondsSinceEpoch: nextDayDateTime.epoch.seconds
                         + Time.Calendar.Gregorian.TimeConstants.secondsPerDay,
                     nanoseconds: 0,
                     timezoneOffsetSeconds: timezoneOffset

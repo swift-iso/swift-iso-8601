@@ -83,7 +83,7 @@ extension ISO_8601.DateTime {
                 case .utc:
                     result += "Z"
                 case .offset(let extended):
-                    result += formatTimezoneOffset(value.timezoneOffsetSeconds, extended: extended)
+                    result += formatTimezoneOffset(value.timezone.offsetSeconds, extended: extended)
                 }
             }
 

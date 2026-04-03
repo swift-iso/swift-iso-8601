@@ -131,19 +131,23 @@ extension ISO_8601.DateTime {
 // MARK: - Computed Properties
 
 extension ISO_8601.DateTime {
-    /// Seconds since Unix epoch (computed property for compatibility)
-    public var secondsSinceEpoch: Int {
-        time.secondsSinceEpoch
-    }
-
     /// Nanoseconds component (computed property for compatibility)
     public var nanoseconds: Int {
         time.totalNanoseconds
     }
+}
 
-    /// Timezone offset in seconds (computed property for compatibility)
-    public var timezoneOffsetSeconds: Int {
-        timezoneOffset.seconds
+// MARK: - Nested Accessors
+
+extension ISO_8601.DateTime {
+    /// Access epoch-relative properties
+    public var epoch: Epoch {
+        Epoch(dateTime: self)
+    }
+
+    /// Access timezone-related properties
+    public var timezone: Timezone {
+        Timezone(dateTime: self)
     }
 }
 
@@ -151,8 +155,8 @@ extension ISO_8601.DateTime {
 
 extension ISO_8601.DateTime {
     public static func < (lhs: Self, rhs: Self) -> Bool {
-        if lhs.secondsSinceEpoch != rhs.secondsSinceEpoch {
-            return lhs.secondsSinceEpoch < rhs.secondsSinceEpoch
+        if lhs.epoch.seconds != rhs.epoch.seconds {
+            return lhs.epoch.seconds < rhs.epoch.seconds
         }
         return lhs.nanoseconds < rhs.nanoseconds
     }
@@ -162,14 +166,14 @@ extension ISO_8601.DateTime {
 
 extension ISO_8601.DateTime {
     /// Two DateTimes are equal if they represent the same moment in time
-    /// (same secondsSinceEpoch and nanoseconds), regardless of timezone offset
+    /// (same epoch seconds and nanoseconds), regardless of timezone offset
     public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.secondsSinceEpoch == rhs.secondsSinceEpoch && lhs.nanoseconds == rhs.nanoseconds
+        lhs.epoch.seconds == rhs.epoch.seconds && lhs.nanoseconds == rhs.nanoseconds
     }
 
     /// Hash based on the moment in time (seconds and nanoseconds), not timezone display
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(secondsSinceEpoch)
+        hasher.combine(epoch.seconds)
         hasher.combine(nanoseconds)
     }
 }
@@ -236,7 +240,7 @@ extension ISO_8601.DateTime {
 extension ISO_8601.DateTime {
     /// Extract calendar date components (Year-Month-Day)
     ///
-    /// Components reflect the local time based on `timezoneOffsetSeconds`.
+    /// Components reflect the local time based on `timezone.offsetSeconds`.
     /// The same moment in time will have different components in different timezones.
     public var components: ISO_8601.Date.Components {
         .init(self)
@@ -418,11 +422,11 @@ extension ISO_8601.DateTime: Codable {
 
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(secondsSinceEpoch, forKey: .secondsSinceEpoch)
+        try container.encode(epoch.seconds, forKey: .secondsSinceEpoch)
         if nanoseconds != 0 {
             try container.encode(nanoseconds, forKey: .nanoseconds)
         }
-        try container.encode(timezoneOffsetSeconds, forKey: .timezoneOffsetSeconds)
+        try container.encode(timezone.offsetSeconds, forKey: .timezoneOffsetSeconds)
     }
 }
 

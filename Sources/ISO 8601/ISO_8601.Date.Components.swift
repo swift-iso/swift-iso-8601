@@ -153,7 +153,7 @@ extension ISO_8601.Date.Components {
     public init(_ dateTime: ISO_8601.Date) {
         // Apply timezone offset to get local time components
         let localTime = Time_Primitives.Time(
-            secondsSinceEpoch: dateTime.secondsSinceEpoch + dateTime.timezoneOffsetSeconds
+            secondsSinceEpoch: dateTime.epoch.seconds + dateTime.timezone.offsetSeconds
         )
 
         // Convert Time_Primitives.Time.Weekday enum to Int (0=Sunday)

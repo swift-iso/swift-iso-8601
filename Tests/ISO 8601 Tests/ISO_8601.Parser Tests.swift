@@ -91,7 +91,7 @@ struct `ISO_8601.Parser Tests` {
         #expect(comp.hour == 12)
         #expect(comp.minute == 30)
         #expect(comp.second == 0)
-        #expect(dt.timezoneOffsetSeconds == 0)
+        #expect(dt.timezone.offsetSeconds == 0)
     }
 
     @Test
@@ -111,21 +111,21 @@ struct `ISO_8601.Parser Tests` {
     func `Parse datetime with positive offset extended`() throws {
         let dt = try ISO_8601.DateTime.Parser.parse("2024-01-15T12:30:00+05:30")
 
-        #expect(dt.timezoneOffsetSeconds == 19800)  // 5.5 hours
+        #expect(dt.timezone.offsetSeconds == 19800)  // 5.5 hours
     }
 
     @Test
     func `Parse datetime with positive offset basic`() throws {
         let dt = try ISO_8601.DateTime.Parser.parse("2024-01-15T12:30:00+0530")
 
-        #expect(dt.timezoneOffsetSeconds == 19800)
+        #expect(dt.timezone.offsetSeconds == 19800)
     }
 
     @Test
     func `Parse datetime with negative offset`() throws {
         let dt = try ISO_8601.DateTime.Parser.parse("2024-01-15T12:30:00-05:00")
 
-        #expect(dt.timezoneOffsetSeconds == -18000)  // -5 hours
+        #expect(dt.timezone.offsetSeconds == -18000)  // -5 hours
     }
 
     @Test

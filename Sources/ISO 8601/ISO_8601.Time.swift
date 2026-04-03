@@ -44,9 +44,13 @@ extension ISO_8601 {
         /// Nanoseconds component (0-999,999,999)
         public let nanoseconds: Int
 
-        /// Timezone offset in seconds from UTC, nil if not specified
-        /// Positive values are east of UTC, negative values are west
-        public let timezoneOffsetSeconds: Int?
+        /// Backing storage for timezone offset in seconds from UTC
+        internal let _timezoneOffsetSeconds: Int?
+
+        /// Access timezone-related properties
+        public var timezone: Timezone {
+            Timezone(time: self)
+        }
 
         /// Create a time with specified components
         ///
@@ -104,7 +108,7 @@ extension ISO_8601 {
             self.minute = minute
             self.second = second
             self.nanoseconds = nanoseconds
-            self.timezoneOffsetSeconds = timezoneOffsetSeconds
+            self._timezoneOffsetSeconds = timezoneOffsetSeconds
         }
     }
 }

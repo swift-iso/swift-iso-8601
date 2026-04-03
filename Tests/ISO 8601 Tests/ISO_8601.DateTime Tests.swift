@@ -19,8 +19,8 @@ struct `ISO_8601.DateTime Tests` {
     @Test
     func `Create from seconds since epoch`() throws {
         let dateTime = try ISO_8601.DateTime(secondsSinceEpoch: 1_609_459_200)
-        #expect(dateTime.secondsSinceEpoch == 1_609_459_200)
-        #expect(dateTime.timezoneOffsetSeconds == 0)
+        #expect(dateTime.epoch.seconds == 1_609_459_200)
+        #expect(dateTime.timezone.offsetSeconds == 0)
     }
 
     @Test
@@ -29,8 +29,8 @@ struct `ISO_8601.DateTime Tests` {
             secondsSinceEpoch: 1_609_459_200,
             timezoneOffsetSeconds: 3600  // +01:00
         )
-        #expect(dateTime.secondsSinceEpoch == 1_609_459_200)
-        #expect(dateTime.timezoneOffsetSeconds == 3600)
+        #expect(dateTime.epoch.seconds == 1_609_459_200)
+        #expect(dateTime.timezone.offsetSeconds == 3600)
     }
 
     // MARK: - Creation from Components
@@ -66,7 +66,7 @@ struct `ISO_8601.DateTime Tests` {
             timezoneOffsetSeconds: 3600
         )
 
-        #expect(dateTime.timezoneOffsetSeconds == 3600)
+        #expect(dateTime.timezone.offsetSeconds == 3600)
     }
 
     // MARK: - Components Extraction
@@ -105,7 +105,7 @@ struct `ISO_8601.DateTime Tests` {
 
         // Same moment but displayed in +03:00 timezone
         let offsetDateTime = try ISO_8601.DateTime(
-            secondsSinceEpoch: utcDateTime.secondsSinceEpoch,
+            secondsSinceEpoch: utcDateTime.epoch.seconds,
             timezoneOffsetSeconds: 10800  // +03:00
         )
 
@@ -211,7 +211,7 @@ struct `ISO_8601.DateTime Tests` {
     func `Timezone offset does not affect equality`() throws {
         let utc = try ISO_8601.DateTime(year: 2024, month: 1, day: 1, hour: 12)
         let offset = try ISO_8601.DateTime(
-            secondsSinceEpoch: utc.secondsSinceEpoch,
+            secondsSinceEpoch: utc.epoch.seconds,
             timezoneOffsetSeconds: 3600
         )
 

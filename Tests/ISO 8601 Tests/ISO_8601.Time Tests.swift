@@ -23,7 +23,7 @@ struct `ISO_8601.Time Tests` {
         #expect(time.minute == 30)
         #expect(time.second == 45)
         #expect(time.nanoseconds == 0)
-        #expect(time.timezoneOffsetSeconds == nil)
+        #expect(time.timezone.offsetSeconds == nil)
     }
 
     @Test
@@ -40,7 +40,7 @@ struct `ISO_8601.Time Tests` {
     func `Create time with timezone`() throws {
         let time = try ISO_8601.Time(hour: 12, minute: 30, second: 45, timezoneOffsetSeconds: 19800)
 
-        #expect(time.timezoneOffsetSeconds == 19800)  // +05:30
+        #expect(time.timezone.offsetSeconds == 19800)  // +05:30
     }
 
     @Test
@@ -213,7 +213,7 @@ struct `ISO_8601.Time Tests` {
         #expect(time.minute == 30)
         #expect(time.second == 45)
         #expect(time.nanoseconds == 0)
-        #expect(time.timezoneOffsetSeconds == nil)
+        #expect(time.timezone.offsetSeconds == nil)
     }
 
     @Test
@@ -277,28 +277,28 @@ struct `ISO_8601.Time Tests` {
         #expect(time.hour == 12)
         #expect(time.minute == 30)
         #expect(time.second == 45)
-        #expect(time.timezoneOffsetSeconds == 0)
+        #expect(time.timezone.offsetSeconds == 0)
     }
 
     @Test
     func `Parse time with positive offset extended`() throws {
         let time = try ISO_8601.Time.Parser.parse("12:30:45+05:30")
 
-        #expect(time.timezoneOffsetSeconds == 19800)
+        #expect(time.timezone.offsetSeconds == 19800)
     }
 
     @Test
     func `Parse time with positive offset basic`() throws {
         let time = try ISO_8601.Time.Parser.parse("123045+0530")
 
-        #expect(time.timezoneOffsetSeconds == 19800)
+        #expect(time.timezone.offsetSeconds == 19800)
     }
 
     @Test
     func `Parse time with negative offset`() throws {
         let time = try ISO_8601.Time.Parser.parse("12:30:45-05:00")
 
-        #expect(time.timezoneOffsetSeconds == -18000)
+        #expect(time.timezone.offsetSeconds == -18000)
     }
 
     @Test
@@ -401,6 +401,6 @@ struct `ISO_8601.Time Tests` {
         #expect(time.hour == 12)
         #expect(time.minute == 30)
         #expect(time.second == 45)
-        #expect(time.timezoneOffsetSeconds == 0)
+        #expect(time.timezone.offsetSeconds == 0)
     }
 }
