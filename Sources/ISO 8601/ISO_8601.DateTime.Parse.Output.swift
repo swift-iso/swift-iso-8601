@@ -4,6 +4,7 @@
 //
 
 extension ISO_8601.DateTime.Parse {
+    /// The parsed components of an ISO 8601 date-time.
     public struct Output: Sendable, Equatable {
         public let date: ISO_8601.Parse.CalendarDate<Input>.Output
         public let time: ISO_8601.Time.Parse<Input>.Output

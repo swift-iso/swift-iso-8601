@@ -6,8 +6,10 @@
 //
 
 extension ISO_8601.OrdinalDate.Parse {
+    /// The parsed components of an ISO 8601 ordinal date.
     public struct Output: Sendable, Equatable {
         public let year: Int
+        /// Day of the year (1-366).
         public let day: Int
 
         @inlinable

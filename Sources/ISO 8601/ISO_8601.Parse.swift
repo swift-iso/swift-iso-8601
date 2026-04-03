@@ -8,5 +8,6 @@
 import Parser_Primitives
 
 extension ISO_8601 {
+    /// Namespace for ISO 8601 parser combinators.
     public enum Parse {}
 }

@@ -6,6 +6,7 @@
 //
 
 extension ISO_8601.Time.Parse {
+    /// The parsed components of an ISO 8601 time.
     public struct Output: Sendable, Equatable {
         public let hour: Int
         public let minute: Int

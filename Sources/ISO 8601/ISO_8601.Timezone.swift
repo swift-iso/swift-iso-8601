@@ -6,5 +6,6 @@
 //
 
 extension ISO_8601 {
+    /// ISO 8601 timezone designators and offset representations.
     public enum Timezone {}
 }

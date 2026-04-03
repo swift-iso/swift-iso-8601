@@ -4,6 +4,7 @@
 //
 
 extension ISO_8601.Duration.Parse {
+    /// The parsed components of an ISO 8601 duration.
     public struct Output: Sendable, Equatable {
         public let years: Int
         public let months: Int

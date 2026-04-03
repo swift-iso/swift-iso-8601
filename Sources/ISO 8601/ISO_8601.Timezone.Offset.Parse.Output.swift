@@ -6,6 +6,7 @@
 //
 
 extension ISO_8601.Timezone.Offset.Parse {
+    /// The parsed representation of an ISO 8601 timezone offset.
     public struct Output: Sendable, Equatable {
         /// Offset from UTC in seconds. Zero for `Z`.
         public let totalSeconds: Int

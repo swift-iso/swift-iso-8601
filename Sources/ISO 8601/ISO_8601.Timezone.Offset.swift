@@ -6,5 +6,6 @@
 //
 
 extension ISO_8601.Timezone {
+    /// A UTC offset expressed as hours and optional minutes.
     public enum Offset {}
 }

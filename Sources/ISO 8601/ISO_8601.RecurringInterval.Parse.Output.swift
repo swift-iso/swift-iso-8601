@@ -4,6 +4,7 @@
 //
 
 extension ISO_8601.RecurringInterval.Parse {
+    /// The parsed components of an ISO 8601 recurring interval.
     public struct Output: Sendable, Equatable {
         /// Repetition count, nil for unlimited.
         public let repetitions: Int?
