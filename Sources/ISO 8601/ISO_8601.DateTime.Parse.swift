@@ -6,6 +6,7 @@
 //
 
 public import Parser_Primitives
+public import Byte_Primitives
 
 extension ISO_8601.DateTime {
     /// Parses an ISO 8601 date-time.
@@ -18,7 +19,7 @@ extension ISO_8601.DateTime {
     /// Returns raw parsed components; construction of domain types is left
     /// to the caller.
     public struct Parse<Input: Collection.Slice.`Protocol`>: Sendable
-    where Input: Sendable, Input.Element == UInt8 {
+    where Input: Sendable, Input.Element == Byte {
         @inlinable
         public init() {}
     }

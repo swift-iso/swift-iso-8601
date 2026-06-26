@@ -6,6 +6,7 @@
 //
 
 public import Parser_Primitives
+public import Byte_Primitives
 
 extension ISO_8601.OrdinalDate {
     /// Parses an ISO 8601 ordinal date.
@@ -15,7 +16,7 @@ extension ISO_8601.OrdinalDate {
     ///
     /// - `DDD` is the ordinal day of the year (001-366)
     public struct Parse<Input: Collection.Slice.`Protocol`>: Sendable
-    where Input: Sendable, Input.Element == UInt8 {
+    where Input: Sendable, Input.Element == Byte {
         @inlinable
         public init() {}
     }

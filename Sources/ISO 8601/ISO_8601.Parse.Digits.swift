@@ -6,6 +6,8 @@
 //
 
 public import Parser_Primitives
+public import ASCII_Decimal_Parser_Primitives
+public import Byte_Primitives
 
 extension ISO_8601.Parse {
     /// Parses exactly `count` ASCII decimal digits into an Int.
@@ -13,8 +15,13 @@ extension ISO_8601.Parse {
     /// Unlike `ASCII.Decimal.Parser` which greedily consumes all digits,
     /// this parser consumes exactly the specified number, enabling fixed-width
     /// parsing of ISO 8601 components (e.g., 4-digit year, 2-digit month).
+    ///
+    /// Delegates to the L1 `ASCII.Decimal.Parser` with an `.exactly(count)`
+    /// digit-count policy, which additionally rejects integer overflow that the
+    /// historical hand-rolled accumulate loop silently wrapped — an accepted
+    /// superset that is unreachable for the small fixed-width fields parsed here.
     public struct Digits<Input: Collection.Slice.`Protocol`>: Sendable
-    where Input: Sendable, Input.Element == UInt8 {
+    where Input: Sendable, Input.Element == Byte {
         public let count: Int
 
         @inlinable
@@ -30,20 +37,15 @@ extension ISO_8601.Parse.Digits: Parser.`Protocol` {
 
     @inlinable
     public func parse(_ input: inout Input) throws(Failure) -> Int {
-        var result = 0
-        var remaining = count
-        var index = input.startIndex
-
-        while remaining > 0 {
-            guard index < input.endIndex else { throw .unexpectedEndOfInput }
-            let byte = input[index]
-            guard byte >= 0x30 && byte <= 0x39 else { throw .expectedDigit }
-            result = result &* 10 &+ Int(byte &- 0x30)
-            input.formIndex(after: &index)
-            remaining -= 1
+        do {
+            return try ASCII.Decimal.Parser<Input, Int>(count: .exactly(count)).parse(&input)
+        } catch {
+            switch error {
+            case .insufficientDigits: throw .expectedDigit
+            case .noDigits: throw .expectedDigit
+            case .overflow: throw .overflow
+            case .invalidSign: throw .expectedDigit
+            }
         }
-
-        input = input[index...]
-        return result
     }
 }

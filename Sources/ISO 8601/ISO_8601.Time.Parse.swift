@@ -6,6 +6,7 @@
 //
 
 public import Parser_Primitives
+public import Byte_Primitives
 
 extension ISO_8601.Time {
     /// Parses an ISO 8601 time of day.
@@ -16,7 +17,7 @@ extension ISO_8601.Time {
     /// Supports both `.` and `,` as fractional second separator (ISO 8601 allows both).
     /// Fractional seconds are normalized to nanoseconds.
     public struct Parse<Input: Collection.Slice.`Protocol`>: Sendable
-    where Input: Sendable, Input.Element == UInt8 {
+    where Input: Sendable, Input.Element == Byte {
         @inlinable
         public init() {}
     }
@@ -67,7 +68,7 @@ extension ISO_8601.Time.Parse: Parser.`Protocol` {
                     let byte = input[index]
                     guard byte >= 0x30 && byte <= 0x39 else { break }
                     if digits < 9 {
-                        fraction = fraction &* 10 &+ Int(byte &- 0x30)
+                        fraction = fraction &* 10 &+ Int(byte.underlying &- 0x30)
                     }
                     input.formIndex(after: &index)
                     digits += 1

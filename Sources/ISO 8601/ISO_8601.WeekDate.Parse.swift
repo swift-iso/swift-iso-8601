@@ -6,6 +6,7 @@
 //
 
 public import Parser_Primitives
+public import Byte_Primitives
 
 extension ISO_8601.WeekDate {
     /// Parses an ISO 8601 week date.
@@ -17,7 +18,7 @@ extension ISO_8601.WeekDate {
     /// - `ww` is the week number (01-53)
     /// - `d` is the weekday (1=Monday, 7=Sunday)
     public struct Parse<Input: Collection.Slice.`Protocol`>: Sendable
-    where Input: Sendable, Input.Element == UInt8 {
+    where Input: Sendable, Input.Element == Byte {
         @inlinable
         public init() {}
     }

@@ -6,6 +6,7 @@
 //
 
 public import Parser_Primitives
+public import Byte_Primitives
 
 extension ISO_8601.Parse {
     /// Parses an ISO 8601 calendar date.
@@ -15,7 +16,7 @@ extension ISO_8601.Parse {
     ///
     /// Validates month (1-12) and day (1-31) ranges.
     public struct CalendarDate<Input: Collection.Slice.`Protocol`>: Sendable
-    where Input: Sendable, Input.Element == UInt8 {
+    where Input: Sendable, Input.Element == Byte {
         @inlinable
         public init() {}
     }

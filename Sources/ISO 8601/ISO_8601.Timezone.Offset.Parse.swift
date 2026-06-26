@@ -6,6 +6,7 @@
 //
 
 public import Parser_Primitives
+public import Byte_Primitives
 
 extension ISO_8601.Timezone.Offset {
     /// Parses an ISO 8601 timezone designator.
@@ -18,7 +19,7 @@ extension ISO_8601.Timezone.Offset {
     ///
     /// Returns the offset from UTC in total seconds.
     public struct Parse<Input: Collection.Slice.`Protocol`>: Sendable
-    where Input: Sendable, Input.Element == UInt8 {
+    where Input: Sendable, Input.Element == Byte {
         @inlinable
         public init() {}
     }

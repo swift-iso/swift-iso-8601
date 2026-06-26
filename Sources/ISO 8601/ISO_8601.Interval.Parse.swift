@@ -6,6 +6,7 @@
 //
 
 public import Parser_Primitives
+public import Byte_Primitives
 
 extension ISO_8601.Interval {
     /// Parses an ISO 8601 interval.
@@ -19,7 +20,7 @@ extension ISO_8601.Interval {
     /// The `/` separator (0x2F) splits the two components.
     /// A leading `P` (0x50) indicates a duration component.
     public struct Parse<Input: Collection.Slice.`Protocol`>: Sendable
-    where Input: Sendable, Input.Element == UInt8 {
+    where Input: Sendable, Input.Element == Byte {
         @inlinable
         public init() {}
     }

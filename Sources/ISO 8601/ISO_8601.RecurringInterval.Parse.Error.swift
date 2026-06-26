@@ -12,5 +12,11 @@ extension ISO_8601.RecurringInterval.Parse {
         case expectedSlash
         /// The interval portion of the recurring interval was invalid.
         case intervalError(ISO_8601.Interval.Parse<Input>.Error)
+        /// The repetition count exceeded the representable range.
+        ///
+        /// Surfaced by the L1 `ASCII.Decimal.Parser`, which rejects integer
+        /// overflow that the historical hand-rolled accumulate loop silently
+        /// wrapped. Unreachable for valid repetition counts.
+        case overflow
     }
 }

@@ -14,5 +14,11 @@ extension ISO_8601.Duration.Parse {
         case expectedComponentDesignator
         /// A non-digit character was encountered where a digit was expected.
         case invalidDigit
+        /// A numeric component value exceeded the representable range.
+        ///
+        /// Surfaced by the L1 `ASCII.Decimal.Parser`, which rejects integer
+        /// overflow that the historical hand-rolled accumulate loop silently
+        /// wrapped. Unreachable for the small component values of valid input.
+        case overflow
     }
 }

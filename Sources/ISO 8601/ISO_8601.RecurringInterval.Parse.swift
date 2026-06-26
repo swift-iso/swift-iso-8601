@@ -6,6 +6,8 @@
 //
 
 public import Parser_Primitives
+public import ASCII_Decimal_Parser_Primitives
+public import Byte_Primitives
 
 extension ISO_8601.RecurringInterval {
     /// Parses an ISO 8601 recurring interval.
@@ -21,7 +23,7 @@ extension ISO_8601.RecurringInterval {
     ///
     /// Examples: `R5/2019-01-01T00:00:00Z/P1D`, `R/P1M`
     public struct Parse<Input: Collection.Slice.`Protocol`>: Sendable
-    where Input: Sendable, Input.Element == UInt8 {
+    where Input: Sendable, Input.Element == Byte {
         @inlinable
         public init() {}
     }
@@ -45,14 +47,19 @@ extension ISO_8601.RecurringInterval.Parse: Parser.`Protocol` {
         if input.startIndex < input.endIndex {
             let byte = input[input.startIndex]
             if byte >= 0x30 && byte <= 0x39 {
-                var value = 0
-                while input.startIndex < input.endIndex {
-                    let d = input[input.startIndex]
-                    guard d >= 0x30 && d <= 0x39 else { break }
-                    value = value &* 10 &+ Int(d &- 0x30)
-                    input = input[input.index(after: input.startIndex)...]
+                // Leading digit guaranteed by the guard above, so the L1 greedy
+                // parser's `.noDigits` is unreachable. (It additionally rejects
+                // overflow the old wrapping loop ignored.)
+                do {
+                    repetitions = try ASCII.Decimal.Parser<Input, Int>().parse(&input)
+                } catch {
+                    switch error {
+                    case .overflow: throw .overflow
+                    // Unreachable under the leading-digit guard + greedy/`.none`
+                    // policy; collapsed onto the next expected token for exhaustiveness.
+                    case .noDigits, .insufficientDigits, .invalidSign: throw .expectedSlash
+                    }
                 }
-                repetitions = value
             }
         }
 

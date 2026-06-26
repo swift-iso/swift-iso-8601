@@ -6,6 +6,8 @@
 //
 
 public import Parser_Primitives
+public import ASCII_Decimal_Parser_Primitives
+public import Byte_Primitives
 
 extension ISO_8601.Duration {
     /// Parses an ISO 8601 duration string.
@@ -19,7 +21,7 @@ extension ISO_8601.Duration {
     ///
     /// Examples: `P3Y6M4DT12H30M5S`, `P1Y`, `PT5M`, `PT0.5S`
     public struct Parse<Input: Collection.Slice.`Protocol`>: Sendable
-    where Input: Sendable, Input.Element == UInt8 {
+    where Input: Sendable, Input.Element == Byte {
         @inlinable
         public init() {}
     }
@@ -61,13 +63,19 @@ extension ISO_8601.Duration.Parse: Parser.`Protocol` {
             // Must be a digit to start a number
             guard byte >= 0x30 && byte <= 0x39 else { break }
 
-            // Accumulate integer value
-            var value = 0
-            while input.startIndex < input.endIndex {
-                let d = input[input.startIndex]
-                guard d >= 0x30 && d <= 0x39 else { break }
-                value = value &* 10 &+ Int(d &- 0x30)
-                input = input[input.index(after: input.startIndex)...]
+            // Accumulate integer value. The leading digit is guaranteed by the
+            // guard above, so the L1 greedy parser's `.noDigits` is unreachable.
+            // (It additionally rejects overflow the old wrapping loop ignored.)
+            let value: Int
+            do {
+                value = try ASCII.Decimal.Parser<Input, Int>().parse(&input)
+            } catch {
+                switch error {
+                case .overflow: throw .overflow
+                // Unreachable under the leading-digit guard + greedy/`.none` policy;
+                // remapped to the digit-error bucket for exhaustiveness.
+                case .noDigits, .insufficientDigits, .invalidSign: throw .invalidDigit
+                }
             }
 
             // Check for fractional part (only valid before 'S')
@@ -82,7 +90,7 @@ extension ISO_8601.Duration.Parse: Parser.`Protocol` {
                         let fb = input[input.startIndex]
                         guard fb >= 0x30 && fb <= 0x39 else { break }
                         if digits < 9 {
-                            fraction = fraction &* 10 &+ Int(fb &- 0x30)
+                            fraction = fraction &* 10 &+ Int(fb.underlying &- 0x30)
                         }
                         input = input[input.index(after: input.startIndex)...]
                         digits += 1
