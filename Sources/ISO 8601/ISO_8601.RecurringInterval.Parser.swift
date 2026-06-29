@@ -2,57 +2,83 @@
 //  ISO_8601.RecurringInterval.Parser.swift
 //  swift-iso-8601
 //
-//  ISO 8601 recurring interval parser
+//  ISO 8601 recurring interval: R[n]/<interval>
 //
 
-// MARK: - Parsing
+public import Parser_Primitives
+public import ASCII_Decimal_Parser_Primitives
+public import Byte_Primitives
 
 extension ISO_8601.RecurringInterval {
-    /// Parser for ISO 8601 recurring interval strings
-    public enum Parser {
-        /// Parse an ISO 8601 recurring interval string
-        ///
-        /// - Parameter value: The R-format string (e.g., "R5/2019-01-01T00:00:00Z/P1D")
-        /// - Returns: RecurringInterval instance
-        /// - Throws: `ISO_8601.Date.Error` if parsing fails
-        public static func parse(_ value: String) throws(ISO_8601.Date.Error) -> ISO_8601.RecurringInterval {
-            guard value.hasPrefix("R") else {
-                throw ISO_8601.Date.Error.invalidFormat("Recurring interval must start with 'R'")
-            }
+    /// Parses an ISO 8601 recurring interval.
+    ///
+    /// Format: `R[n]/<interval>`
+    ///
+    /// - `R` prefix (0x52) indicates recurring
+    /// - Optional repetition count `n` (digits)
+    /// - `/` separator (0x2F)
+    /// - Interval body (parsed by `ISO_8601.Interval.Parser`)
+    ///
+    /// If `n` is omitted, repetitions are unlimited.
+    ///
+    /// Examples: `R5/2019-01-01T00:00:00Z/P1D`, `R/P1M`
+    public struct Parser<Input: Collection.Slice.`Protocol`>: Sendable
+    where Input: Sendable, Input.Element == Byte {
+        @inlinable
+        public init() {}
+    }
+}
 
-            let afterR = String(value.dropFirst())
-            guard !afterR.isEmpty else {
-                throw ISO_8601.Date.Error.invalidFormat("Recurring interval cannot be just 'R'")
-            }
+extension ISO_8601.RecurringInterval.Parser: Parser.`Protocol` {
+    public typealias Failure = ISO_8601.RecurringInterval.Parser<Input>.Error
 
-            // Split on first slash to separate repetitions from interval
-            guard let firstSlash = afterR.firstIndex(of: "/") else {
-                throw ISO_8601.Date.Error.invalidFormat(
-                    "Recurring interval must contain '/' separator"
-                )
-            }
-
-            let repsStr = String(afterR[..<firstSlash])
-            let intervalStr = String(afterR[afterR.index(after: firstSlash)...])
-
-            // Parse repetitions (empty means unlimited)
-            let repetitions: Int?
-            if repsStr.isEmpty {
-                repetitions = nil
-            } else {
-                guard let reps = Int(repsStr) else {
-                    throw ISO_8601.Date.Error.invalidFormat("Invalid repetition count: \(repsStr)")
-                }
-                guard reps >= 0 else {
-                    throw ISO_8601.Date.Error.invalidFormat("Repetitions must be non-negative")
-                }
-                repetitions = reps
-            }
-
-            // Parse the interval
-            let interval = try ISO_8601.Interval.Parser.parse(intervalStr)
-
-            return try ISO_8601.RecurringInterval(repetitions: repetitions, interval: interval)
+    @inlinable
+    public func parse(_ input: inout Input) throws(Failure) -> Output {
+        // Expect 'R' (0x52)
+        guard input.startIndex < input.endIndex,
+            input[input.startIndex] == 0x52
+        else {
+            throw .expectedR
         }
+        input = input[input.index(after: input.startIndex)...]
+
+        // Parse optional repetition count (digits before '/')
+        var repetitions: Int? = nil
+        if input.startIndex < input.endIndex {
+            let byte = input[input.startIndex]
+            if byte >= 0x30 && byte <= 0x39 {
+                // Leading digit guaranteed by the guard above, so the L1 greedy
+                // parser's `.noDigits` is unreachable. (It additionally rejects
+                // overflow the old wrapping loop ignored.)
+                do {
+                    repetitions = try ASCII.Decimal.Parser<Input, Int>().parse(&input)
+                } catch {
+                    switch error {
+                    case .overflow: throw .overflow
+                    // Unreachable under the leading-digit guard + greedy/`.none`
+                    // policy; collapsed onto the next expected token for exhaustiveness.
+                    case .noDigits, .insufficientDigits, .invalidSign: throw .expectedSlash
+                    }
+                }
+            }
+        }
+
+        // Expect '/' (0x2F)
+        guard input.startIndex < input.endIndex,
+            input[input.startIndex] == 0x2F
+        else {
+            throw .expectedSlash
+        }
+        input = input[input.index(after: input.startIndex)...]
+
+        // Parse interval
+        let interval: ISO_8601.Interval.Parser<Input>.Output
+        do {
+            interval = try ISO_8601.Interval.Parser<Input>().parse(&input)
+        } catch {
+            throw .intervalError(error)
+        }
+
+        return Output(repetitions: repetitions, interval: interval)
     }
 }

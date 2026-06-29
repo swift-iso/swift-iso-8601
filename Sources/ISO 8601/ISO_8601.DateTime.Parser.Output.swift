@@ -1,9 +1,9 @@
 //
-//  ISO_8601.DateTime.Parse.Output.swift
+//  ISO_8601.DateTime.Parser.Output.swift
 //  swift-iso-8601
 //
 
-extension ISO_8601.DateTime.Parse {
+extension ISO_8601.DateTime.Parser {
     /// The parsed components of an ISO 8601 date-time.
     public struct Output: Sendable, Equatable {
         public let date: ISO_8601.Parse.CalendarDate<Input>.Output

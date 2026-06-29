@@ -1,9 +1,9 @@
 //
-//  ISO_8601.Duration.Parse.Output.swift
+//  ISO_8601.Duration.Parser.Output.swift
 //  swift-iso-8601
 //
 
-extension ISO_8601.Duration.Parse {
+extension ISO_8601.Duration.Parser {
     /// The parsed components of an ISO 8601 duration.
     public struct Output: Sendable, Equatable {
         public let years: Int
