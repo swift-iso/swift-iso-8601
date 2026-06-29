@@ -7,7 +7,6 @@
 
 public import Parser_Primitives
 public import ASCII_Decimal_Parser_Primitives
-public import Byte_Primitives
 
 extension ISO_8601.RecurringInterval {
     /// Parses an ISO 8601 recurring interval.

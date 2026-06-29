@@ -11,7 +11,6 @@
 
 public import Parser_Primitives
 public import ASCII_Decimal_Parser_Primitives
-public import Byte_Primitives
 
 extension ISO_8601 {
     /// Parses exactly `count` ASCII decimal digits into an Int.
