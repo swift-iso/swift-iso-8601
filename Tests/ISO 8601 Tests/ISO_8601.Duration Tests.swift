@@ -142,7 +142,7 @@ struct `ISO_8601.Duration Tests` {
 
     @Test
     func `Parse duration with all components`() throws {
-        let duration = try ISO_8601.Duration.Parser.parse("P3Y6M4DT12H30M5S")
+        let duration = try ISO_8601.Duration("P3Y6M4DT12H30M5S")
 
         #expect(duration.years == 3)
         #expect(duration.months == 6)
@@ -154,7 +154,7 @@ struct `ISO_8601.Duration Tests` {
 
     @Test
     func `Parse duration with only years`() throws {
-        let duration = try ISO_8601.Duration.Parser.parse("P1Y")
+        let duration = try ISO_8601.Duration("P1Y")
 
         #expect(duration.years == 1)
         #expect(duration.months == 0)
@@ -162,7 +162,7 @@ struct `ISO_8601.Duration Tests` {
 
     @Test
     func `Parse duration with only time`() throws {
-        let duration = try ISO_8601.Duration.Parser.parse("PT5M")
+        let duration = try ISO_8601.Duration("PT5M")
 
         #expect(duration.minutes == 5)
         #expect(duration.hours == 0)
@@ -171,7 +171,7 @@ struct `ISO_8601.Duration Tests` {
 
     @Test
     func `Parse duration with fractional seconds using period`() throws {
-        let duration = try ISO_8601.Duration.Parser.parse("PT5.5S")
+        let duration = try ISO_8601.Duration("PT5.5S")
 
         #expect(duration.seconds == 5)
         #expect(duration.nanoseconds == 500_000_000)
@@ -179,7 +179,7 @@ struct `ISO_8601.Duration Tests` {
 
     @Test
     func `Parse duration with fractional seconds using comma`() throws {
-        let duration = try ISO_8601.Duration.Parser.parse("PT5,5S")
+        let duration = try ISO_8601.Duration("PT5,5S")
 
         #expect(duration.seconds == 5)
         #expect(duration.nanoseconds == 500_000_000)
@@ -187,7 +187,7 @@ struct `ISO_8601.Duration Tests` {
 
     @Test
     func `Parse zero duration`() throws {
-        let duration = try ISO_8601.Duration.Parser.parse("PT0S")
+        let duration = try ISO_8601.Duration("PT0S")
 
         #expect(duration.isZero)
     }
@@ -205,7 +205,7 @@ struct `ISO_8601.Duration Tests` {
             seconds: 6
         )
         let formatted = original.description
-        let parsed = try ISO_8601.Duration.Parser.parse(formatted)
+        let parsed = try ISO_8601.Duration(formatted)
 
         #expect(parsed == original)
     }
@@ -214,7 +214,7 @@ struct `ISO_8601.Duration Tests` {
     func `Round-trip time-only duration`() throws {
         let original = try ISO_8601.Duration(hours: 2, minutes: 30, seconds: 45)
         let formatted = original.description
-        let parsed = try ISO_8601.Duration.Parser.parse(formatted)
+        let parsed = try ISO_8601.Duration(formatted)
 
         #expect(parsed == original)
     }
@@ -223,15 +223,15 @@ struct `ISO_8601.Duration Tests` {
 
     @Test
     func `Reject duration without P prefix`() throws {
-        #expect(throws: ISO_8601.Date.Error.self) {
-            _ = try ISO_8601.Duration.Parser.parse("1Y2M")
+        #expect(throws: __DurationParserError.self) {
+            _ = try ISO_8601.Duration("1Y2M")
         }
     }
 
     @Test
     func `Reject invalid format`() throws {
-        #expect(throws: ISO_8601.Date.Error.self) {
-            _ = try ISO_8601.Duration.Parser.parse("PABC")
+        #expect(throws: __DurationParserError.self) {
+            _ = try ISO_8601.Duration("PABC")
         }
     }
 

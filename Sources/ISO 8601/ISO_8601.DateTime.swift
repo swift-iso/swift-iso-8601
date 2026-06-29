@@ -7,6 +7,8 @@
 
 public import Time_Primitives
 import Standard_Library_Extensions
+import Parser_Primitives
+import Byte_Parser_Primitives
 
 extension ISO_8601 {
 
@@ -435,5 +437,27 @@ extension ISO_8601.DateTime: Codable {
 extension ISO_8601.DateTime: CustomStringConvertible {
     public var description: String {
         Formatter.format(self)
+    }
+}
+
+// MARK: - String Parsing
+
+extension ISO_8601.DateTime {
+    /// Parses an ISO 8601 date-time string into an ``ISO_8601/DateTime``.
+    ///
+    /// Accepts all three date representations in extended and basic form
+    /// (calendar `2024-01-15` / `20240115`, week `2024-W03-1` / `2024W031`,
+    /// ordinal `2024-039` / `2024039`), optionally followed by `T` + a time
+    /// (seconds optional) and an optional timezone (`Z`, `±HH:MM`, `±HHMM`).
+    /// `24:00:00` rolls over to `00:00:00` of the next day.
+    ///
+    /// - Parameter string: The ISO 8601 date-time string.
+    /// - Throws: ``Parser/Error`` if the string is not a complete, valid
+    ///   ISO 8601 date-time.
+    public init(_ string: String) throws(ISO_8601.DateTime.Parser.Error) {
+        var input = Byte.Input(utf8: string)
+        let value = try ISO_8601.DateTime.Parser<Byte.Input>().parse(&input)
+        guard input.isEmpty else { throw .unexpectedTrailingInput }
+        self = value
     }
 }

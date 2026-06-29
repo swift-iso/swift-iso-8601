@@ -5,6 +5,9 @@
 //  ISO 8601 Recurring Interval representation (R format)
 //
 
+import Parser_Primitives
+import Byte_Parser_Primitives
+
 extension ISO_8601 {
     /// ISO 8601 Recurring Interval representation
     ///
@@ -27,7 +30,7 @@ extension ISO_8601 {
     /// let recurring = ISO_8601.RecurringInterval(repetitions: 5, interval: interval)
     ///
     /// let formatted = recurring.description  // "R5/2019-01-01T00:00:00Z/P1D"
-    /// let parsed = try ISO_8601.RecurringInterval.Parser.parse("R5/2019-01-01T00:00:00Z/P1D")
+    /// let parsed = try ISO_8601.RecurringInterval("R5/2019-01-01T00:00:00Z/P1D")
     /// ```
     public struct RecurringInterval: Sendable, Equatable, Hashable {
         /// Number of repetitions, nil for unlimited
@@ -73,11 +76,28 @@ extension ISO_8601.RecurringInterval: Codable {
     public init(from decoder: any Decoder) throws {
         let container = try decoder.singleValueContainer()
         let string = try container.decode(String.self)
-        self = try Parser.parse(string)
+        self = try ISO_8601.RecurringInterval(string)
     }
 
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.singleValueContainer()
         try container.encode(description)
+    }
+}
+
+// MARK: - String Parsing
+
+extension ISO_8601.RecurringInterval {
+    /// Parses an ISO 8601 recurring-interval string (`R[n]/<interval>`).
+    ///
+    /// - Parameter string: The ISO 8601 recurring-interval string
+    ///   (e.g. `R5/2019-01-01T00:00:00Z/P1D`, `R/P1M`).
+    /// - Throws: ``Parser/Error`` if the string is not a complete, valid
+    ///   recurring interval.
+    public init(_ string: String) throws(ISO_8601.RecurringInterval.Parser.Error) {
+        var input = Byte.Input(utf8: string)
+        let value = try ISO_8601.RecurringInterval.Parser<Byte.Input>().parse(&input)
+        guard input.isEmpty else { throw .unexpectedTrailingInput }
+        self = value
     }
 }

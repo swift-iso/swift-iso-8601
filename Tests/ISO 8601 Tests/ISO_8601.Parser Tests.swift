@@ -18,7 +18,7 @@ struct `ISO_8601.Parser Tests` {
 
     @Test
     func `Parse calendar date extended`() throws {
-        let dt = try ISO_8601.DateTime.Parser.parse("2024-01-15")
+        let dt = try ISO_8601.DateTime("2024-01-15")
 
         let comp = dt.components
         #expect(comp.year == 2024)
@@ -28,7 +28,7 @@ struct `ISO_8601.Parser Tests` {
 
     @Test
     func `Parse calendar date basic`() throws {
-        let dt = try ISO_8601.DateTime.Parser.parse("20240115")
+        let dt = try ISO_8601.DateTime("20240115")
 
         let comp = dt.components
         #expect(comp.year == 2024)
@@ -40,7 +40,7 @@ struct `ISO_8601.Parser Tests` {
 
     @Test
     func `Parse week date extended`() throws {
-        let dt = try ISO_8601.DateTime.Parser.parse("2024-W03-1")
+        let dt = try ISO_8601.DateTime("2024-W03-1")
 
         let weekDate = ISO_8601.WeekDate(dt)
         #expect(weekDate.weekYear == 2024)
@@ -50,7 +50,7 @@ struct `ISO_8601.Parser Tests` {
 
     @Test
     func `Parse week date basic`() throws {
-        let dt = try ISO_8601.DateTime.Parser.parse("2024W031")
+        let dt = try ISO_8601.DateTime("2024W031")
 
         let weekDate = ISO_8601.WeekDate(dt)
         #expect(weekDate.weekYear == 2024)
@@ -62,7 +62,7 @@ struct `ISO_8601.Parser Tests` {
 
     @Test
     func `Parse ordinal date extended`() throws {
-        let dt = try ISO_8601.DateTime.Parser.parse("2024-039")
+        let dt = try ISO_8601.DateTime("2024-039")
 
         let ordinal = ISO_8601.OrdinalDate(dt)
         #expect(ordinal.year == 2024)
@@ -71,7 +71,7 @@ struct `ISO_8601.Parser Tests` {
 
     @Test
     func `Parse ordinal date basic`() throws {
-        let dt = try ISO_8601.DateTime.Parser.parse("2024039")
+        let dt = try ISO_8601.DateTime("2024039")
 
         let ordinal = ISO_8601.OrdinalDate(dt)
         #expect(ordinal.year == 2024)
@@ -82,7 +82,7 @@ struct `ISO_8601.Parser Tests` {
 
     @Test
     func `Parse datetime with UTC timezone`() throws {
-        let dt = try ISO_8601.DateTime.Parser.parse("2024-01-15T12:30:00Z")
+        let dt = try ISO_8601.DateTime("2024-01-15T12:30:00Z")
 
         let comp = dt.components
         #expect(comp.year == 2024)
@@ -96,7 +96,7 @@ struct `ISO_8601.Parser Tests` {
 
     @Test
     func `Parse datetime basic format with UTC`() throws {
-        let dt = try ISO_8601.DateTime.Parser.parse("20240115T123000Z")
+        let dt = try ISO_8601.DateTime("20240115T123000Z")
 
         let comp = dt.components
         #expect(comp.year == 2024)
@@ -109,28 +109,28 @@ struct `ISO_8601.Parser Tests` {
 
     @Test
     func `Parse datetime with positive offset extended`() throws {
-        let dt = try ISO_8601.DateTime.Parser.parse("2024-01-15T12:30:00+05:30")
+        let dt = try ISO_8601.DateTime("2024-01-15T12:30:00+05:30")
 
         #expect(dt.timezone.offsetSeconds == 19800)  // 5.5 hours
     }
 
     @Test
     func `Parse datetime with positive offset basic`() throws {
-        let dt = try ISO_8601.DateTime.Parser.parse("2024-01-15T12:30:00+0530")
+        let dt = try ISO_8601.DateTime("2024-01-15T12:30:00+0530")
 
         #expect(dt.timezone.offsetSeconds == 19800)
     }
 
     @Test
     func `Parse datetime with negative offset`() throws {
-        let dt = try ISO_8601.DateTime.Parser.parse("2024-01-15T12:30:00-05:00")
+        let dt = try ISO_8601.DateTime("2024-01-15T12:30:00-05:00")
 
         #expect(dt.timezone.offsetSeconds == -18000)  // -5 hours
     }
 
     @Test
     func `Parse datetime without seconds`() throws {
-        let dt = try ISO_8601.DateTime.Parser.parse("2024-01-15T12:30Z")
+        let dt = try ISO_8601.DateTime("2024-01-15T12:30Z")
 
         let comp = dt.components
         #expect(comp.hour == 12)
@@ -151,7 +151,7 @@ struct `ISO_8601.Parser Tests` {
             second: 45
         )
         let formatted = ISO_8601.DateTime.Formatter.format(original)
-        let parsed = try ISO_8601.DateTime.Parser.parse(formatted)
+        let parsed = try ISO_8601.DateTime(formatted)
 
         #expect(original == parsed)
     }
@@ -172,7 +172,7 @@ struct `ISO_8601.Parser Tests` {
             time: .time(extended: false),
             timezone: .utc
         )
-        let parsed = try ISO_8601.DateTime.Parser.parse(formatted)
+        let parsed = try ISO_8601.DateTime(formatted)
 
         #expect(original == parsed)
     }
@@ -186,7 +186,7 @@ struct `ISO_8601.Parser Tests` {
             time: .time(extended: true),
             timezone: .utc
         )
-        let parsed = try ISO_8601.DateTime.Parser.parse(formatted)
+        let parsed = try ISO_8601.DateTime(formatted)
 
         #expect(original == parsed)
     }
@@ -200,7 +200,7 @@ struct `ISO_8601.Parser Tests` {
             time: .time(extended: true),
             timezone: .utc
         )
-        let parsed = try ISO_8601.DateTime.Parser.parse(formatted)
+        let parsed = try ISO_8601.DateTime(formatted)
 
         #expect(original == parsed)
     }
@@ -209,29 +209,29 @@ struct `ISO_8601.Parser Tests` {
 
     @Test
     func `Reject invalid date format`() throws {
-        #expect(throws: ISO_8601.Date.Error.self) {
-            _ = try ISO_8601.DateTime.Parser.parse("invalid")
+        #expect(throws: __DateTimeParserError.self) {
+            _ = try ISO_8601.DateTime("invalid")
         }
     }
 
     @Test
     func `Reject invalid month`() throws {
-        #expect(throws: ISO_8601.Date.Error.self) {
-            _ = try ISO_8601.DateTime.Parser.parse("2024-13-01")
+        #expect(throws: __DateTimeParserError.self) {
+            _ = try ISO_8601.DateTime("2024-13-01")
         }
     }
 
     @Test
     func `Reject invalid day`() throws {
-        #expect(throws: ISO_8601.Date.Error.self) {
-            _ = try ISO_8601.DateTime.Parser.parse("2024-02-30")
+        #expect(throws: __DateTimeParserError.self) {
+            _ = try ISO_8601.DateTime("2024-02-30")
         }
     }
 
     @Test
     func `Reject empty string`() throws {
-        #expect(throws: ISO_8601.Date.Error.self) {
-            _ = try ISO_8601.DateTime.Parser.parse("")
+        #expect(throws: __DateTimeParserError.self) {
+            _ = try ISO_8601.DateTime("")
         }
     }
 }

@@ -41,7 +41,7 @@
 /// // "2024-01-15T12:30:00Z"
 ///
 /// // Parse from string
-/// let parsed = try ISO_8601.DateTime.Parser.parse("2024-01-15T12:30:00Z")
+/// let parsed = try ISO_8601.DateTime("2024-01-15T12:30:00Z")
 ///
 /// // Week date
 /// let weekDate = ISO_8601.WeekDate(dt)

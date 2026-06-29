@@ -5,6 +5,9 @@
 //  ISO 8601 Duration representation (P format)
 //
 
+import Parser_Primitives
+import Byte_Parser_Primitives
+
 extension ISO_8601 {
     /// ISO 8601 Duration representation
     ///
@@ -25,7 +28,7 @@ extension ISO_8601 {
     /// ```swift
     /// let duration = try ISO_8601.Duration(years: 1, months: 6, days: 15)
     /// let formatted = duration.description  // "P1Y6M15D"
-    /// let parsed = try ISO_8601.Duration.parse("PT2H30M")
+    /// let parsed = try ISO_8601.Duration("PT2H30M")
     /// ```
     public struct Duration: Sendable, Equatable, Hashable {
         /// Years component
@@ -104,11 +107,26 @@ extension ISO_8601.Duration: Codable {
     public init(from decoder: any Decoder) throws {
         let container = try decoder.singleValueContainer()
         let string = try container.decode(String.self)
-        self = try Parser.parse(string)
+        self = try ISO_8601.Duration(string)
     }
 
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.singleValueContainer()
         try container.encode(description)
+    }
+}
+
+// MARK: - String Parsing
+
+extension ISO_8601.Duration {
+    /// Parses an ISO 8601 duration string (`P[n]Y[n]M[n]DT[n]H[n]M[n]S`).
+    ///
+    /// - Parameter string: The ISO 8601 duration string (e.g. `P3Y6M4DT12H30M5S`, `PT2H30M`).
+    /// - Throws: ``Parser/Error`` if the string is not a complete, valid duration.
+    public init(_ string: String) throws(ISO_8601.Duration.Parser.Error) {
+        var input = Byte.Input(utf8: string)
+        let value = try ISO_8601.Duration.Parser<Byte.Input>().parse(&input)
+        guard input.isEmpty else { throw .unexpectedTrailingInput }
+        self = value
     }
 }

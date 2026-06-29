@@ -97,7 +97,7 @@ struct `ISO_8601.RecurringInterval Tests` {
 
     @Test
     func `Parse recurring interval with count`() throws {
-        let recurring = try ISO_8601.RecurringInterval.Parser.parse("R5/2019-01-01T00:00:00Z/P1D")
+        let recurring = try ISO_8601.RecurringInterval("R5/2019-01-01T00:00:00Z/P1D")
 
         #expect(recurring.repetitions == 5)
         #expect(recurring.isUnlimited == false)
@@ -116,7 +116,7 @@ struct `ISO_8601.RecurringInterval Tests` {
 
     @Test
     func `Parse unlimited recurring interval`() throws {
-        let recurring = try ISO_8601.RecurringInterval.Parser.parse("R/2019-01-01T00:00:00Z/P7D")
+        let recurring = try ISO_8601.RecurringInterval("R/2019-01-01T00:00:00Z/P7D")
 
         #expect(recurring.repetitions == nil)
         #expect(recurring.isUnlimited == true)
@@ -131,7 +131,7 @@ struct `ISO_8601.RecurringInterval Tests` {
 
     @Test
     func `Parse recurring with duration only`() throws {
-        let recurring = try ISO_8601.RecurringInterval.Parser.parse("R12/P1M")
+        let recurring = try ISO_8601.RecurringInterval("R12/P1M")
 
         #expect(recurring.repetitions == 12)
 
@@ -145,7 +145,7 @@ struct `ISO_8601.RecurringInterval Tests` {
 
     @Test
     func `Parse recurring with end date`() throws {
-        let recurring = try ISO_8601.RecurringInterval.Parser.parse(
+        let recurring = try ISO_8601.RecurringInterval(
             "R3/P1Y2M10DT2H30M/2019-12-31T23:59:59Z"
         )
 
@@ -170,7 +170,7 @@ struct `ISO_8601.RecurringInterval Tests` {
 
     @Test
     func `Parse recurring with start and end`() throws {
-        let recurring = try ISO_8601.RecurringInterval.Parser.parse(
+        let recurring = try ISO_8601.RecurringInterval(
             "R7/2019-01-01T00:00:00Z/2019-01-08T00:00:00Z"
         )
 
@@ -196,7 +196,7 @@ struct `ISO_8601.RecurringInterval Tests` {
         let interval = ISO_8601.Interval.startDuration(start: start, duration: duration)
         let original = try ISO_8601.RecurringInterval(repetitions: 5, interval: interval)
         let formatted = original.description
-        let parsed = try ISO_8601.RecurringInterval.Parser.parse(formatted)
+        let parsed = try ISO_8601.RecurringInterval(formatted)
 
         #expect(parsed == original)
     }
@@ -207,7 +207,7 @@ struct `ISO_8601.RecurringInterval Tests` {
         let interval = ISO_8601.Interval.duration(duration)
         let original = try ISO_8601.RecurringInterval(repetitions: nil, interval: interval)
         let formatted = original.description
-        let parsed = try ISO_8601.RecurringInterval.Parser.parse(formatted)
+        let parsed = try ISO_8601.RecurringInterval(formatted)
 
         #expect(parsed == original)
     }
@@ -216,29 +216,29 @@ struct `ISO_8601.RecurringInterval Tests` {
 
     @Test
     func `Reject recurring without R prefix`() throws {
-        #expect(throws: ISO_8601.Date.Error.self) {
-            _ = try ISO_8601.RecurringInterval.Parser.parse("5/2019-01-01T00:00:00Z/P1D")
+        #expect(throws: __RecurringIntervalParserError.self) {
+            _ = try ISO_8601.RecurringInterval("5/2019-01-01T00:00:00Z/P1D")
         }
     }
 
     @Test
     func `Reject recurring without slash`() throws {
-        #expect(throws: ISO_8601.Date.Error.self) {
-            _ = try ISO_8601.RecurringInterval.Parser.parse("R5")
+        #expect(throws: __RecurringIntervalParserError.self) {
+            _ = try ISO_8601.RecurringInterval("R5")
         }
     }
 
     @Test
     func `Reject recurring with invalid count`() throws {
-        #expect(throws: ISO_8601.Date.Error.self) {
-            _ = try ISO_8601.RecurringInterval.Parser.parse("RABC/P1D")
+        #expect(throws: __RecurringIntervalParserError.self) {
+            _ = try ISO_8601.RecurringInterval("RABC/P1D")
         }
     }
 
     @Test
     func `Reject recurring with just R`() throws {
-        #expect(throws: ISO_8601.Date.Error.self) {
-            _ = try ISO_8601.RecurringInterval.Parser.parse("R")
+        #expect(throws: __RecurringIntervalParserError.self) {
+            _ = try ISO_8601.RecurringInterval("R")
         }
     }
 

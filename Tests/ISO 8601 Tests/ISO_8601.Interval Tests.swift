@@ -42,7 +42,7 @@ struct `ISO_8601.Interval Tests` {
 
     @Test
     func `Parse start-end interval`() throws {
-        let interval = try ISO_8601.Interval.Parser.parse(
+        let interval = try ISO_8601.Interval(
             "2019-08-27T00:00:00Z/2019-08-29T00:00:00Z"
         )
 
@@ -86,7 +86,7 @@ struct `ISO_8601.Interval Tests` {
 
     @Test
     func `Parse duration-only interval`() throws {
-        let interval = try ISO_8601.Interval.Parser.parse("P3D")
+        let interval = try ISO_8601.Interval("P3D")
 
         guard case .duration(let dur) = interval else {
             Issue.record("Expected duration interval")
@@ -125,7 +125,7 @@ struct `ISO_8601.Interval Tests` {
 
     @Test
     func `Parse start-duration interval`() throws {
-        let interval = try ISO_8601.Interval.Parser.parse("2019-08-27T00:00:00Z/P3D")
+        let interval = try ISO_8601.Interval("2019-08-27T00:00:00Z/P3D")
 
         guard case .startDuration(let start, let dur) = interval else {
             Issue.record("Expected startDuration interval")
@@ -168,7 +168,7 @@ struct `ISO_8601.Interval Tests` {
 
     @Test
     func `Parse duration-end interval`() throws {
-        let interval = try ISO_8601.Interval.Parser.parse("P3D/2019-08-29T00:00:00Z")
+        let interval = try ISO_8601.Interval("P3D/2019-08-29T00:00:00Z")
 
         guard case .durationEnd(let dur, let end) = interval else {
             Issue.record("Expected durationEnd interval")
@@ -186,7 +186,7 @@ struct `ISO_8601.Interval Tests` {
 
     @Test
     func `Parse interval with time components`() throws {
-        let interval = try ISO_8601.Interval.Parser.parse(
+        let interval = try ISO_8601.Interval(
             "2019-08-27T12:30:00Z/2019-08-29T18:45:00Z"
         )
 
@@ -206,7 +206,7 @@ struct `ISO_8601.Interval Tests` {
 
     @Test
     func `Parse interval with duration components`() throws {
-        let interval = try ISO_8601.Interval.Parser.parse("2019-08-27T00:00:00Z/P1Y2M3DT4H5M6S")
+        let interval = try ISO_8601.Interval("2019-08-27T00:00:00Z/P1Y2M3DT4H5M6S")
 
         guard case .startDuration(let start, let dur) = interval else {
             Issue.record("Expected startDuration interval")
@@ -232,7 +232,7 @@ struct `ISO_8601.Interval Tests` {
         let end = try ISO_8601.DateTime(year: 2019, month: 8, day: 29)
         let original = ISO_8601.Interval.startEnd(start: start, end: end)
         let formatted = original.description
-        let parsed = try ISO_8601.Interval.Parser.parse(formatted)
+        let parsed = try ISO_8601.Interval(formatted)
 
         #expect(parsed == original)
     }
@@ -242,7 +242,7 @@ struct `ISO_8601.Interval Tests` {
         let duration = try ISO_8601.Duration(days: 3)
         let original = ISO_8601.Interval.duration(duration)
         let formatted = original.description
-        let parsed = try ISO_8601.Interval.Parser.parse(formatted)
+        let parsed = try ISO_8601.Interval(formatted)
 
         #expect(parsed == original)
     }
@@ -253,7 +253,7 @@ struct `ISO_8601.Interval Tests` {
         let duration = try ISO_8601.Duration(days: 3)
         let original = ISO_8601.Interval.startDuration(start: start, duration: duration)
         let formatted = original.description
-        let parsed = try ISO_8601.Interval.Parser.parse(formatted)
+        let parsed = try ISO_8601.Interval(formatted)
 
         #expect(parsed == original)
     }
@@ -264,7 +264,7 @@ struct `ISO_8601.Interval Tests` {
         let end = try ISO_8601.DateTime(year: 2019, month: 8, day: 29)
         let original = ISO_8601.Interval.durationEnd(duration: duration, end: end)
         let formatted = original.description
-        let parsed = try ISO_8601.Interval.Parser.parse(formatted)
+        let parsed = try ISO_8601.Interval(formatted)
 
         #expect(parsed == original)
     }
@@ -273,15 +273,15 @@ struct `ISO_8601.Interval Tests` {
 
     @Test
     func `Reject interval without slash and not duration`() throws {
-        #expect(throws: ISO_8601.Date.Error.self) {
-            _ = try ISO_8601.Interval.Parser.parse("2019-08-27")
+        #expect(throws: __IntervalParserError.self) {
+            _ = try ISO_8601.Interval("2019-08-27")
         }
     }
 
     @Test
     func `Reject interval with two durations`() throws {
-        #expect(throws: ISO_8601.Date.Error.self) {
-            _ = try ISO_8601.Interval.Parser.parse("P3D/P5D")
+        #expect(throws: __IntervalParserError.self) {
+            _ = try ISO_8601.Interval("P3D/P5D")
         }
     }
 

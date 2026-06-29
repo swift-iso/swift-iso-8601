@@ -185,7 +185,7 @@ struct `Foundation Comparison Tests` {
 
     @Test
     func `Parse extended format: 2024-01-15`() throws {
-        let dt = try ISO_8601.DateTime.Parser.parse("2024-01-15")
+        let dt = try ISO_8601.DateTime("2024-01-15")
         #expect(dt.components.year == 2024)
         #expect(dt.components.month == 1)
         #expect(dt.components.day == 15)
@@ -202,7 +202,7 @@ struct `Foundation Comparison Tests` {
 
     @Test
     func `Parse basic format: 20240115`() throws {
-        let dt = try ISO_8601.DateTime.Parser.parse("20240115")
+        let dt = try ISO_8601.DateTime("20240115")
         #expect(dt.components.year == 2024)
         #expect(dt.components.month == 1)
         #expect(dt.components.day == 15)

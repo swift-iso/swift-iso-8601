@@ -5,6 +5,9 @@
 //  ISO 8601 Time Interval representation
 //
 
+import Parser_Primitives
+import Byte_Parser_Primitives
+
 extension ISO_8601 {
     /// ISO 8601 Time Interval representation
     ///
@@ -30,7 +33,7 @@ extension ISO_8601 {
     /// let interval2 = ISO_8601.Interval.startDuration(start: start, duration: duration)
     ///
     /// // Parse from string
-    /// let parsed = try ISO_8601.Interval.Parser.parse("2019-08-27/P3D")
+    /// let parsed = try ISO_8601.Interval("2019-08-27/P3D")
     /// ```
     public enum Interval: Sendable, Equatable, Hashable {
         /// Interval defined by start and end date-times
@@ -61,7 +64,7 @@ extension ISO_8601.Interval: Codable {
     public init(from decoder: any Decoder) throws {
         let container = try decoder.singleValueContainer()
         let string = try container.decode(String.self)
-        self = try Parser.parse(string)
+        self = try ISO_8601.Interval(string)
     }
 
     public func encode(to encoder: any Encoder) throws {
@@ -131,5 +134,23 @@ extension ISO_8601.Interval {
         case .startEnd:
             return nil
         }
+    }
+}
+
+// MARK: - String Parsing
+
+extension ISO_8601.Interval {
+    /// Parses an ISO 8601 interval string.
+    ///
+    /// Accepts the four ISO 8601:2019 forms: `<datetime>/<datetime>`,
+    /// `<datetime>/<duration>`, `<duration>/<datetime>`, and `<duration>`.
+    ///
+    /// - Parameter string: The ISO 8601 interval string (e.g. `2019-08-27/P3D`).
+    /// - Throws: ``Parser/Error`` if the string is not a complete, valid interval.
+    public init(_ string: String) throws(ISO_8601.Interval.Parser.Error) {
+        var input = Byte.Input(utf8: string)
+        let value = try ISO_8601.Interval.Parser<Byte.Input>().parse(&input)
+        guard input.isEmpty else { throw .unexpectedTrailingInput }
+        self = value
     }
 }
