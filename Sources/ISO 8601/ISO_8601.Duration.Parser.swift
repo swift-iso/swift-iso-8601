@@ -31,7 +31,7 @@ extension ISO_8601.Duration.Parser: Parser.`Protocol` {
     public typealias Failure = ISO_8601.Duration.Parser<Input>.Error
 
     @inlinable
-    public func parse(_ input: inout Input) throws(Failure) -> Output {
+    public func parse(_ input: inout Input) throws(Failure) -> ISO_8601.Duration {
         // Expect 'P' (0x50)
         guard input.startIndex < input.endIndex,
             input[input.startIndex] == 0x50
@@ -132,10 +132,17 @@ extension ISO_8601.Duration.Parser: Parser.`Protocol` {
 
         guard hasComponent else { throw .emptyDuration }
 
-        return Output(
-            years: years, months: months, days: days,
-            hours: hours, minutes: minutes, seconds: seconds,
-            nanoseconds: nanoseconds
-        )
+        // Construct the domain value. The only failure mode is nanoseconds out
+        // of range, which is unreachable here (the fractional scan caps at 9
+        // significant digits ⇒ ≤ 999_999_999); mapped to the numeric bucket.
+        do {
+            return try ISO_8601.Duration(
+                years: years, months: months, days: days,
+                hours: hours, minutes: minutes, seconds: seconds,
+                nanoseconds: nanoseconds
+            )
+        } catch {
+            throw .overflow
+        }
     }
 }

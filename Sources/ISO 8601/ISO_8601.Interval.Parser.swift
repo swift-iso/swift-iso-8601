@@ -27,44 +27,44 @@ extension ISO_8601.Interval {
 }
 
 extension ISO_8601.Interval.Parser: Parser.`Protocol` {
-    public typealias Failure = ISO_8601.Interval.Parser<Input>.Error
+    public typealias Failure = __IntervalParserError
 
     @inlinable
-    public func parse(_ input: inout Input) throws(Failure) -> Output {
+    public func parse(_ input: inout Input) throws(Failure) -> ISO_8601.Interval {
         guard input.startIndex < input.endIndex else {
             throw .dateTimeError(.expectedT)
         }
 
         // Check if first component is a duration (starts with 'P')
         if input[input.startIndex] == 0x50 {
-            let dur: ISO_8601.Duration.Parser<Input>.Output
+            let duration: ISO_8601.Duration
             do {
-                dur = try ISO_8601.Duration.Parser<Input>().parse(&input)
+                duration = try ISO_8601.Duration.Parser<Input>().parse(&input)
             } catch {
                 throw .durationError(error)
             }
 
             // Check for '/' separator
             guard input.startIndex < input.endIndex else {
-                return .duration(dur)
+                return .duration(duration)
             }
             guard input[input.startIndex] == 0x2F else {
-                return .duration(dur)
+                return .duration(duration)
             }
             input = input[input.index(after: input.startIndex)...]
 
             // Second component must be a datetime
-            let end: ISO_8601.DateTime.Parser<Input>.Output
+            let end: ISO_8601.DateTime
             do {
                 end = try ISO_8601.DateTime.Parser<Input>().parse(&input)
             } catch {
                 throw .dateTimeError(error)
             }
-            return .durationEnd(duration: dur, end: end)
+            return .durationEnd(duration: duration, end: end)
         }
 
         // First component is a datetime
-        let start: ISO_8601.DateTime.Parser<Input>.Output
+        let start: ISO_8601.DateTime
         do {
             start = try ISO_8601.DateTime.Parser<Input>().parse(&input)
         } catch {
@@ -85,17 +85,17 @@ extension ISO_8601.Interval.Parser: Parser.`Protocol` {
         }
 
         if input[input.startIndex] == 0x50 {
-            let dur: ISO_8601.Duration.Parser<Input>.Output
+            let duration: ISO_8601.Duration
             do {
-                dur = try ISO_8601.Duration.Parser<Input>().parse(&input)
+                duration = try ISO_8601.Duration.Parser<Input>().parse(&input)
             } catch {
                 throw .durationError(error)
             }
-            return .startDuration(start: start, duration: dur)
+            return .startDuration(start: start, duration: duration)
         }
 
         // Second component is a datetime
-        let end: ISO_8601.DateTime.Parser<Input>.Output
+        let end: ISO_8601.DateTime
         do {
             end = try ISO_8601.DateTime.Parser<Input>().parse(&input)
         } catch {

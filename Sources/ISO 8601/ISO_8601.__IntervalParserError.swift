@@ -4,7 +4,7 @@
 //
 //  Module-scope, non-generic error for the ISO 8601 interval parser.
 //
-//  Hoisted out of the generic `ISO_8601.Interval.Parse<Input>` namespace so the
+//  Hoisted out of the generic `ISO_8601.Interval.Parser<Input>` namespace so the
 //  `@error` SIL result carries no phantom `Input` type parameter — the structural
 //  fix for the `FunctionSignatureOpts` release-build ICE
 //  (`SILArgument.cpp:40 !type.hasTypeParameter()`; Research §A13 / swiftlang/swift#89617).
@@ -24,4 +24,6 @@ public enum __IntervalParserError: Swift.Error, Sendable, Equatable {
     case twoDateTimes
     /// Both sides of the interval were durations; at least one must be a date-time.
     case twoDurations
+    /// Parsing succeeded but the input was not fully consumed (trailing bytes).
+    case unexpectedTrailingInput
 }

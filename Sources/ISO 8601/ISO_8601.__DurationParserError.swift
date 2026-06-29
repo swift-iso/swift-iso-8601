@@ -4,7 +4,7 @@
 //
 //  Module-scope, non-generic error for the ISO 8601 duration parser.
 //
-//  Hoisted out of the generic `ISO_8601.Duration.Parse<Input>` namespace so the
+//  Hoisted out of the generic `ISO_8601.Duration.Parser<Input>` namespace so the
 //  `@error` SIL result carries no phantom `Input` type parameter — the structural
 //  fix for the `FunctionSignatureOpts` release-build ICE
 //  (`SILArgument.cpp:40 !type.hasTypeParameter()`; Research §A13 / swiftlang/swift#89617).
@@ -27,4 +27,6 @@ public enum __DurationParserError: Swift.Error, Sendable, Equatable {
     /// overflow that the historical hand-rolled accumulate loop silently
     /// wrapped. Unreachable for the small component values of valid input.
     case overflow
+    /// Parsing succeeded but the input was not fully consumed (trailing bytes).
+    case unexpectedTrailingInput
 }

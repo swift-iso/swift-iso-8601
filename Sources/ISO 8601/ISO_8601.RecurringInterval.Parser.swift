@@ -33,7 +33,7 @@ extension ISO_8601.RecurringInterval.Parser: Parser.`Protocol` {
     public typealias Failure = ISO_8601.RecurringInterval.Parser<Input>.Error
 
     @inlinable
-    public func parse(_ input: inout Input) throws(Failure) -> Output {
+    public func parse(_ input: inout Input) throws(Failure) -> ISO_8601.RecurringInterval {
         // Expect 'R' (0x52)
         guard input.startIndex < input.endIndex,
             input[input.startIndex] == 0x52
@@ -72,13 +72,20 @@ extension ISO_8601.RecurringInterval.Parser: Parser.`Protocol` {
         input = input[input.index(after: input.startIndex)...]
 
         // Parse interval
-        let interval: ISO_8601.Interval.Parser<Input>.Output
+        let interval: ISO_8601.Interval
         do {
             interval = try ISO_8601.Interval.Parser<Input>().parse(&input)
         } catch {
             throw .intervalError(error)
         }
 
-        return Output(repetitions: repetitions, interval: interval)
+        // Construct the domain value. The only failure mode is a negative
+        // repetition count, which is unreachable here (the count is parsed from
+        // ASCII digits ⇒ non-negative); mapped to the numeric bucket.
+        do {
+            return try ISO_8601.RecurringInterval(repetitions: repetitions, interval: interval)
+        } catch {
+            throw .overflow
+        }
     }
 }
