@@ -1,5 +1,5 @@
 //
-//  ISO_8601.Parse.CalendarDate.swift
+//  ISO_8601.CalendarDate.Parse.swift
 //  swift-iso-8601
 //
 //  ISO 8601 calendar date: YYYY-MM-DD (extended) or YYYYMMDD (basic)
@@ -8,26 +8,26 @@
 public import Parser_Primitives
 public import Byte_Primitives
 
-extension ISO_8601.Parse {
+extension ISO_8601.CalendarDate {
     /// Parses an ISO 8601 calendar date.
     ///
     /// Extended format: `YYYY-MM-DD`
     /// Basic format: `YYYYMMDD`
     ///
     /// Validates month (1-12) and day (1-31) ranges.
-    public struct CalendarDate<Input: Collection.Slice.`Protocol`>: Sendable
+    public struct Parse<Input: Collection.Slice.`Protocol`>: Sendable
     where Input: Sendable, Input.Element == Byte {
         @inlinable
         public init() {}
     }
 }
 
-extension ISO_8601.Parse.CalendarDate: Parser.`Protocol` {
-    public typealias Failure = ISO_8601.Parse.Error
+extension ISO_8601.CalendarDate.Parse: Parser.`Protocol` {
+    public typealias Failure = __ISO8601ParseError
 
     @inlinable
     public func parse(_ input: inout Input) throws(Failure) -> Output {
-        let year = try ISO_8601.Parse.Digits<Input>(count: 4).parse(&input)
+        let year = try ISO_8601.Digits<Input>(count: 4).parse(&input)
 
         // Detect extended format (hyphen separator)
         let extended: Bool
@@ -38,7 +38,7 @@ extension ISO_8601.Parse.CalendarDate: Parser.`Protocol` {
             extended = false
         }
 
-        let month = try ISO_8601.Parse.Digits<Input>(count: 2).parse(&input)
+        let month = try ISO_8601.Digits<Input>(count: 2).parse(&input)
         guard month >= 1 && month <= 12 else { throw .invalidMonth(month) }
 
         if extended {
@@ -49,7 +49,7 @@ extension ISO_8601.Parse.CalendarDate: Parser.`Protocol` {
             input = input[input.index(after: input.startIndex)...]
         }
 
-        let day = try ISO_8601.Parse.Digits<Input>(count: 2).parse(&input)
+        let day = try ISO_8601.Digits<Input>(count: 2).parse(&input)
         guard day >= 1 && day <= 31 else { throw .invalidDay(day) }
 
         return Output(year: year, month: month, day: day)

@@ -44,11 +44,11 @@ extension ISO_8601.WeekDate.Parse {
 }
 
 extension ISO_8601.WeekDate.Parse: Parser.`Protocol` {
-    public typealias Failure = ISO_8601.Parse.Error
+    public typealias Failure = __ISO8601ParseError
 
     @inlinable
     public func parse(_ input: inout Input) throws(Failure) -> Output {
-        let weekYear = try ISO_8601.Parse.Digits<Input>(count: 4).parse(&input)
+        let weekYear = try ISO_8601.Digits<Input>(count: 4).parse(&input)
 
         // Detect extended format: '-' before 'W'
         let extended: Bool
@@ -67,7 +67,7 @@ extension ISO_8601.WeekDate.Parse: Parser.`Protocol` {
         }
         input = input[input.index(after: input.startIndex)...]
 
-        let week = try ISO_8601.Parse.Digits<Input>(count: 2).parse(&input)
+        let week = try ISO_8601.Digits<Input>(count: 2).parse(&input)
         guard week >= 1 && week <= 53 else {
             throw .invalidMonth(week) // reuse for week range
         }
@@ -80,7 +80,7 @@ extension ISO_8601.WeekDate.Parse: Parser.`Protocol` {
             input = input[input.index(after: input.startIndex)...]
         }
 
-        let weekday = try ISO_8601.Parse.Digits<Input>(count: 1).parse(&input)
+        let weekday = try ISO_8601.Digits<Input>(count: 1).parse(&input)
         guard weekday >= 1 && weekday <= 7 else {
             throw .invalidDay(weekday)
         }

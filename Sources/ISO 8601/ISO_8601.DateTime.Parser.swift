@@ -31,9 +31,9 @@ extension ISO_8601.DateTime.Parser: Parser.`Protocol` {
     @inlinable
     public func parse(_ input: inout Input) throws(Failure) -> Output {
         // Parse date
-        let date: ISO_8601.Parse.CalendarDate<Input>.Output
+        let date: ISO_8601.CalendarDate.Parse<Input>.Output
         do {
-            date = try ISO_8601.Parse.CalendarDate<Input>().parse(&input)
+            date = try ISO_8601.CalendarDate.Parse<Input>().parse(&input)
         } catch {
             throw .dateError(error)
         }

@@ -16,9 +16,9 @@ public enum __DateTimeParserError: Swift.Error, Sendable, Equatable {
     /// The input did not contain the required `T` separator between date and time.
     case expectedT
     /// The date portion of the date-time was invalid.
-    case dateError(ISO_8601.Parse.Error)
+    case dateError(__ISO8601ParseError)
     /// The time portion of the date-time was invalid.
-    case timeError(ISO_8601.Parse.Error)
+    case timeError(__ISO8601ParseError)
     /// The timezone offset portion was invalid.
-    case timezoneError(ISO_8601.Parse.Error)
+    case timezoneError(__ISO8601ParseError)
 }

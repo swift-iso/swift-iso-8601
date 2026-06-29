@@ -23,18 +23,18 @@ extension ISO_8601.OrdinalDate {
 }
 
 extension ISO_8601.OrdinalDate.Parse: Parser.`Protocol` {
-    public typealias Failure = ISO_8601.Parse.Error
+    public typealias Failure = __ISO8601ParseError
 
     @inlinable
     public func parse(_ input: inout Input) throws(Failure) -> Output {
-        let year = try ISO_8601.Parse.Digits<Input>(count: 4).parse(&input)
+        let year = try ISO_8601.Digits<Input>(count: 4).parse(&input)
 
         // Detect extended format
         if input.startIndex < input.endIndex && input[input.startIndex] == 0x2D {
             input = input[input.index(after: input.startIndex)...]
         }
 
-        let day = try ISO_8601.Parse.Digits<Input>(count: 3).parse(&input)
+        let day = try ISO_8601.Digits<Input>(count: 3).parse(&input)
         guard day >= 1 && day <= 366 else {
             throw .invalidDay(day)
         }

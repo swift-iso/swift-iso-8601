@@ -26,7 +26,7 @@ extension ISO_8601.Timezone.Offset {
 }
 
 extension ISO_8601.Timezone.Offset.Parse: Parser.`Protocol` {
-    public typealias Failure = ISO_8601.Parse.Error
+    public typealias Failure = __ISO8601ParseError
 
     @inlinable
     public func parse(_ input: inout Input) throws(Failure) -> Output {
@@ -53,7 +53,7 @@ extension ISO_8601.Timezone.Offset.Parse: Parser.`Protocol` {
         }
         input = input[input.index(after: input.startIndex)...]
 
-        let hour = try ISO_8601.Parse.Digits<Input>(count: 2).parse(&input)
+        let hour = try ISO_8601.Digits<Input>(count: 2).parse(&input)
 
         // Optional minute (with or without colon)
         var minute = 0
@@ -61,9 +61,9 @@ extension ISO_8601.Timezone.Offset.Parse: Parser.`Protocol` {
             let next = input[input.startIndex]
             if next == 0x3A {
                 input = input[input.index(after: input.startIndex)...]
-                minute = try ISO_8601.Parse.Digits<Input>(count: 2).parse(&input)
+                minute = try ISO_8601.Digits<Input>(count: 2).parse(&input)
             } else if next >= 0x30 && next <= 0x39 {
-                minute = try ISO_8601.Parse.Digits<Input>(count: 2).parse(&input)
+                minute = try ISO_8601.Digits<Input>(count: 2).parse(&input)
             }
         }
 

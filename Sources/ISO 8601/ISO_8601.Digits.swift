@@ -1,15 +1,19 @@
 //
-//  ISO_8601.Parse.Digits.swift
+//  ISO_8601.Digits.swift
 //  swift-iso-8601
 //
 //  Fixed-width decimal digit parser for ISO 8601 date/time components.
+//
+//  Module-internal grammar helper (formerly ISO_8601.Parse.Digits; dropped from
+//  the public surface when the ISO_8601.Parse namespace was dissolved). Marked
+//  @usableFromInline so the @inlinable leaf parsers may compose it.
 //
 
 public import Parser_Primitives
 public import ASCII_Decimal_Parser_Primitives
 public import Byte_Primitives
 
-extension ISO_8601.Parse {
+extension ISO_8601 {
     /// Parses exactly `count` ASCII decimal digits into an Int.
     ///
     /// Unlike `ASCII.Decimal.Parser` which greedily consumes all digits,
@@ -20,23 +24,27 @@ extension ISO_8601.Parse {
     /// digit-count policy, which additionally rejects integer overflow that the
     /// historical hand-rolled accumulate loop silently wrapped — an accepted
     /// superset that is unreachable for the small fixed-width fields parsed here.
-    public struct Digits<Input: Collection.Slice.`Protocol`>: Sendable
+    @usableFromInline
+    struct Digits<Input: Collection.Slice.`Protocol`>: Sendable
     where Input: Sendable, Input.Element == Byte {
-        public let count: Int
+        @usableFromInline
+        let count: Int
 
         @inlinable
-        public init(count: Int) {
+        init(count: Int) {
             self.count = count
         }
     }
 }
 
-extension ISO_8601.Parse.Digits: Parser.`Protocol` {
-    public typealias Output = Int
-    public typealias Failure = ISO_8601.Parse.Error
+extension ISO_8601.Digits: Parser.`Protocol` {
+    @usableFromInline
+    typealias Output = Int
+    @usableFromInline
+    typealias Failure = __ISO8601ParseError
 
     @inlinable
-    public func parse(_ input: inout Input) throws(Failure) -> Int {
+    func parse(_ input: inout Input) throws(Failure) -> Int {
         do {
             return try ASCII.Decimal.Parser<Input, Int>(count: .exactly(count)).parse(&input)
         } catch {

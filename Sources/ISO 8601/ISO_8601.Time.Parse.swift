@@ -24,11 +24,11 @@ extension ISO_8601.Time {
 }
 
 extension ISO_8601.Time.Parse: Parser.`Protocol` {
-    public typealias Failure = ISO_8601.Parse.Error
+    public typealias Failure = __ISO8601ParseError
 
     @inlinable
     public func parse(_ input: inout Input) throws(Failure) -> Output {
-        let hour = try ISO_8601.Parse.Digits<Input>(count: 2).parse(&input)
+        let hour = try ISO_8601.Digits<Input>(count: 2).parse(&input)
         guard hour >= 0 && hour <= 24 else { throw .invalidHour(hour) }
 
         // Detect extended format (colon separator)
@@ -40,7 +40,7 @@ extension ISO_8601.Time.Parse: Parser.`Protocol` {
             extended = false
         }
 
-        let minute = try ISO_8601.Parse.Digits<Input>(count: 2).parse(&input)
+        let minute = try ISO_8601.Digits<Input>(count: 2).parse(&input)
         guard minute >= 0 && minute <= 59 else { throw .invalidMinute(minute) }
 
         if extended {
@@ -51,7 +51,7 @@ extension ISO_8601.Time.Parse: Parser.`Protocol` {
             input = input[input.index(after: input.startIndex)...]
         }
 
-        let second = try ISO_8601.Parse.Digits<Input>(count: 2).parse(&input)
+        let second = try ISO_8601.Digits<Input>(count: 2).parse(&input)
         // 60 allowed for leap seconds
         guard second >= 0 && second <= 60 else { throw .invalidSecond(second) }
 
