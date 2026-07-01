@@ -18,7 +18,6 @@ extension Target.Dependency {
     static var incits_4_1986: Self { .product(name: "ASCII Primitives", package: "swift-ascii-primitives") }
     static var asciiDecimalParser: Self { .product(name: "ASCII Decimal Parser Primitives", package: "swift-ascii-parser-primitives") }
     static var byteParser: Self { .product(name: "Byte Parser Primitives", package: "swift-byte-parser-primitives") }
-    static var standardsTestSupport: Self { .product(name: "Test Primitives", package: "swift-test-primitives") }
 }
 
 let package = Package(
