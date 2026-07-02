@@ -104,7 +104,7 @@ Add as a dependency in Package.swift:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/swift-standards/swift-iso-8601.git", from: "0.1.0")
+    .package(url: "https://github.com/swift-iso/swift-iso-8601.git", from: "0.2.3")
 ]
 ```
 
