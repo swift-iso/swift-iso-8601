@@ -10,8 +10,8 @@
 //  ISO_8601.Time.Parser.
 //
 
-public import Parser_Primitives
 public import Byte_Primitives
+public import Parser_Primitives
 
 extension ISO_8601.Time {
     /// Parses the time-of-day component of an ISO 8601 date-time.
@@ -103,8 +103,10 @@ extension ISO_8601.Time.Parse: Parser.`Protocol` {
         }
 
         return Output(
-            hour: hour, minute: minute,
-            second: second, nanoseconds: nanoseconds
+            hour: hour,
+            minute: minute,
+            second: second,
+            nanoseconds: nanoseconds
         )
     }
 }

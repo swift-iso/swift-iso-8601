@@ -12,8 +12,8 @@
 //  valid). 24:00:00 rolls over to 00:00:00 of the next day per ISO 8601.
 //
 
-public import Parser_Primitives
 public import Byte_Primitives
+public import Parser_Primitives
 public import Time_Primitives
 
 extension ISO_8601.DateTime {
@@ -149,8 +149,13 @@ extension ISO_8601.DateTime.Parser: Parser.`Protocol` {
             let startOfDay: ISO_8601.DateTime
             do {
                 startOfDay = try ISO_8601.DateTime(
-                    year: year, month: month, day: day,
-                    hour: 0, minute: 0, second: 0, nanoseconds: 0,
+                    year: year,
+                    month: month,
+                    day: day,
+                    hour: 0,
+                    minute: 0,
+                    second: 0,
+                    nanoseconds: 0,
                     timezoneOffsetSeconds: timezoneOffset
                 )
             } catch {
@@ -171,8 +176,13 @@ extension ISO_8601.DateTime.Parser: Parser.`Protocol` {
         // 6. Construct the domain value, mapping component-validation failures.
         do {
             return try ISO_8601.DateTime(
-                year: year, month: month, day: day,
-                hour: hour, minute: minute, second: second, nanoseconds: nanoseconds,
+                year: year,
+                month: month,
+                day: day,
+                hour: hour,
+                minute: minute,
+                second: second,
+                nanoseconds: nanoseconds,
                 timezoneOffsetSeconds: timezoneOffset
             )
         } catch {

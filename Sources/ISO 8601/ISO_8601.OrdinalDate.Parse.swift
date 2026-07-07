@@ -5,8 +5,8 @@
 //  ISO 8601 ordinal date: YYYY-DDD (extended) or YYYYDDD (basic)
 //
 
-public import Parser_Primitives
 public import Byte_Primitives
+public import Parser_Primitives
 
 extension ISO_8601.OrdinalDate {
     /// Parses an ISO 8601 ordinal date.

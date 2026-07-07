@@ -5,8 +5,8 @@
 //  ISO 8601 week date: YYYY-Www-d (extended) or YYYYWwwd (basic)
 //
 
-public import Parser_Primitives
 public import Byte_Primitives
+public import Parser_Primitives
 
 extension ISO_8601.WeekDate {
     /// Parses an ISO 8601 week date.
@@ -69,12 +69,14 @@ extension ISO_8601.WeekDate.Parse: Parser.`Protocol` {
 
         let week = try ISO_8601.Digits<Input>(count: 2).parse(&input)
         guard week >= 1 && week <= 53 else {
-            throw .invalidMonth(week) // reuse for week range
+            throw .invalidMonth(week)  // reuse for week range
         }
 
         if extended {
-            guard input.startIndex < input.endIndex
-                && input[input.startIndex] == 0x2D else {
+            guard
+                input.startIndex < input.endIndex
+                    && input[input.startIndex] == 0x2D
+            else {
                 throw .expectedByte(0x2D)
             }
             input = input[input.index(after: input.startIndex)...]

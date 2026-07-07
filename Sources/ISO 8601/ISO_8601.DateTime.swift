@@ -5,10 +5,10 @@
 //  Core date-time representation following ISO 8601:2019
 //
 
-public import Time_Primitives
-import Standard_Library_Extensions
-import Parser_Primitives
 import Byte_Parser_Primitives
+import Parser_Primitives
+import Standard_Library_Extensions
+public import Time_Primitives
 
 extension ISO_8601 {
 

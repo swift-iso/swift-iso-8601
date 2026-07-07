@@ -5,8 +5,8 @@
 //  ISO 8601 timezone offset: Z, +HH:MM, -HH:MM, +HHMM, -HHMM, +HH, -HH
 //
 
-public import Parser_Primitives
 public import Byte_Primitives
+public import Parser_Primitives
 
 extension ISO_8601.Timezone.Offset {
     /// Parses an ISO 8601 timezone designator.

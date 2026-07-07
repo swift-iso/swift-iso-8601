@@ -5,8 +5,8 @@
 //  ISO 8601 calendar date: YYYY-MM-DD (extended) or YYYYMMDD (basic)
 //
 
-public import Parser_Primitives
 public import Byte_Primitives
+public import Parser_Primitives
 
 extension ISO_8601.CalendarDate {
     /// Parses an ISO 8601 calendar date.
@@ -42,8 +42,10 @@ extension ISO_8601.CalendarDate.Parse: Parser.`Protocol` {
         guard month >= 1 && month <= 12 else { throw .invalidMonth(month) }
 
         if extended {
-            guard input.startIndex < input.endIndex
-                && input[input.startIndex] == 0x2D else {
+            guard
+                input.startIndex < input.endIndex
+                    && input[input.startIndex] == 0x2D
+            else {
                 throw .expectedByte(0x2D)
             }
             input = input[input.index(after: input.startIndex)...]

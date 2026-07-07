@@ -5,8 +5,8 @@
 //  ISO 8601 duration: P[n]Y[n]M[n]DT[n]H[n]M[n]S
 //
 
-public import Parser_Primitives
 public import ASCII_Decimal_Parser_Primitives
+public import Parser_Primitives
 
 extension ISO_8601.Duration {
     /// Parses an ISO 8601 duration string.
@@ -112,18 +112,18 @@ extension ISO_8601.Duration.Parser: Parser.`Protocol` {
 
             if inTimePart {
                 switch designator {
-                case 0x48: hours = value    // H
+                case 0x48: hours = value  // H
                 case 0x4D: minutes = value  // M
-                case 0x53:                  // S
+                case 0x53:  // S
                     seconds = value
                     nanoseconds = fracNanos
                 default: throw .expectedComponentDesignator
                 }
             } else {
                 switch designator {
-                case 0x59: years = value    // Y
-                case 0x4D: months = value   // M
-                case 0x44: days = value     // D
+                case 0x59: years = value  // Y
+                case 0x4D: months = value  // M
+                case 0x44: days = value  // D
                 default: throw .expectedComponentDesignator
                 }
             }
@@ -136,8 +136,12 @@ extension ISO_8601.Duration.Parser: Parser.`Protocol` {
         // significant digits ⇒ ≤ 999_999_999); mapped to the numeric bucket.
         do {
             return try ISO_8601.Duration(
-                years: years, months: months, days: days,
-                hours: hours, minutes: minutes, seconds: seconds,
+                years: years,
+                months: months,
+                days: days,
+                hours: hours,
+                minutes: minutes,
+                seconds: seconds,
                 nanoseconds: nanoseconds
             )
         } catch {

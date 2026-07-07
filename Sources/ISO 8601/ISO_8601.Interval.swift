@@ -5,8 +5,8 @@
 //  ISO 8601 Time Interval representation
 //
 
-import Parser_Primitives
 import Byte_Parser_Primitives
+import Parser_Primitives
 
 extension ISO_8601 {
     /// ISO 8601 Time Interval representation

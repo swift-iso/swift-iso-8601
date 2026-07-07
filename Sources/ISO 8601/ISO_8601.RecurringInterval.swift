@@ -5,8 +5,8 @@
 //  ISO 8601 Recurring Interval representation (R format)
 //
 
-import Parser_Primitives
 import Byte_Parser_Primitives
+import Parser_Primitives
 
 extension ISO_8601 {
     /// ISO 8601 Recurring Interval representation

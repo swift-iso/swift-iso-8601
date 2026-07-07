@@ -157,7 +157,9 @@ extension ISO_8601.Time {
             return (sec, nano)
         }
 
-        private static func parseFractionalPart(_ fracStr: String) throws(ISO_8601.Date.Error) -> Int {
+        private static func parseFractionalPart(
+            _ fracStr: String
+        ) throws(ISO_8601.Date.Error) -> Int {
             // Pad or truncate to 9 digits (nanoseconds)
             var paddedFrac = fracStr
             if fracStr.count < 9 {
@@ -185,7 +187,10 @@ extension ISO_8601.Time {
             }
         }
 
-        private static func parseTimezoneOffset(_ value: String, positive: Bool) throws(ISO_8601.Date.Error) -> Int {
+        private static func parseTimezoneOffset(
+            _ value: String,
+            positive: Bool
+        ) throws(ISO_8601.Date.Error) -> Int {
             let hours: Int
             let minutes: Int
 
@@ -226,7 +231,8 @@ extension ISO_8601.Time {
             }
 
             let offset =
-                hours * Time_Primitives.Time.Calendar.Gregorian.TimeConstants.secondsPerHour + minutes
+                hours * Time_Primitives.Time.Calendar.Gregorian.TimeConstants.secondsPerHour
+                + minutes
                 * Time_Primitives.Time.Calendar.Gregorian.TimeConstants.secondsPerMinute
             return positive ? offset : -offset
         }
