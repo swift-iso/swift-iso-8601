@@ -84,12 +84,16 @@ extension ISO_8601 {
             self.seconds = seconds
             self.nanoseconds = nanoseconds
         }
+    }
+}
 
-        /// Check if this duration represents zero time
-        public var isZero: Bool {
-            years == 0 && months == 0 && days == 0 && hours == 0 && minutes == 0 && seconds == 0
-                && nanoseconds == 0
-        }
+// MARK: - Zero Check
+
+extension ISO_8601.Duration {
+    /// Check if this duration represents zero time
+    public var isZero: Bool {
+        years == 0 && months == 0 && days == 0 && hours == 0 && minutes == 0 && seconds == 0
+            && nanoseconds == 0
     }
 }
 

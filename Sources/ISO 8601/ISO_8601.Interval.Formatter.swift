@@ -7,31 +7,33 @@
 
 extension ISO_8601.Interval {
     /// Formatter for ISO 8601 interval strings
-    public enum Formatter {
-        /// Format an interval as an ISO 8601 string
-        ///
-        /// - Parameter value: The interval to format
-        /// - Returns: ISO 8601 interval string (e.g., "2019-08-27/2019-08-29")
-        public static func format(_ value: ISO_8601.Interval) -> String {
-            switch value {
-            case .startEnd(let start, let end):
-                let startStr = ISO_8601.DateTime.Formatter.format(start)
-                let endStr = ISO_8601.DateTime.Formatter.format(end)
-                return "\(startStr)/\(endStr)"
+    public enum Formatter {}
+}
 
-            case .duration(let duration):
-                return duration.description
+extension ISO_8601.Interval.Formatter {
+    /// Format an interval as an ISO 8601 string
+    ///
+    /// - Parameter value: The interval to format
+    /// - Returns: ISO 8601 interval string (e.g., "2019-08-27/2019-08-29")
+    public static func format(_ value: ISO_8601.Interval) -> String {
+        switch value {
+        case .startEnd(let start, let end):
+            let startStr = ISO_8601.DateTime.Formatter.format(start)
+            let endStr = ISO_8601.DateTime.Formatter.format(end)
+            return "\(startStr)/\(endStr)"
 
-            case .startDuration(let start, let duration):
-                let startStr = ISO_8601.DateTime.Formatter.format(start)
-                let durationStr = duration.description
-                return "\(startStr)/\(durationStr)"
+        case .duration(let duration):
+            return duration.description
 
-            case .durationEnd(let duration, let end):
-                let durationStr = duration.description
-                let endStr = ISO_8601.DateTime.Formatter.format(end)
-                return "\(durationStr)/\(endStr)"
-            }
+        case .startDuration(let start, let duration):
+            let startStr = ISO_8601.DateTime.Formatter.format(start)
+            let durationStr = duration.description
+            return "\(startStr)/\(durationStr)"
+
+        case .durationEnd(let duration, let end):
+            let durationStr = duration.description
+            let endStr = ISO_8601.DateTime.Formatter.format(end)
+            return "\(durationStr)/\(endStr)"
         }
     }
 }

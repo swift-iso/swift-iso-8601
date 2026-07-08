@@ -49,7 +49,7 @@ extension ISO_8601.RecurringInterval.Parser: Parser.`Protocol` {
                 // Leading digit guaranteed by the guard above, so the L1 greedy
                 // parser's `.noDigits` is unreachable. (It additionally rejects
                 // overflow the old wrapping loop ignored.)
-                do {
+                do throws(ASCII.Decimal.Error) {
                     repetitions = try ASCII.Decimal.Parser<Input, Int>().parse(&input)
                 } catch {
                     switch error {
@@ -72,7 +72,7 @@ extension ISO_8601.RecurringInterval.Parser: Parser.`Protocol` {
 
         // Parse interval
         let interval: ISO_8601.Interval
-        do {
+        do throws(__IntervalParserError) {
             interval = try ISO_8601.Interval.Parser<Input>().parse(&input)
         } catch {
             throw .intervalError(error)
@@ -81,7 +81,7 @@ extension ISO_8601.RecurringInterval.Parser: Parser.`Protocol` {
         // Construct the domain value. The only failure mode is a negative
         // repetition count, which is unreachable here (the count is parsed from
         // ASCII digits ⇒ non-negative); mapped to the numeric bucket.
-        do {
+        do throws(ISO_8601.Date.Error) {
             return try ISO_8601.RecurringInterval(repetitions: repetitions, interval: interval)
         } catch {
             throw .overflow

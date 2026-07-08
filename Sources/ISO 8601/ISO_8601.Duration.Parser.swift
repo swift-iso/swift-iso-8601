@@ -66,7 +66,7 @@ extension ISO_8601.Duration.Parser: Parser.`Protocol` {
             // guard above, so the L1 greedy parser's `.noDigits` is unreachable.
             // (It additionally rejects overflow the old wrapping loop ignored.)
             let value: Int
-            do {
+            do throws(ASCII.Decimal.Error) {
                 value = try ASCII.Decimal.Parser<Input, Int>().parse(&input)
             } catch {
                 switch error {
@@ -134,7 +134,7 @@ extension ISO_8601.Duration.Parser: Parser.`Protocol` {
         // Construct the domain value. The only failure mode is nanoseconds out
         // of range, which is unreachable here (the fractional scan caps at 9
         // significant digits ⇒ ≤ 999_999_999); mapped to the numeric bucket.
-        do {
+        do throws(ISO_8601.Date.Error) {
             return try ISO_8601.Duration(
                 years: years,
                 months: months,

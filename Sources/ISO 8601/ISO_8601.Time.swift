@@ -47,11 +47,6 @@ extension ISO_8601 {
         /// Backing storage for timezone offset in seconds from UTC
         internal let _timezoneOffsetSeconds: Int?
 
-        /// Access timezone-related properties
-        public var timezone: Timezone {
-            Timezone(time: self)
-        }
-
         /// Create a time with specified components
         ///
         /// - Parameters:
@@ -110,6 +105,15 @@ extension ISO_8601 {
             self.nanoseconds = nanoseconds
             self._timezoneOffsetSeconds = timezoneOffsetSeconds
         }
+    }
+}
+
+// MARK: - Nested Accessors
+
+extension ISO_8601.Time {
+    /// Access timezone-related properties
+    public var timezone: Timezone {
+        Timezone(time: self)
     }
 }
 

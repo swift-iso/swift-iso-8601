@@ -55,57 +55,6 @@ extension ISO_8601.Time {
             self = calculatedDay
         }
 
-        /// ISO 8601 weekday number (1=Monday, 2=Tuesday, ..., 7=Sunday)
-        public var isoNumber: Int {
-            switch self {
-            case .monday: return 1
-            case .tuesday: return 2
-            case .wednesday: return 3
-            case .thursday: return 4
-            case .friday: return 5
-            case .saturday: return 6
-            case .sunday: return 7
-            }
-        }
-
-        /// Gregorian/Western weekday number (0=Sunday, 1=Monday, ..., 6=Saturday)
-        public var gregorianNumber: Int {
-            rawValue
-        }
-
-        /// Calculate weekday using Zeller's congruence
-        ///
-        /// This is an internal helper that uses Zeller's congruence algorithm
-        /// to determine the day of the week for any Gregorian calendar date.
-        ///
-        /// - Parameters:
-        ///   - year: The year
-        ///   - month: The month (1-12)
-        ///   - day: The day of the month
-        /// - Returns: The weekday
-        internal static func calculate(year: Int, month: Int, day: Int) -> Weekday {
-            var y = year
-            var m = month
-
-            // Zeller's congruence: treat Jan/Feb as months 13/14 of previous year
-            if m < 3 {
-                m += 12
-                y -= 1
-            }
-
-            let q = day
-            let k = y % 100  // Year of century
-            let j = y / 100  // Zero-based century
-
-            // Zeller's formula
-            let h = (q + ((13 * (m + 1)) / 5) + k + (k / 4) + (j / 4) - (2 * j)) % 7
-
-            // Convert from Zeller's (0=Saturday) to Gregorian (0=Sunday)
-            let gregorianDay = (h + 6) % 7
-
-            return Weekday(rawValue: gregorianDay)!
-        }
-
         /// Create from ISO 8601 weekday number (1=Monday, ..., 7=Sunday)
         public init?(isoNumber: Int) {
             switch isoNumber {
@@ -124,5 +73,58 @@ extension ISO_8601.Time {
         public init?(gregorianNumber: Int) {
             self.init(rawValue: gregorianNumber)
         }
+    }
+}
+
+extension ISO_8601.Time.Weekday {
+    /// ISO 8601 weekday number (1=Monday, 2=Tuesday, ..., 7=Sunday)
+    public var isoNumber: Int {
+        switch self {
+        case .monday: return 1
+        case .tuesday: return 2
+        case .wednesday: return 3
+        case .thursday: return 4
+        case .friday: return 5
+        case .saturday: return 6
+        case .sunday: return 7
+        }
+    }
+
+    /// Gregorian/Western weekday number (0=Sunday, 1=Monday, ..., 6=Saturday)
+    public var gregorianNumber: Int {
+        rawValue
+    }
+
+    /// Calculate weekday using Zeller's congruence
+    ///
+    /// This is an internal helper that uses Zeller's congruence algorithm
+    /// to determine the day of the week for any Gregorian calendar date.
+    ///
+    /// - Parameters:
+    ///   - year: The year
+    ///   - month: The month (1-12)
+    ///   - day: The day of the month
+    /// - Returns: The weekday
+    internal static func calculate(year: Int, month: Int, day: Int) -> Self {
+        var y = year
+        var m = month
+
+        // Zeller's congruence: treat Jan/Feb as months 13/14 of previous year
+        if m < 3 {
+            m += 12
+            y -= 1
+        }
+
+        let q = day
+        let k = y % 100  // Year of century
+        let j = y / 100  // Zero-based century
+
+        // Zeller's formula
+        let h = (q + ((13 * (m + 1)) / 5) + k + (k / 4) + (j / 4) - (2 * j)) % 7
+
+        // Convert from Zeller's (0=Saturday) to Gregorian (0=Sunday)
+        let gregorianDay = (h + 6) % 7
+
+        return Self(rawValue: gregorianDay)!
     }
 }

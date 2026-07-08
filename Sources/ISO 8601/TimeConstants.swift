@@ -5,7 +5,9 @@
 //  Created by Coen ten Thije Boonkkamp on 18/11/2025.
 //
 
-enum TimeConstants {
+enum TimeConstants {}
+
+extension TimeConstants {
     static let secondsPerMinute = 60
     static let secondsPerHour = 3600
     static let secondsPerDay = 86400

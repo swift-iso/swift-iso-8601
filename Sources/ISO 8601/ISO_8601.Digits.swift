@@ -30,7 +30,7 @@ extension ISO_8601 {
         let count: Int
 
         @inlinable
-        init(count: Int) {
+        package init(count: Int) {
             self.count = count
         }
     }
@@ -43,8 +43,8 @@ extension ISO_8601.Digits: Parser.`Protocol` {
     typealias Failure = __ISO8601ParseError
 
     @inlinable
-    func parse(_ input: inout Input) throws(Failure) -> Int {
-        do {
+    package func parse(_ input: inout Input) throws(Failure) -> Int {
+        do throws(ASCII.Decimal.Error) {
             return try ASCII.Decimal.Parser<Input, Int>(count: .exactly(count)).parse(&input)
         } catch {
             switch error {

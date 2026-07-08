@@ -9,12 +9,14 @@ extension ISO_8601.Time {
     /// Accessor for timezone-related properties
     public struct Timezone: Sendable {
         internal let time: ISO_8601.Time
+    }
+}
 
-        /// Timezone offset from UTC in seconds, nil if not specified
-        ///
-        /// Positive values are east of UTC, negative values are west.
-        public var offsetSeconds: Int? {
-            time._timezoneOffsetSeconds
-        }
+extension ISO_8601.Time.Timezone {
+    /// Timezone offset from UTC in seconds, nil if not specified
+    ///
+    /// Positive values are east of UTC, negative values are west.
+    public var offsetSeconds: Int? {
+        time._timezoneOffsetSeconds
     }
 }

@@ -214,7 +214,7 @@ extension ISO_8601.DateTime {
 
         // Create Time with validation
         let time: Time_Primitives.Time
-        do {
+        do throws(Time_Primitives.Time.Error) {
             time = try Time_Primitives.Time(
                 year: year,
                 month: month,

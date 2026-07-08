@@ -38,7 +38,7 @@ extension ISO_8601.Interval.Parser: Parser.`Protocol` {
         // Check if first component is a duration (starts with 'P')
         if input[input.startIndex] == 0x50 {
             let duration: ISO_8601.Duration
-            do {
+            do throws(ISO_8601.Duration.Parser<Input>.Error) {
                 duration = try ISO_8601.Duration.Parser<Input>().parse(&input)
             } catch {
                 throw .durationError(error)
@@ -55,7 +55,7 @@ extension ISO_8601.Interval.Parser: Parser.`Protocol` {
 
             // Second component must be a datetime
             let end: ISO_8601.DateTime
-            do {
+            do throws(__DateTimeParserError) {
                 end = try ISO_8601.DateTime.Parser<Input>().parse(&input)
             } catch {
                 throw .dateTimeError(error)
@@ -65,7 +65,7 @@ extension ISO_8601.Interval.Parser: Parser.`Protocol` {
 
         // First component is a datetime
         let start: ISO_8601.DateTime
-        do {
+        do throws(__DateTimeParserError) {
             start = try ISO_8601.DateTime.Parser<Input>().parse(&input)
         } catch {
             throw .dateTimeError(error)
@@ -86,7 +86,7 @@ extension ISO_8601.Interval.Parser: Parser.`Protocol` {
 
         if input[input.startIndex] == 0x50 {
             let duration: ISO_8601.Duration
-            do {
+            do throws(ISO_8601.Duration.Parser<Input>.Error) {
                 duration = try ISO_8601.Duration.Parser<Input>().parse(&input)
             } catch {
                 throw .durationError(error)
@@ -96,7 +96,7 @@ extension ISO_8601.Interval.Parser: Parser.`Protocol` {
 
         // Second component is a datetime
         let end: ISO_8601.DateTime
-        do {
+        do throws(__DateTimeParserError) {
             end = try ISO_8601.DateTime.Parser<Input>().parse(&input)
         } catch {
             throw .dateTimeError(error)

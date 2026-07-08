@@ -65,13 +65,13 @@ extension ISO_8601.DateTime.Parser: Parser.`Protocol` {
         let day: Int
         if isWeek {
             let parsed: ISO_8601.WeekDate.Parse<Input>.Output
-            do {
+            do throws(__ISO8601ParseError) {
                 parsed = try ISO_8601.WeekDate.Parse<Input>().parse(&input)
             } catch {
                 throw .dateError(error)
             }
             let weekDate: ISO_8601.WeekDate
-            do {
+            do throws(ISO_8601.Date.Error) {
                 weekDate = try ISO_8601.WeekDate(
                     weekYear: parsed.weekYear,
                     week: parsed.week,
@@ -84,13 +84,13 @@ extension ISO_8601.DateTime.Parser: Parser.`Protocol` {
             (year, month, day) = (components.year, components.month, components.day)
         } else if isOrdinal {
             let parsed: ISO_8601.OrdinalDate.Parse<Input>.Output
-            do {
+            do throws(__ISO8601ParseError) {
                 parsed = try ISO_8601.OrdinalDate.Parse<Input>().parse(&input)
             } catch {
                 throw .dateError(error)
             }
             let ordinalDate: ISO_8601.OrdinalDate
-            do {
+            do throws(ISO_8601.Date.Error) {
                 ordinalDate = try ISO_8601.OrdinalDate(year: parsed.year, day: parsed.day)
             } catch {
                 throw .invalidComponents(error)
@@ -99,7 +99,7 @@ extension ISO_8601.DateTime.Parser: Parser.`Protocol` {
             (year, month, day) = (components.year, components.month, components.day)
         } else {
             let parsed: ISO_8601.CalendarDate.Parse<Input>.Output
-            do {
+            do throws(__ISO8601ParseError) {
                 parsed = try ISO_8601.CalendarDate.Parse<Input>().parse(&input)
             } catch {
                 throw .dateError(error)
@@ -115,7 +115,7 @@ extension ISO_8601.DateTime.Parser: Parser.`Protocol` {
         if input.startIndex < input.endIndex, input[input.startIndex] == 0x54 {
             input = input[input.index(after: input.startIndex)...]
             let time: ISO_8601.Time.Parse<Input>.Output
-            do {
+            do throws(__ISO8601ParseError) {
                 time = try ISO_8601.Time.Parse<Input>().parse(&input)
             } catch {
                 throw .timeError(error)
@@ -130,7 +130,7 @@ extension ISO_8601.DateTime.Parser: Parser.`Protocol` {
             let byte = input[input.startIndex]
             if byte == 0x5A || byte == 0x2B || byte == 0x2D {
                 let offset: ISO_8601.Timezone.Offset.Parse<Input>.Output
-                do {
+                do throws(__ISO8601ParseError) {
                     offset = try ISO_8601.Timezone.Offset.Parse<Input>().parse(&input)
                 } catch {
                     throw .timezoneError(error)
@@ -147,7 +147,7 @@ extension ISO_8601.DateTime.Parser: Parser.`Protocol` {
                 )
             }
             let startOfDay: ISO_8601.DateTime
-            do {
+            do throws(ISO_8601.Date.Error) {
                 startOfDay = try ISO_8601.DateTime(
                     year: year,
                     month: month,
@@ -161,7 +161,7 @@ extension ISO_8601.DateTime.Parser: Parser.`Protocol` {
             } catch {
                 throw .invalidComponents(error)
             }
-            do {
+            do throws(ISO_8601.Date.Error) {
                 return try ISO_8601.DateTime(
                     secondsSinceEpoch: startOfDay.epoch.seconds
                         + Time_Primitives.Time.Calendar.Gregorian.TimeConstants.secondsPerDay,
@@ -174,7 +174,7 @@ extension ISO_8601.DateTime.Parser: Parser.`Protocol` {
         }
 
         // 6. Construct the domain value, mapping component-validation failures.
-        do {
+        do throws(ISO_8601.Date.Error) {
             return try ISO_8601.DateTime(
                 year: year,
                 month: month,

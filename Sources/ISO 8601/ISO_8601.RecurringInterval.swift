@@ -54,11 +54,15 @@ extension ISO_8601 {
             self.repetitions = repetitions
             self.interval = interval
         }
+    }
+}
 
-        /// Check if this recurring interval is unlimited
-        public var isUnlimited: Bool {
-            repetitions == nil
-        }
+// MARK: - Unlimited Check
+
+extension ISO_8601.RecurringInterval {
+    /// Check if this recurring interval is unlimited
+    public var isUnlimited: Bool {
+        repetitions == nil
     }
 }
 
