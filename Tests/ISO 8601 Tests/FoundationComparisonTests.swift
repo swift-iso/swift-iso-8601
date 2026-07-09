@@ -17,7 +17,6 @@ struct `Foundation Comparison Tests` {
     // MARK: - Critical Year Boundary Cases
 
     @Test(
-        "Year boundary",
         arguments: [
             (
                 year: 2023, month: 1, day: 1, weekYear: 2022, week: 52, weekday: 7,
@@ -33,7 +32,7 @@ struct `Foundation Comparison Tests` {
             ),
         ]
     )
-    func yearBoundary(
+    func `Year boundary`(
         year: Int,
         month: Int,
         day: Int,
@@ -62,10 +61,9 @@ struct `Foundation Comparison Tests` {
     // MARK: - January 4 Rule (Always Week 1)
 
     @Test(
-        "ISO 8601 rule: January 4 is always in week 1",
         arguments: [2020, 2021, 2022, 2023, 2024, 2025, 2026]
     )
-    func january4AlwaysWeek1(year: Int) throws {
+    func `ISO 8601 rule: January 4 is always in week 1`(year: Int) throws {
         let dt = try ISO_8601.DateTime(year: year, month: 1, day: 4)
         let weekDate = ISO_8601.WeekDate(dt)
 
@@ -88,14 +86,13 @@ struct `Foundation Comparison Tests` {
     // MARK: - 53-Week Years
 
     @Test(
-        "Weeks in year",
         arguments: [
             (year: 2020, expectedWeeks: 53, desc: "2020 (Jan 1 = Wed + leap year)"),
             (year: 2015, expectedWeeks: 53, desc: "2015 (Jan 1 = Thu)"),
             (year: 2024, expectedWeeks: 52, desc: "2024 (Jan 1 = Mon)"),
         ]
     )
-    func weeksInYear(year: Int, expectedWeeks: Int, desc: String) throws {
+    func `Weeks in year`(year: Int, expectedWeeks: Int, desc: String) throws {
         // Test last day of year
         let lastDay = Time_Primitives.Time.Calendar.Gregorian.isLeapYear(year) ? 31 : 30
         let dt = try ISO_8601.DateTime(year: year, month: 12, day: lastDay)
@@ -242,7 +239,6 @@ struct `Foundation Comparison Tests` {
     // MARK: - Round-Trip Tests
 
     @Test(
-        "Round-trip conversions",
         arguments: [
             (year: 2024, month: 6, day: 15, desc: "mid-year date"),
             (year: 2023, month: 1, day: 1, desc: "year boundary (Sun)"),
@@ -251,7 +247,7 @@ struct `Foundation Comparison Tests` {
             (year: 2024, month: 12, day: 31, desc: "year end"),
         ]
     )
-    func roundTripConversions(year: Int, month: Int, day: Int, desc: String) throws {
+    func `Round-trip conversions`(year: Int, month: Int, day: Int, desc: String) throws {
         let original = try ISO_8601.DateTime(year: year, month: month, day: day)
 
         // Calendar → Week Date → Calendar
