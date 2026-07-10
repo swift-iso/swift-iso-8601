@@ -99,8 +99,7 @@ extension ISO_8601.DateTime.Formatter {
 // MARK: - Private Formatting Helpers
 
 extension ISO_8601.DateTime.Formatter {
-    private static func formatCalendarDate(_ value: ISO_8601.DateTime, extended: Bool) -> String
-    {
+    private static func formatCalendarDate(_ value: ISO_8601.DateTime, extended: Bool) -> String {
         let comp = value.components
         let year = formatFourDigits(comp.year)
         let month = formatTwoDigits(comp.month)
@@ -125,8 +124,7 @@ extension ISO_8601.DateTime.Formatter {
         }
     }
 
-    private static func formatOrdinalDate(_ value: ISO_8601.DateTime, extended: Bool) -> String
-    {
+    private static func formatOrdinalDate(_ value: ISO_8601.DateTime, extended: Bool) -> String {
         let comp = value.components
         let year = formatFourDigits(comp.year)
         let day = formatThreeDigits(value.ordinalDay)
