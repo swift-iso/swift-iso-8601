@@ -63,36 +63,81 @@ extension ISO_8601.DateTime.Formatter {
     ) -> String {
         var result = ""
 
-        // Format date portion
-        switch date {
-        case .calendar(let extended):
-            result += formatCalendarDate(value, extended: extended)
-        case .week(let extended):
-            result += formatWeekDate(value, extended: extended)
-        case .ordinal(let extended):
-            result += formatOrdinalDate(value, extended: extended)
-        }
-
-        // Format time portion if requested
         switch time {
         case .none:
-            break
-        case .time(let extended):
-            result += "T"
-            result += formatTime(value, extended: extended)
+            // No time (and therefore no timezone indicator) is rendered: the
+            // date portion reflects the DateTime's own local (offset-shifted)
+            // components, same as always — `timezone` has no observable effect
+            // here, so it does not change the reference frame.
+            result += formatDatePortion(value, format: date)
 
-            // Format timezone if time is included
+        case .time(let extended):
+            // `timezone` decides which reference frame date AND time are both
+            // rendered in: `.utc` renders the components of the true UTC
+            // instant (the epoch with a zero offset), so the date can roll to
+            // a different day than the DateTime's own local components would
+            // show. `.offset` and `.none` render the DateTime's own local
+            // (offset-shifted) components, matching the offset suffix (or its
+            // absence) that follows.
+            let renderValue = renderedValue(for: value, timezone: timezone)
+
+            result += formatDatePortion(renderValue, format: date)
+            result += "T"
+            result += formatTime(renderValue, extended: extended)
+
             switch timezone {
             case .none:
                 break
             case .utc:
                 result += "Z"
-            case .offset(let extended):
-                result += formatTimezoneOffset(value.timezone.offsetSeconds, extended: extended)
+            case .offset(let offsetExtended):
+                result += formatTimezoneOffset(
+                    value.timezone.offsetSeconds,
+                    extended: offsetExtended
+                )
             }
         }
 
         return result
+    }
+
+    /// Formats the date-only portion for the given `DateFormat`.
+    private static func formatDatePortion(_ value: ISO_8601.DateTime, format: DateFormat)
+        -> String
+    {
+        switch format {
+        case .calendar(let extended):
+            return formatCalendarDate(value, extended: extended)
+        case .week(let extended):
+            return formatWeekDate(value, extended: extended)
+        case .ordinal(let extended):
+            return formatOrdinalDate(value, extended: extended)
+        }
+    }
+
+    /// The `DateTime` whose calendar/time components should be rendered for
+    /// the given `TimezoneFormat`.
+    ///
+    /// `.utc` renders the true UTC instant: the epoch with the offset zeroed
+    /// out, so `.components` on the result is the UTC calendar/time reading
+    /// (correct across a day-boundary crossing too). `.offset` and `.none`
+    /// render the value unchanged — its own local, offset-shifted components.
+    private static func renderedValue(
+        for value: ISO_8601.DateTime,
+        timezone: TimezoneFormat
+    ) -> ISO_8601.DateTime {
+        switch timezone {
+        case .utc:
+            // SAFE: `value.nanoseconds` is always 0..<1_000_000_000 by
+            // construction on any valid `ISO_8601.DateTime`.
+            let utcTime = try! Time_Primitives.Time(
+                secondsSinceEpoch: value.epoch.seconds,
+                nanoseconds: value.nanoseconds
+            )
+            return ISO_8601.DateTime(time: utcTime, timezoneOffset: .utc)
+        case .none, .offset:
+            return value
+        }
     }
 }
 
