@@ -146,24 +146,26 @@ extension ISO_8601.DateTime.Parser: Parser.`Protocol` {
                     .invalidTime("24:xx:xx is not valid, only 24:00:00 is allowed")
                 )
             }
-            let startOfDay: ISO_8601.DateTime
-            do throws(ISO_8601.Date.Error) {
-                startOfDay = try ISO_8601.DateTime(
+            // Local midnight of the *next* day at `timezoneOffset`, expressed as
+            // its true UTC instant: naive-UTC(components) minus the offset (see
+            // step 6 for the same local-wall-clock-to-UTC convention).
+            let localMidnight: Time_Primitives.Time
+            do throws(Time_Primitives.Time.Error) {
+                localMidnight = try Time_Primitives.Time(
                     year: year,
                     month: month,
                     day: day,
                     hour: 0,
                     minute: 0,
-                    second: 0,
-                    nanoseconds: 0,
-                    timezoneOffsetSeconds: timezoneOffset
+                    second: 0
                 )
             } catch {
-                throw .invalidComponents(error)
+                throw .invalidComponents(.invalidComponents(error))
             }
+            let trueEpochOfMidnight = localMidnight.secondsSinceEpoch - timezoneOffset
             do throws(ISO_8601.Date.Error) {
                 return try ISO_8601.DateTime(
-                    secondsSinceEpoch: startOfDay.epoch.seconds
+                    secondsSinceEpoch: trueEpochOfMidnight
                         + Time_Primitives.Time.Calendar.Gregorian.TimeConstants.secondsPerDay,
                     nanoseconds: 0,
                     timezoneOffsetSeconds: timezoneOffset
@@ -173,15 +175,37 @@ extension ISO_8601.DateTime.Parser: Parser.`Protocol` {
             }
         }
 
-        // 6. Construct the domain value, mapping component-validation failures.
-        do throws(ISO_8601.Date.Error) {
-            return try ISO_8601.DateTime(
+        // 6. The parsed components are local wall-clock values at
+        //    `timezoneOffset`, not UTC. Validate them as a calendar date/time
+        //    (day-of-month, leap year, hour/minute/second range, …), then
+        //    convert to the true UTC instant: epoch = naive-UTC(components)
+        //    minus the offset (e.g. local 12:30 at +02:00 is 10:30 UTC).
+        let millisecond = nanoseconds / 1_000_000
+        let microsecondRemainder = nanoseconds % 1_000_000
+        let microsecond = microsecondRemainder / 1000
+        let nanosecond = microsecondRemainder % 1000
+
+        let localTime: Time_Primitives.Time
+        do throws(Time_Primitives.Time.Error) {
+            localTime = try Time_Primitives.Time(
                 year: year,
                 month: month,
                 day: day,
                 hour: hour,
                 minute: minute,
                 second: second,
+                millisecond: millisecond,
+                microsecond: microsecond,
+                nanosecond: nanosecond
+            )
+        } catch {
+            throw .invalidComponents(.invalidComponents(error))
+        }
+        let trueEpochSeconds = localTime.secondsSinceEpoch - timezoneOffset
+
+        do throws(ISO_8601.Date.Error) {
+            return try ISO_8601.DateTime(
+                secondsSinceEpoch: trueEpochSeconds,
                 nanoseconds: nanoseconds,
                 timezoneOffsetSeconds: timezoneOffset
             )
