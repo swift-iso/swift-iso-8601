@@ -27,7 +27,7 @@ extension ISO_8601.Duration {
 }
 
 extension ISO_8601.Duration.Parser: Parser.`Protocol` {
-    public typealias Failure = ISO_8601.Duration.Parser<Input>.Error
+    public typealias Failure = __DurationParserError
 
     @inlinable
     public func parse(_ input: inout Input) throws(Failure) -> ISO_8601.Duration {

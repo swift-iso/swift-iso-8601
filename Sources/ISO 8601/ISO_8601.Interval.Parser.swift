@@ -38,7 +38,7 @@ extension ISO_8601.Interval.Parser: Parser.`Protocol` {
         // Check if first component is a duration (starts with 'P')
         if input[input.startIndex] == 0x50 {
             let duration: ISO_8601.Duration
-            do throws(ISO_8601.Duration.Parser<Input>.Error) {
+            do throws(__DurationParserError) {
                 duration = try ISO_8601.Duration.Parser<Input>().parse(&input)
             } catch {
                 throw .durationError(error)
@@ -86,7 +86,7 @@ extension ISO_8601.Interval.Parser: Parser.`Protocol` {
 
         if input[input.startIndex] == 0x50 {
             let duration: ISO_8601.Duration
-            do throws(ISO_8601.Duration.Parser<Input>.Error) {
+            do throws(__DurationParserError) {
                 duration = try ISO_8601.Duration.Parser<Input>().parse(&input)
             } catch {
                 throw .durationError(error)

@@ -29,7 +29,7 @@ extension ISO_8601.RecurringInterval {
 }
 
 extension ISO_8601.RecurringInterval.Parser: Parser.`Protocol` {
-    public typealias Failure = ISO_8601.RecurringInterval.Parser<Input>.Error
+    public typealias Failure = __RecurringIntervalParserError
 
     @inlinable
     public func parse(_ input: inout Input) throws(Failure) -> ISO_8601.RecurringInterval {
