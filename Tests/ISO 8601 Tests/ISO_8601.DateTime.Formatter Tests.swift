@@ -110,7 +110,12 @@ extension ISO_8601.DateTime.Formatter.Tests.`Edge Case` {
     @Test
     func `Zero-offset DateTime is unaffected by the UTC-rendering fix`() throws {
         let dt = try ISO_8601.DateTime(
-            year: 2024, month: 1, day: 15, hour: 12, minute: 30, second: 45
+            year: 2024,
+            month: 1,
+            day: 15,
+            hour: 12,
+            minute: 30,
+            second: 45
         )
 
         let formatted = ISO_8601.DateTime.Formatter.format(

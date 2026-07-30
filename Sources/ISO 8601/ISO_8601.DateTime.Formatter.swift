@@ -102,7 +102,10 @@ extension ISO_8601.DateTime.Formatter {
     }
 
     /// Formats the date-only portion for the given `DateFormat`.
-    private static func formatDatePortion(_ value: ISO_8601.DateTime, format: DateFormat)
+    private static func formatDatePortion(
+        _ value: ISO_8601.DateTime,
+        format: DateFormat
+    )
         -> String
     {
         switch format {

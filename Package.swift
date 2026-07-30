@@ -8,16 +8,24 @@ extension String {
 
 extension Target.Dependency {
     static var iso8601: Self { .target(name: .iso8601) }
-    static var standards: Self { .product(name: "Standard Library Extensions", package: "swift-standard-library-extensions") }
+    static var standards: Self {
+        .product(name: "Standard Library Extensions", package: "swift-standard-library-extensions")
+    }
     static var time: Self {
         .product(
             name: "Time Primitives",
             package: "swift-time-primitives"
         )
     }
-    static var incits_4_1986: Self { .product(name: "ASCII Primitives", package: "swift-ascii-primitives") }
-    static var asciiDecimalParser: Self { .product(name: "ASCII Decimal Parser Primitives", package: "swift-ascii-parser-primitives") }
-    static var byteParser: Self { .product(name: "Byte Parser Primitives", package: "swift-byte-parser-primitives") }
+    static var asciiPrimitives: Self {
+        .product(name: "ASCII Primitives", package: "swift-ascii-primitives")
+    }
+    static var asciiDecimalParser: Self {
+        .product(name: "ASCII Decimal Parser Primitives", package: "swift-ascii-parser-primitives")
+    }
+    static var byteParser: Self {
+        .product(name: "Byte Parser Primitives", package: "swift-byte-parser-primitives")
+    }
 }
 
 let package = Package(
@@ -27,18 +35,36 @@ let package = Package(
         .iOS(.v26),
         .tvOS(.v26),
         .watchOS(.v26),
-        .visionOS(.v26)
+        .visionOS(.v26),
     ],
     products: [
         .library(name: "ISO 8601", targets: ["ISO 8601"])
     ],
     dependencies: [
-        .package(url: "https://github.com/swift-primitives/swift-standard-library-extensions.git", branch: "main"),
-        .package(url: "https://github.com/swift-primitives/swift-time-primitives.git", branch: "main"),
-        .package(url: "https://github.com/swift-primitives/swift-ascii-primitives.git", branch: "main"),
-        .package(url: "https://github.com/swift-primitives/swift-parser-primitives.git", branch: "main"),
-        .package(url: "https://github.com/swift-primitives/swift-ascii-parser-primitives.git", branch: "main"),
-        .package(url: "https://github.com/swift-primitives/swift-byte-parser-primitives.git", branch: "main")
+        .package(
+            url: "https://github.com/swift-primitives/swift-standard-library-extensions.git",
+            branch: "main"
+        ),
+        .package(
+            url: "https://github.com/swift-primitives/swift-time-primitives.git",
+            branch: "main"
+        ),
+        .package(
+            url: "https://github.com/swift-primitives/swift-ascii-primitives.git",
+            branch: "main"
+        ),
+        .package(
+            url: "https://github.com/swift-primitives/swift-parser-primitives.git",
+            branch: "main"
+        ),
+        .package(
+            url: "https://github.com/swift-primitives/swift-ascii-parser-primitives.git",
+            branch: "main"
+        ),
+        .package(
+            url: "https://github.com/swift-primitives/swift-byte-parser-primitives.git",
+            branch: "main"
+        ),
     ],
     targets: [
         .target(
@@ -46,16 +72,16 @@ let package = Package(
             dependencies: [
                 .standards,
                 .time,
-                .incits_4_1986,
+                .asciiPrimitives,
                 .asciiDecimalParser,
                 .byteParser,
-                .product(name: "Parser Primitives", package: "swift-parser-primitives")
+                .product(name: "Parser Primitives", package: "swift-parser-primitives"),
             ]
         ),
         .testTarget(
             name: "ISO 8601 Tests",
             dependencies: [
-                "ISO 8601",
+                "ISO 8601"
             ]
         ),
     ],
