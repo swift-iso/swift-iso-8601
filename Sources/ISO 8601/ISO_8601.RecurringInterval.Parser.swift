@@ -55,6 +55,7 @@ extension ISO_8601.RecurringInterval.Parser: Parser.`Protocol` {
                 } catch {
                     switch error {
                     case .overflow: throw .overflow
+
                     // Unreachable under the leading-digit guard + greedy/`.none`
                     // policy; collapsed onto the next expected token for exhaustiveness.
                     case .noDigits, .insufficientDigits, .invalidSign: throw .expectedSlash

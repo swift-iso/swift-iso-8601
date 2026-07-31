@@ -66,8 +66,10 @@ extension ISO_8601.DateTime.Formatter {
             switch timezone {
             case .none:
                 break
+
             case .utc:
                 result += "Z"
+
             case .offset(let offsetExtended):
                 result += formatTimezoneOffset(
                     value.timezone.offsetSeconds,
@@ -89,8 +91,10 @@ extension ISO_8601.DateTime.Formatter {
         switch format {
         case .calendar(let extended):
             return formatCalendarDate(value, extended: extended)
+
         case .week(let extended):
             return formatWeekDate(value, extended: extended)
+
         case .ordinal(let extended):
             return formatOrdinalDate(value, extended: extended)
         }
@@ -116,6 +120,7 @@ extension ISO_8601.DateTime.Formatter {
                 nanoseconds: value.nanoseconds
             )
             return ISO_8601.DateTime(time: utcTime, timezoneOffset: .utc)
+
         case .none, .offset:
             return value
         }

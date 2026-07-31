@@ -72,6 +72,7 @@ extension ISO_8601.Duration.Parser: Parser.`Protocol` {
             } catch {
                 switch error {
                 case .overflow: throw .overflow
+
                 // Unreachable under the leading-digit guard + greedy/`.none` policy;
                 // remapped to the digit-error bucket for exhaustiveness.
                 case .noDigits, .insufficientDigits, .invalidSign: throw .invalidDigit
@@ -115,9 +116,11 @@ extension ISO_8601.Duration.Parser: Parser.`Protocol` {
                 switch designator {
                 case 0x48: hours = value  // H
                 case 0x4D: minutes = value  // M
+
                 case 0x53:  // S
                     seconds = value
                     nanoseconds = fracNanos
+
                 default: throw .expectedComponentDesignator
                 }
             } else {

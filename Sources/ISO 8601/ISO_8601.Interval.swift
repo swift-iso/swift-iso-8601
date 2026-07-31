@@ -81,6 +81,7 @@ extension ISO_8601.Interval {
         switch self {
         case .startEnd, .startDuration:
             return true
+
         case .duration, .durationEnd:
             return false
         }
@@ -91,6 +92,7 @@ extension ISO_8601.Interval {
         switch self {
         case .startEnd, .durationEnd:
             return true
+
         case .duration, .startDuration:
             return false
         }
@@ -101,6 +103,7 @@ extension ISO_8601.Interval {
         switch self {
         case .duration, .startDuration, .durationEnd:
             return true
+
         case .startEnd:
             return false
         }
@@ -111,6 +114,7 @@ extension ISO_8601.Interval {
         switch self {
         case .startEnd(let start, _), .startDuration(let start, _):
             return start
+
         case .duration, .durationEnd:
             return nil
         }
@@ -121,6 +125,7 @@ extension ISO_8601.Interval {
         switch self {
         case .startEnd(_, let end), .durationEnd(_, let end):
             return end
+
         case .duration, .startDuration:
             return nil
         }
@@ -131,6 +136,7 @@ extension ISO_8601.Interval {
         switch self {
         case .duration(let dur), .startDuration(_, let dur), .durationEnd(let dur, _):
             return dur
+
         case .startEnd:
             return nil
         }
