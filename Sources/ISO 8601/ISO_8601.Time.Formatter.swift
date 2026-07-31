@@ -17,9 +17,10 @@ extension ISO_8601.Time.Formatter {
     ///
     /// - Parameters:
     ///   - value: The time to format
-    ///   - extended: Use extended format with colons (default: true)
+    ///   - format: Use extended format with colons (default: `.extended`)
     /// - Returns: ISO 8601 time string (e.g., "12:30:45" or "123045")
-    public static func format(_ value: ISO_8601.Time, extended: Bool = true) -> String {
+    public static func format(_ value: ISO_8601.Time, format: Format = .extended) -> String {
+        let extended = format == .extended
         var result = ""
 
         // Hour (always present)

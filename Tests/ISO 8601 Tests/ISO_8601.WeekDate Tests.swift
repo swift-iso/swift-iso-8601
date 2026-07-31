@@ -12,6 +12,12 @@ import Testing
 
 @Suite
 struct `ISO_8601.WeekDate Tests` {
+    @Suite struct Unit {}
+    @Suite struct `Edge Case` {}
+    @Suite struct Integration {}
+}
+
+extension `ISO_8601.WeekDate Tests`.Unit {
 
     // MARK: - Creation
 
@@ -29,6 +35,27 @@ struct `ISO_8601.WeekDate Tests` {
         let weekDate = try ISO_8601.WeekDate(weekYear: 2024, week: 1, weekday: weekday)
         #expect(weekDate.weekday == weekday)
     }
+
+    // MARK: - Equality
+
+    @Test
+    func `Week dates with same values are equal`() throws {
+        let wd1 = try ISO_8601.WeekDate(weekYear: 2024, week: 3, weekday: 1)
+        let wd2 = try ISO_8601.WeekDate(weekYear: 2024, week: 3, weekday: 1)
+
+        #expect(wd1 == wd2)
+    }
+
+    @Test
+    func `Week dates with different values are not equal`() throws {
+        let wd1 = try ISO_8601.WeekDate(weekYear: 2024, week: 3, weekday: 1)
+        let wd2 = try ISO_8601.WeekDate(weekYear: 2024, week: 3, weekday: 2)
+
+        #expect(wd1 != wd2)
+    }
+}
+
+extension `ISO_8601.WeekDate Tests`.`Edge Case` {
 
     // MARK: - Validation
 
@@ -53,6 +80,9 @@ struct `ISO_8601.WeekDate Tests` {
             _ = try ISO_8601.WeekDate(weekYear: 2023, week: 53, weekday: 1)
         }
     }
+}
+
+extension `ISO_8601.WeekDate Tests`.Integration {
 
     // MARK: - Conversion to DateTime
 
@@ -85,23 +115,5 @@ struct `ISO_8601.WeekDate Tests` {
         #expect(original.components.year == converted.components.year)
         #expect(original.components.month == converted.components.month)
         #expect(original.components.day == converted.components.day)
-    }
-
-    // MARK: - Equality
-
-    @Test
-    func `Week dates with same values are equal`() throws {
-        let wd1 = try ISO_8601.WeekDate(weekYear: 2024, week: 3, weekday: 1)
-        let wd2 = try ISO_8601.WeekDate(weekYear: 2024, week: 3, weekday: 1)
-
-        #expect(wd1 == wd2)
-    }
-
-    @Test
-    func `Week dates with different values are not equal`() throws {
-        let wd1 = try ISO_8601.WeekDate(weekYear: 2024, week: 3, weekday: 1)
-        let wd2 = try ISO_8601.WeekDate(weekYear: 2024, week: 3, weekday: 2)
-
-        #expect(wd1 != wd2)
     }
 }

@@ -12,6 +12,12 @@ import Testing
 
 @Suite
 struct `ISO_8601.Time Tests` {
+    @Suite struct Unit {}
+    @Suite struct `Edge Case` {}
+    @Suite struct Integration {}
+}
+
+extension `ISO_8601.Time Tests`.Unit {
 
     // MARK: - Creation
 
@@ -70,50 +76,6 @@ struct `ISO_8601.Time Tests` {
         #expect(time.second == 0)
     }
 
-    // MARK: - Validation
-
-    @Test
-    func `Reject hour out of range`() throws {
-        #expect(throws: ISO_8601.Date.Error.self) {
-            _ = try ISO_8601.Time(hour: 25)
-        }
-    }
-
-    @Test
-    func `Reject minute out of range`() throws {
-        #expect(throws: ISO_8601.Date.Error.self) {
-            _ = try ISO_8601.Time(hour: 12, minute: 60)
-        }
-    }
-
-    @Test
-    func `Reject second out of range`() throws {
-        #expect(throws: ISO_8601.Date.Error.self) {
-            _ = try ISO_8601.Time(hour: 12, minute: 30, second: 61)
-        }
-    }
-
-    @Test
-    func `Reject invalid nanoseconds`() throws {
-        #expect(throws: ISO_8601.Date.Error.self) {
-            _ = try ISO_8601.Time(hour: 12, nanoseconds: 1_000_000_000)
-        }
-    }
-
-    @Test
-    func `Reject 24 hours with non-zero components`() throws {
-        #expect(throws: ISO_8601.Date.Error.self) {
-            _ = try ISO_8601.Time(hour: 24, minute: 30)
-        }
-    }
-
-    @Test
-    func `Accept leap second`() throws {
-        let time = try ISO_8601.Time(hour: 23, minute: 59, second: 60)
-
-        #expect(time.second == 60)
-    }
-
     // MARK: - Formatting
 
     @Test
@@ -126,7 +88,7 @@ struct `ISO_8601.Time Tests` {
     @Test
     func `Format full time basic`() throws {
         let time = try ISO_8601.Time(hour: 12, minute: 30, second: 45)
-        let formatted = ISO_8601.Time.Formatter.format(time, extended: false)
+        let formatted = ISO_8601.Time.Formatter.format(time, format: .basic)
 
         #expect(formatted == "123045")
     }
@@ -141,7 +103,7 @@ struct `ISO_8601.Time Tests` {
     @Test
     func `Format hour and minute basic`() throws {
         let time = try ISO_8601.Time(hour: 12, minute: 30)
-        let formatted = ISO_8601.Time.Formatter.format(time, extended: false)
+        let formatted = ISO_8601.Time.Formatter.format(time, format: .basic)
 
         #expect(formatted == "1230")
     }
@@ -179,7 +141,7 @@ struct `ISO_8601.Time Tests` {
     @Test
     func `Format time with positive offset basic`() throws {
         let time = try ISO_8601.Time(hour: 12, minute: 30, second: 45, timezoneOffsetSeconds: 19800)
-        let formatted = ISO_8601.Time.Formatter.format(time, extended: false)
+        let formatted = ISO_8601.Time.Formatter.format(time, format: .basic)
 
         #expect(formatted == "123045+0530")
     }
@@ -320,6 +282,82 @@ struct `ISO_8601.Time Tests` {
         #expect(time.nanoseconds == 123_000_000)
     }
 
+    // MARK: - Equality
+
+    @Test
+    func `Times with same values are equal`() throws {
+        let t1 = try ISO_8601.Time(hour: 12, minute: 30, second: 45)
+        let t2 = try ISO_8601.Time(hour: 12, minute: 30, second: 45)
+
+        #expect(t1 == t2)
+    }
+
+    @Test
+    func `Times with different values are not equal`() throws {
+        let t1 = try ISO_8601.Time(hour: 12, minute: 30, second: 45)
+        let t2 = try ISO_8601.Time(hour: 12, minute: 30, second: 46)
+
+        #expect(t1 != t2)
+    }
+
+    @Test
+    func `Times with different timezones are not equal`() throws {
+        let t1 = try ISO_8601.Time(hour: 12, minute: 30, timezoneOffsetSeconds: 0)
+        let t2 = try ISO_8601.Time(hour: 12, minute: 30, timezoneOffsetSeconds: 3600)
+
+        #expect(t1 != t2)
+    }
+}
+
+extension `ISO_8601.Time Tests`.`Edge Case` {
+
+    // MARK: - Validation
+
+    @Test
+    func `Reject hour out of range`() throws {
+        #expect(throws: ISO_8601.Date.Error.self) {
+            _ = try ISO_8601.Time(hour: 25)
+        }
+    }
+
+    @Test
+    func `Reject minute out of range`() throws {
+        #expect(throws: ISO_8601.Date.Error.self) {
+            _ = try ISO_8601.Time(hour: 12, minute: 60)
+        }
+    }
+
+    @Test
+    func `Reject second out of range`() throws {
+        #expect(throws: ISO_8601.Date.Error.self) {
+            _ = try ISO_8601.Time(hour: 12, minute: 30, second: 61)
+        }
+    }
+
+    @Test
+    func `Reject invalid nanoseconds`() throws {
+        #expect(throws: ISO_8601.Date.Error.self) {
+            _ = try ISO_8601.Time(hour: 12, nanoseconds: 1_000_000_000)
+        }
+    }
+
+    @Test
+    func `Reject 24 hours with non-zero components`() throws {
+        #expect(throws: ISO_8601.Date.Error.self) {
+            _ = try ISO_8601.Time(hour: 24, minute: 30)
+        }
+    }
+
+    @Test
+    func `Accept leap second`() throws {
+        let time = try ISO_8601.Time(hour: 23, minute: 59, second: 60)
+
+        #expect(time.second == 60)
+    }
+}
+
+extension `ISO_8601.Time Tests`.Integration {
+
     // MARK: - Round-trip Tests
 
     @Test
@@ -352,32 +390,6 @@ struct `ISO_8601.Time Tests` {
         let parsed = try ISO_8601.Time.Parser.parse(formatted)
 
         #expect(parsed == original)
-    }
-
-    // MARK: - Equality
-
-    @Test
-    func `Times with same values are equal`() throws {
-        let t1 = try ISO_8601.Time(hour: 12, minute: 30, second: 45)
-        let t2 = try ISO_8601.Time(hour: 12, minute: 30, second: 45)
-
-        #expect(t1 == t2)
-    }
-
-    @Test
-    func `Times with different values are not equal`() throws {
-        let t1 = try ISO_8601.Time(hour: 12, minute: 30, second: 45)
-        let t2 = try ISO_8601.Time(hour: 12, minute: 30, second: 46)
-
-        #expect(t1 != t2)
-    }
-
-    @Test
-    func `Times with different timezones are not equal`() throws {
-        let t1 = try ISO_8601.Time(hour: 12, minute: 30, timezoneOffsetSeconds: 0)
-        let t2 = try ISO_8601.Time(hour: 12, minute: 30, timezoneOffsetSeconds: 3600)
-
-        #expect(t1 != t2)
     }
 
     // MARK: - Codable

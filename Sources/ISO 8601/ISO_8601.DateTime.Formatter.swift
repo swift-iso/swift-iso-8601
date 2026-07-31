@@ -25,28 +25,6 @@ extension ISO_8601.DateTime {
 }
 
 extension ISO_8601.DateTime.Formatter {
-    /// Date format options
-    public enum DateFormat {
-        case calendar(extended: Bool)  // YYYY-MM-DD or YYYYMMDD
-        case week(extended: Bool)  // YYYY-Www-D or YYYYWwwD
-        case ordinal(extended: Bool)  // YYYY-DDD or YYYYDDD
-    }
-
-    /// Time format options
-    public enum TimeFormat {
-        case none
-        case time(extended: Bool)  // HH:MM:SS or HHMMSS
-    }
-
-    /// Timezone format options
-    public enum TimezoneFormat {
-        case none
-        case utc  // Z
-        case offset(extended: Bool)  // +05:30 or +0530
-    }
-}
-
-extension ISO_8601.DateTime.Formatter {
     /// Format a DateTime as ISO 8601 string
     ///
     /// - Parameters:

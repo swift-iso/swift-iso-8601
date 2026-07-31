@@ -30,6 +30,7 @@ extension ISO_8601.Time {
 }
 
 extension ISO_8601.Time.Parse: Parser.`Protocol` {
+    public typealias Body = Never
     public typealias Failure = __ISO8601ParseError
 
     @inlinable

@@ -27,6 +27,7 @@ extension ISO_8601.Interval {
 }
 
 extension ISO_8601.Interval.Parser: Parser.`Protocol` {
+    public typealias Body = Never
     public typealias Failure = __IntervalParserError
 
     @inlinable

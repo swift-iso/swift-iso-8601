@@ -12,6 +12,12 @@ import Testing
 
 @Suite
 struct `ISO_8601.OrdinalDate Tests` {
+    @Suite struct Unit {}
+    @Suite struct `Edge Case` {}
+    @Suite struct Integration {}
+}
+
+extension `ISO_8601.OrdinalDate Tests`.Unit {
 
     // MARK: - Creation
 
@@ -44,6 +50,27 @@ struct `ISO_8601.OrdinalDate Tests` {
         #expect(ordinal.day == 365)
     }
 
+    // MARK: - Equality
+
+    @Test
+    func `Ordinal dates with same values are equal`() throws {
+        let od1 = try ISO_8601.OrdinalDate(year: 2024, day: 39)
+        let od2 = try ISO_8601.OrdinalDate(year: 2024, day: 39)
+
+        #expect(od1 == od2)
+    }
+
+    @Test
+    func `Ordinal dates with different values are not equal`() throws {
+        let od1 = try ISO_8601.OrdinalDate(year: 2024, day: 39)
+        let od2 = try ISO_8601.OrdinalDate(year: 2024, day: 40)
+
+        #expect(od1 != od2)
+    }
+}
+
+extension `ISO_8601.OrdinalDate Tests`.`Edge Case` {
+
     // MARK: - Validation
 
     @Test
@@ -66,6 +93,9 @@ struct `ISO_8601.OrdinalDate Tests` {
             _ = try ISO_8601.OrdinalDate(year: 2024, day: 367)
         }
     }
+}
+
+extension `ISO_8601.OrdinalDate Tests`.Integration {
 
     // MARK: - Conversion to DateTime
 
@@ -134,23 +164,5 @@ struct `ISO_8601.OrdinalDate Tests` {
 
         #expect(roundTrip.year == ordinal.year, "Day \(day) - year")
         #expect(roundTrip.day == ordinal.day, "Day \(day) - day")
-    }
-
-    // MARK: - Equality
-
-    @Test
-    func `Ordinal dates with same values are equal`() throws {
-        let od1 = try ISO_8601.OrdinalDate(year: 2024, day: 39)
-        let od2 = try ISO_8601.OrdinalDate(year: 2024, day: 39)
-
-        #expect(od1 == od2)
-    }
-
-    @Test
-    func `Ordinal dates with different values are not equal`() throws {
-        let od1 = try ISO_8601.OrdinalDate(year: 2024, day: 39)
-        let od2 = try ISO_8601.OrdinalDate(year: 2024, day: 40)
-
-        #expect(od1 != od2)
     }
 }

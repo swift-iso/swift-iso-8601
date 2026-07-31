@@ -12,6 +12,12 @@ import Testing
 
 @Suite
 struct `ISO_8601.RecurringInterval Tests` {
+    @Suite struct Unit {}
+    @Suite struct `Edge Case` {}
+    @Suite struct Integration {}
+}
+
+extension `ISO_8601.RecurringInterval Tests`.Unit {
 
     // MARK: - Creation
 
@@ -35,25 +41,6 @@ struct `ISO_8601.RecurringInterval Tests` {
 
         #expect(recurring.repetitions == nil)
         #expect(recurring.isUnlimited == true)
-    }
-
-    @Test
-    func `Reject negative repetitions`() throws {
-        let duration = try ISO_8601.Duration(days: 1)
-        let interval = ISO_8601.Interval.duration(duration)
-
-        #expect(throws: ISO_8601.Date.Error.self) {
-            _ = try ISO_8601.RecurringInterval(repetitions: -1, interval: interval)
-        }
-    }
-
-    @Test
-    func `Accept zero repetitions`() throws {
-        let duration = try ISO_8601.Duration(days: 1)
-        let interval = ISO_8601.Interval.duration(duration)
-        let recurring = try ISO_8601.RecurringInterval(repetitions: 0, interval: interval)
-
-        #expect(recurring.repetitions == 0)
     }
 
     // MARK: - Formatting
@@ -187,29 +174,58 @@ struct `ISO_8601.RecurringInterval Tests` {
         #expect(endComp.day == 8)
     }
 
-    // MARK: - Round-trip Tests
+    // MARK: - Equality
 
     @Test
-    func `Round-trip recurring interval with count`() throws {
-        let start = try ISO_8601.DateTime(year: 2019, month: 1, day: 1)
+    func `Recurring intervals with same values are equal`() throws {
         let duration = try ISO_8601.Duration(days: 1)
-        let interval = ISO_8601.Interval.startDuration(start: start, duration: duration)
-        let original = try ISO_8601.RecurringInterval(repetitions: 5, interval: interval)
-        let formatted = original.description
-        let parsed = try ISO_8601.RecurringInterval(formatted)
+        let interval = ISO_8601.Interval.duration(duration)
+        let r1 = try ISO_8601.RecurringInterval(repetitions: 5, interval: interval)
+        let r2 = try ISO_8601.RecurringInterval(repetitions: 5, interval: interval)
 
-        #expect(parsed == original)
+        #expect(r1 == r2)
     }
 
     @Test
-    func `Round-trip unlimited recurring interval`() throws {
-        let duration = try ISO_8601.Duration(days: 7)  // 1 week = 7 days
+    func `Recurring intervals with different repetitions are not equal`() throws {
+        let duration = try ISO_8601.Duration(days: 1)
         let interval = ISO_8601.Interval.duration(duration)
-        let original = try ISO_8601.RecurringInterval(repetitions: nil, interval: interval)
-        let formatted = original.description
-        let parsed = try ISO_8601.RecurringInterval(formatted)
+        let r1 = try ISO_8601.RecurringInterval(repetitions: 5, interval: interval)
+        let r2 = try ISO_8601.RecurringInterval(repetitions: 10, interval: interval)
 
-        #expect(parsed == original)
+        #expect(r1 != r2)
+    }
+
+    @Test
+    func `Unlimited and limited recurring intervals are not equal`() throws {
+        let duration = try ISO_8601.Duration(days: 1)
+        let interval = ISO_8601.Interval.duration(duration)
+        let r1 = try ISO_8601.RecurringInterval(repetitions: nil, interval: interval)
+        let r2 = try ISO_8601.RecurringInterval(repetitions: 5, interval: interval)
+
+        #expect(r1 != r2)
+    }
+}
+
+extension `ISO_8601.RecurringInterval Tests`.`Edge Case` {
+
+    @Test
+    func `Reject negative repetitions`() throws {
+        let duration = try ISO_8601.Duration(days: 1)
+        let interval = ISO_8601.Interval.duration(duration)
+
+        #expect(throws: ISO_8601.Date.Error.self) {
+            _ = try ISO_8601.RecurringInterval(repetitions: -1, interval: interval)
+        }
+    }
+
+    @Test
+    func `Accept zero repetitions`() throws {
+        let duration = try ISO_8601.Duration(days: 1)
+        let interval = ISO_8601.Interval.duration(duration)
+        let recurring = try ISO_8601.RecurringInterval(repetitions: 0, interval: interval)
+
+        #expect(recurring.repetitions == 0)
     }
 
     // MARK: - Error Cases
@@ -241,37 +257,33 @@ struct `ISO_8601.RecurringInterval Tests` {
             _ = try ISO_8601.RecurringInterval("R")
         }
     }
+}
 
-    // MARK: - Equality
+extension `ISO_8601.RecurringInterval Tests`.Integration {
+
+    // MARK: - Round-trip Tests
 
     @Test
-    func `Recurring intervals with same values are equal`() throws {
+    func `Round-trip recurring interval with count`() throws {
+        let start = try ISO_8601.DateTime(year: 2019, month: 1, day: 1)
         let duration = try ISO_8601.Duration(days: 1)
-        let interval = ISO_8601.Interval.duration(duration)
-        let r1 = try ISO_8601.RecurringInterval(repetitions: 5, interval: interval)
-        let r2 = try ISO_8601.RecurringInterval(repetitions: 5, interval: interval)
+        let interval = ISO_8601.Interval.startDuration(start: start, duration: duration)
+        let original = try ISO_8601.RecurringInterval(repetitions: 5, interval: interval)
+        let formatted = original.description
+        let parsed = try ISO_8601.RecurringInterval(formatted)
 
-        #expect(r1 == r2)
+        #expect(parsed == original)
     }
 
     @Test
-    func `Recurring intervals with different repetitions are not equal`() throws {
-        let duration = try ISO_8601.Duration(days: 1)
+    func `Round-trip unlimited recurring interval`() throws {
+        let duration = try ISO_8601.Duration(days: 7)  // 1 week = 7 days
         let interval = ISO_8601.Interval.duration(duration)
-        let r1 = try ISO_8601.RecurringInterval(repetitions: 5, interval: interval)
-        let r2 = try ISO_8601.RecurringInterval(repetitions: 10, interval: interval)
+        let original = try ISO_8601.RecurringInterval(repetitions: nil, interval: interval)
+        let formatted = original.description
+        let parsed = try ISO_8601.RecurringInterval(formatted)
 
-        #expect(r1 != r2)
-    }
-
-    @Test
-    func `Unlimited and limited recurring intervals are not equal`() throws {
-        let duration = try ISO_8601.Duration(days: 1)
-        let interval = ISO_8601.Interval.duration(duration)
-        let r1 = try ISO_8601.RecurringInterval(repetitions: nil, interval: interval)
-        let r2 = try ISO_8601.RecurringInterval(repetitions: 5, interval: interval)
-
-        #expect(r1 != r2)
+        #expect(parsed == original)
     }
 
     // MARK: - Codable

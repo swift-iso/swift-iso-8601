@@ -13,6 +13,12 @@ import Time_Primitives
 
 @Suite
 struct `ISO_8601.DateTime Tests` {
+    @Suite struct Unit {}
+    @Suite struct `Edge Case` {}
+    @Suite struct Integration {}
+}
+
+extension `ISO_8601.DateTime Tests`.Unit {
 
     // MARK: - Creation from Epoch
 
@@ -176,27 +182,6 @@ struct `ISO_8601.DateTime Tests` {
         #expect(dateTime.isoWeekYear == 2024)
     }
 
-    // MARK: - Conversions
-
-    @Test
-    func `Convert to week date`() throws {
-        let dateTime = try ISO_8601.DateTime(year: 2024, month: 1, day: 15)
-        let weekDate = ISO_8601.WeekDate(dateTime)
-
-        #expect(weekDate.weekYear == 2024)
-        #expect(weekDate.week > 0)
-        #expect(weekDate.weekday >= 1 && weekDate.weekday <= 7)
-    }
-
-    @Test
-    func `Convert to ordinal date`() throws {
-        let dateTime = try ISO_8601.DateTime(year: 2024, month: 2, day: 8)
-        let ordinal = ISO_8601.OrdinalDate(dateTime)
-
-        #expect(ordinal.year == 2024)
-        #expect(ordinal.day == 39)
-    }
-
     // MARK: - Equality and Comparison
 
     @Test
@@ -226,6 +211,9 @@ struct `ISO_8601.DateTime Tests` {
         #expect(earlier < later)
         #expect(later > earlier)
     }
+}
+
+extension `ISO_8601.DateTime Tests`.`Edge Case` {
 
     // MARK: - Validation
 
@@ -261,5 +249,29 @@ struct `ISO_8601.DateTime Tests` {
         #expect(throws: ISO_8601.Date.Error.self) {
             _ = try ISO_8601.DateTime(year: 2023, month: 2, day: 29)
         }
+    }
+}
+
+extension `ISO_8601.DateTime Tests`.Integration {
+
+    // MARK: - Conversions
+
+    @Test
+    func `Convert to week date`() throws {
+        let dateTime = try ISO_8601.DateTime(year: 2024, month: 1, day: 15)
+        let weekDate = ISO_8601.WeekDate(dateTime)
+
+        #expect(weekDate.weekYear == 2024)
+        #expect(weekDate.week > 0)
+        #expect(weekDate.weekday >= 1 && weekDate.weekday <= 7)
+    }
+
+    @Test
+    func `Convert to ordinal date`() throws {
+        let dateTime = try ISO_8601.DateTime(year: 2024, month: 2, day: 8)
+        let ordinal = ISO_8601.OrdinalDate(dateTime)
+
+        #expect(ordinal.year == 2024)
+        #expect(ordinal.day == 39)
     }
 }

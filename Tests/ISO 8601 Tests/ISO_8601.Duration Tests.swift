@@ -12,6 +12,12 @@ import Testing
 
 @Suite
 struct `ISO_8601.Duration Tests` {
+    @Suite struct Unit {}
+    @Suite struct `Edge Case` {}
+    @Suite struct Integration {}
+}
+
+extension `ISO_8601.Duration Tests`.Unit {
 
     // MARK: - Creation
 
@@ -66,22 +72,6 @@ struct `ISO_8601.Duration Tests` {
         let duration = try ISO_8601.Duration(seconds: 1)
 
         #expect(duration.isZero == false)
-    }
-
-    // MARK: - Validation
-
-    @Test
-    func `Reject invalid nanoseconds`() throws {
-        #expect(throws: ISO_8601.Date.Error.self) {
-            _ = try ISO_8601.Duration(nanoseconds: 1_000_000_000)
-        }
-    }
-
-    @Test
-    func `Accept maximum valid nanoseconds`() throws {
-        let duration = try ISO_8601.Duration(nanoseconds: 999_999_999)
-
-        #expect(duration.nanoseconds == 999_999_999)
     }
 
     // MARK: - Formatting
@@ -192,6 +182,62 @@ struct `ISO_8601.Duration Tests` {
         #expect(duration.isZero)
     }
 
+    // MARK: - Equality
+
+    @Test
+    func `Durations with same values are equal`() throws {
+        let d1 = try ISO_8601.Duration(years: 1, days: 15)
+        let d2 = try ISO_8601.Duration(years: 1, days: 15)
+
+        #expect(d1 == d2)
+    }
+
+    @Test
+    func `Durations with different values are not equal`() throws {
+        let d1 = try ISO_8601.Duration(years: 1, days: 15)
+        let d2 = try ISO_8601.Duration(years: 1, days: 16)
+
+        #expect(d1 != d2)
+    }
+}
+
+extension `ISO_8601.Duration Tests`.`Edge Case` {
+
+    // MARK: - Validation
+
+    @Test
+    func `Reject invalid nanoseconds`() throws {
+        #expect(throws: ISO_8601.Date.Error.self) {
+            _ = try ISO_8601.Duration(nanoseconds: 1_000_000_000)
+        }
+    }
+
+    @Test
+    func `Accept maximum valid nanoseconds`() throws {
+        let duration = try ISO_8601.Duration(nanoseconds: 999_999_999)
+
+        #expect(duration.nanoseconds == 999_999_999)
+    }
+
+    // MARK: - Error Cases
+
+    @Test
+    func `Reject duration without P prefix`() throws {
+        #expect(throws: __DurationParserError.self) {
+            _ = try ISO_8601.Duration("1Y2M")
+        }
+    }
+
+    @Test
+    func `Reject invalid format`() throws {
+        #expect(throws: __DurationParserError.self) {
+            _ = try ISO_8601.Duration("PABC")
+        }
+    }
+}
+
+extension `ISO_8601.Duration Tests`.Integration {
+
     // MARK: - Round-trip Tests
 
     @Test
@@ -217,40 +263,6 @@ struct `ISO_8601.Duration Tests` {
         let parsed = try ISO_8601.Duration(formatted)
 
         #expect(parsed == original)
-    }
-
-    // MARK: - Error Cases
-
-    @Test
-    func `Reject duration without P prefix`() throws {
-        #expect(throws: __DurationParserError.self) {
-            _ = try ISO_8601.Duration("1Y2M")
-        }
-    }
-
-    @Test
-    func `Reject invalid format`() throws {
-        #expect(throws: __DurationParserError.self) {
-            _ = try ISO_8601.Duration("PABC")
-        }
-    }
-
-    // MARK: - Equality
-
-    @Test
-    func `Durations with same values are equal`() throws {
-        let d1 = try ISO_8601.Duration(years: 1, days: 15)
-        let d2 = try ISO_8601.Duration(years: 1, days: 15)
-
-        #expect(d1 == d2)
-    }
-
-    @Test
-    func `Durations with different values are not equal`() throws {
-        let d1 = try ISO_8601.Duration(years: 1, days: 15)
-        let d2 = try ISO_8601.Duration(years: 1, days: 16)
-
-        #expect(d1 != d2)
     }
 
     // MARK: - Codable

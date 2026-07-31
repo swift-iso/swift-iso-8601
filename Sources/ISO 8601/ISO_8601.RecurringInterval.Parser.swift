@@ -29,6 +29,7 @@ extension ISO_8601.RecurringInterval {
 }
 
 extension ISO_8601.RecurringInterval.Parser: Parser.`Protocol` {
+    public typealias Body = Never
     public typealias Failure = __RecurringIntervalParserError
 
     @inlinable

@@ -13,6 +13,54 @@ import Time_Primitives
 
 @Suite
 struct `Foundation Comparison Tests` {
+    @Suite struct Unit {}
+    @Suite struct `Edge Case` {}
+    @Suite struct Integration {}
+}
+
+extension `Foundation Comparison Tests`.`Edge Case` {
+
+    // MARK: - Ordinal Dates
+
+    @Test
+    func `Ordinal date: Feb 29 in leap year is day 60`() throws {
+        let dt = try ISO_8601.DateTime(year: 2024, month: 2, day: 29)
+        #expect(dt.ordinalDay == 60, "Feb 29 in leap year should be day 60")
+
+        let ordinal = ISO_8601.OrdinalDate(dt)
+        #expect(ordinal.day == 60)
+
+        // Round-trip
+        let reconstituted = ISO_8601.DateTime(ordinal)
+        #expect(reconstituted.components.month == 2)
+        #expect(reconstituted.components.day == 29)
+    }
+
+    @Test
+    func `Ordinal date: Day 60 in common year is March 1`() throws {
+        let ordinal = try ISO_8601.OrdinalDate(year: 2023, day: 60)
+        let dt = ISO_8601.DateTime(ordinal)
+
+        #expect(dt.components.month == 3, "Day 60 in common year should be March")
+        #expect(dt.components.day == 1, "Day 60 in common year should be March 1")
+    }
+
+    @Test
+    func `Ordinal date: Day 366 valid in leap year, invalid in common year`() throws {
+        // Valid in leap year
+        let leapYearOrdinal = try ISO_8601.OrdinalDate(year: 2024, day: 366)
+        let dt = ISO_8601.DateTime(leapYearOrdinal)
+        #expect(dt.components.month == 12)
+        #expect(dt.components.day == 31)
+
+        // Invalid in common year
+        #expect(throws: ISO_8601.Date.Error.self) {
+            _ = try ISO_8601.OrdinalDate(year: 2023, day: 366)
+        }
+    }
+}
+
+extension `Foundation Comparison Tests`.Integration {
 
     // MARK: - Critical Year Boundary Cases
 
@@ -137,45 +185,6 @@ struct `Foundation Comparison Tests` {
         // Note: Foundation uses 1=Sunday, 2=Monday, ... 7=Saturday
         // ISO 8601 uses 1=Monday, 2=Tuesday, ... 7=Sunday
         // We need to account for this difference
-    }
-
-    // MARK: - Ordinal Dates
-
-    @Test
-    func `Ordinal date: Feb 29 in leap year is day 60`() throws {
-        let dt = try ISO_8601.DateTime(year: 2024, month: 2, day: 29)
-        #expect(dt.ordinalDay == 60, "Feb 29 in leap year should be day 60")
-
-        let ordinal = ISO_8601.OrdinalDate(dt)
-        #expect(ordinal.day == 60)
-
-        // Round-trip
-        let reconstituted = ISO_8601.DateTime(ordinal)
-        #expect(reconstituted.components.month == 2)
-        #expect(reconstituted.components.day == 29)
-    }
-
-    @Test
-    func `Ordinal date: Day 60 in common year is March 1`() throws {
-        let ordinal = try ISO_8601.OrdinalDate(year: 2023, day: 60)
-        let dt = ISO_8601.DateTime(ordinal)
-
-        #expect(dt.components.month == 3, "Day 60 in common year should be March")
-        #expect(dt.components.day == 1, "Day 60 in common year should be March 1")
-    }
-
-    @Test
-    func `Ordinal date: Day 366 valid in leap year, invalid in common year`() throws {
-        // Valid in leap year
-        let leapYearOrdinal = try ISO_8601.OrdinalDate(year: 2024, day: 366)
-        let dt = ISO_8601.DateTime(leapYearOrdinal)
-        #expect(dt.components.month == 12)
-        #expect(dt.components.day == 31)
-
-        // Invalid in common year
-        #expect(throws: ISO_8601.Date.Error.self) {
-            _ = try ISO_8601.OrdinalDate(year: 2023, day: 366)
-        }
     }
 
     // MARK: - Parsing Format Validation

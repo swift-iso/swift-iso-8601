@@ -31,6 +31,7 @@ extension ISO_8601.DateTime {
 }
 
 extension ISO_8601.DateTime.Parser: Parser.`Protocol` {
+    public typealias Body = Never
     public typealias Failure = __DateTimeParserError
 
     @inlinable

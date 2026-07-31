@@ -23,6 +23,7 @@ extension ISO_8601.OrdinalDate {
 }
 
 extension ISO_8601.OrdinalDate.Parse: Parser.`Protocol` {
+    public typealias Body = Never
     public typealias Failure = __ISO8601ParseError
 
     @inlinable

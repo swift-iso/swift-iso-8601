@@ -12,6 +12,12 @@ import Testing
 
 @Suite
 struct `ISO_8601.Formatter Tests` {
+    @Suite struct Unit {}
+    @Suite struct `Edge Case` {}
+    @Suite struct Integration {}
+}
+
+extension `ISO_8601.Formatter Tests`.Unit {
 
     // MARK: - Calendar Date Formatting
 

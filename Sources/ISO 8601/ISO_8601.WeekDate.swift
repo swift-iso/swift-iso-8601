@@ -124,7 +124,14 @@ extension ISO_8601.DateTime {
         let totalSeconds =
             daysSinceEpoch * Time_Primitives.Time.Calendar.Gregorian.TimeConstants.secondsPerDay
 
+        // REASON: typed-system bottom-out, [CONV-001] permitted same-package
+        // use — `totalSeconds` is derived deterministically from validated
+        // `ISO_8601.WeekDate` components (week/weekday already range-checked
+        // at construction), so a zero epoch offset and zero nanoseconds are
+        // always valid; this extension-init call is the internal leaf that
+        // the checked public initializer itself would reduce to.
         self.init(
+            // swift-linter:disable:next unchecked call site
             __unchecked: (),
             secondsEpoch: totalSeconds,
             timezoneOffsetSeconds: 0

@@ -13,6 +13,12 @@ import Time_Primitives
 
 @Suite
 struct `ISO_8601.Parser Tests` {
+    @Suite struct Unit {}
+    @Suite struct `Edge Case` {}
+    @Suite struct Integration {}
+}
+
+extension `ISO_8601.Parser Tests`.Unit {
 
     // MARK: - Calendar Date Parsing
 
@@ -137,6 +143,42 @@ struct `ISO_8601.Parser Tests` {
         #expect(comp.minute == 30)
         #expect(comp.second == 0)
     }
+}
+
+extension `ISO_8601.Parser Tests`.`Edge Case` {
+
+    // MARK: - Error Cases
+
+    @Test
+    func `Reject invalid date format`() throws {
+        #expect(throws: __DateTimeParserError.self) {
+            _ = try ISO_8601.DateTime("invalid")
+        }
+    }
+
+    @Test
+    func `Reject invalid month`() throws {
+        #expect(throws: __DateTimeParserError.self) {
+            _ = try ISO_8601.DateTime("2024-13-01")
+        }
+    }
+
+    @Test
+    func `Reject invalid day`() throws {
+        #expect(throws: __DateTimeParserError.self) {
+            _ = try ISO_8601.DateTime("2024-02-30")
+        }
+    }
+
+    @Test
+    func `Reject empty string`() throws {
+        #expect(throws: __DateTimeParserError.self) {
+            _ = try ISO_8601.DateTime("")
+        }
+    }
+}
+
+extension `ISO_8601.Parser Tests`.Integration {
 
     // MARK: - Round-trip Tests
 
@@ -203,35 +245,5 @@ struct `ISO_8601.Parser Tests` {
         let parsed = try ISO_8601.DateTime(formatted)
 
         #expect(original == parsed)
-    }
-
-    // MARK: - Error Cases
-
-    @Test
-    func `Reject invalid date format`() throws {
-        #expect(throws: __DateTimeParserError.self) {
-            _ = try ISO_8601.DateTime("invalid")
-        }
-    }
-
-    @Test
-    func `Reject invalid month`() throws {
-        #expect(throws: __DateTimeParserError.self) {
-            _ = try ISO_8601.DateTime("2024-13-01")
-        }
-    }
-
-    @Test
-    func `Reject invalid day`() throws {
-        #expect(throws: __DateTimeParserError.self) {
-            _ = try ISO_8601.DateTime("2024-02-30")
-        }
-    }
-
-    @Test
-    func `Reject empty string`() throws {
-        #expect(throws: __DateTimeParserError.self) {
-            _ = try ISO_8601.DateTime("")
-        }
     }
 }

@@ -12,6 +12,12 @@ import Testing
 
 @Suite
 struct `ISO_8601.Time.Weekday Tests` {
+    @Suite struct Unit {}
+    @Suite struct `Edge Case` {}
+    @Suite struct Integration {}
+}
+
+extension `ISO_8601.Time.Weekday Tests`.Unit {
 
     // MARK: - Known Dates
 
@@ -127,6 +133,45 @@ struct `ISO_8601.Time.Weekday Tests` {
         #expect(ISO_8601.Time.Weekday(gregorianNumber: 6) == .saturday)
     }
 
+    // MARK: - CaseIterable
+
+    @Test
+    func `All cases are available`() {
+        let allDays = ISO_8601.Time.Weekday.allCases
+
+        #expect(allDays.count == 7)
+        #expect(allDays.contains(.sunday))
+        #expect(allDays.contains(.monday))
+        #expect(allDays.contains(.tuesday))
+        #expect(allDays.contains(.wednesday))
+        #expect(allDays.contains(.thursday))
+        #expect(allDays.contains(.friday))
+        #expect(allDays.contains(.saturday))
+    }
+
+    // MARK: - Internal Consistency
+
+    @Test
+    func `Round-trip between ISO and enum`() {
+        for day in ISO_8601.Time.Weekday.allCases {
+            let iso = day.isoNumber
+            let recovered = ISO_8601.Time.Weekday(isoNumber: iso)
+            #expect(recovered == day)
+        }
+    }
+
+    @Test
+    func `Round-trip between Gregorian and enum`() {
+        for day in ISO_8601.Time.Weekday.allCases {
+            let gregorian = day.gregorianNumber
+            let recovered = ISO_8601.Time.Weekday(gregorianNumber: gregorian)
+            #expect(recovered == day)
+        }
+    }
+}
+
+extension `ISO_8601.Time.Weekday Tests`.`Edge Case` {
+
     @Test
     func `Reject invalid ISO number`() {
         #expect(ISO_8601.Time.Weekday(isoNumber: 0) == nil)
@@ -172,22 +217,9 @@ struct `ISO_8601.Time.Weekday Tests` {
         let weekday2000 = ISO_8601.Time.Weekday(year: 2000, month: 1, day: 1)
         #expect(weekday2000 == .saturday)
     }
+}
 
-    // MARK: - CaseIterable
-
-    @Test
-    func `All cases are available`() {
-        let allDays = ISO_8601.Time.Weekday.allCases
-
-        #expect(allDays.count == 7)
-        #expect(allDays.contains(.sunday))
-        #expect(allDays.contains(.monday))
-        #expect(allDays.contains(.tuesday))
-        #expect(allDays.contains(.wednesday))
-        #expect(allDays.contains(.thursday))
-        #expect(allDays.contains(.friday))
-        #expect(allDays.contains(.saturday))
-    }
+extension `ISO_8601.Time.Weekday Tests`.Integration {
 
     // MARK: - Codable
 
@@ -237,24 +269,6 @@ struct `ISO_8601.Time.Weekday Tests` {
 
             // Components.weekday is Zeller's format (0=Sunday)
             #expect(weekday.gregorianNumber == components.weekday)
-        }
-    }
-
-    @Test
-    func `Round-trip between ISO and enum`() {
-        for day in ISO_8601.Time.Weekday.allCases {
-            let iso = day.isoNumber
-            let recovered = ISO_8601.Time.Weekday(isoNumber: iso)
-            #expect(recovered == day)
-        }
-    }
-
-    @Test
-    func `Round-trip between Gregorian and enum`() {
-        for day in ISO_8601.Time.Weekday.allCases {
-            let gregorian = day.gregorianNumber
-            let recovered = ISO_8601.Time.Weekday(gregorianNumber: gregorian)
-            #expect(recovered == day)
         }
     }
 }

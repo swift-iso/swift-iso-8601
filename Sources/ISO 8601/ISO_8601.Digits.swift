@@ -38,6 +38,8 @@ extension ISO_8601 {
 
 extension ISO_8601.Digits: Parser.`Protocol` {
     @usableFromInline
+    typealias Body = Never
+    @usableFromInline
     typealias Output = Int
     @usableFromInline
     typealias Failure = __ISO8601ParseError

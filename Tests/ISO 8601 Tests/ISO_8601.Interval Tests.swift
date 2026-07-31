@@ -12,6 +12,12 @@ import Testing
 
 @Suite
 struct `ISO_8601.Interval Tests` {
+    @Suite struct Unit {}
+    @Suite struct `Edge Case` {}
+    @Suite struct Integration {}
+}
+
+extension `ISO_8601.Interval Tests`.Unit {
 
     // MARK: - Start/End Intervals
 
@@ -224,6 +230,50 @@ struct `ISO_8601.Interval Tests` {
         #expect(dur.seconds == 6)
     }
 
+    // MARK: - Equality
+
+    @Test
+    func `Intervals with same values are equal`() throws {
+        let start = try ISO_8601.DateTime(year: 2019, month: 8, day: 27)
+        let end = try ISO_8601.DateTime(year: 2019, month: 8, day: 29)
+        let i1 = ISO_8601.Interval.startEnd(start: start, end: end)
+        let i2 = ISO_8601.Interval.startEnd(start: start, end: end)
+
+        #expect(i1 == i2)
+    }
+
+    @Test
+    func `Intervals with different types are not equal`() throws {
+        let start = try ISO_8601.DateTime(year: 2019, month: 8, day: 27)
+        let duration = try ISO_8601.Duration(days: 3)
+        let i1 = ISO_8601.Interval.startDuration(start: start, duration: duration)
+        let i2 = ISO_8601.Interval.duration(duration)
+
+        #expect(i1 != i2)
+    }
+}
+
+extension `ISO_8601.Interval Tests`.`Edge Case` {
+
+    // MARK: - Error Cases
+
+    @Test
+    func `Reject interval without slash and not duration`() throws {
+        #expect(throws: __IntervalParserError.self) {
+            _ = try ISO_8601.Interval("2019-08-27")
+        }
+    }
+
+    @Test
+    func `Reject interval with two durations`() throws {
+        #expect(throws: __IntervalParserError.self) {
+            _ = try ISO_8601.Interval("P3D/P5D")
+        }
+    }
+}
+
+extension `ISO_8601.Interval Tests`.Integration {
+
     // MARK: - Round-trip Tests
 
     @Test
@@ -267,44 +317,6 @@ struct `ISO_8601.Interval Tests` {
         let parsed = try ISO_8601.Interval(formatted)
 
         #expect(parsed == original)
-    }
-
-    // MARK: - Error Cases
-
-    @Test
-    func `Reject interval without slash and not duration`() throws {
-        #expect(throws: __IntervalParserError.self) {
-            _ = try ISO_8601.Interval("2019-08-27")
-        }
-    }
-
-    @Test
-    func `Reject interval with two durations`() throws {
-        #expect(throws: __IntervalParserError.self) {
-            _ = try ISO_8601.Interval("P3D/P5D")
-        }
-    }
-
-    // MARK: - Equality
-
-    @Test
-    func `Intervals with same values are equal`() throws {
-        let start = try ISO_8601.DateTime(year: 2019, month: 8, day: 27)
-        let end = try ISO_8601.DateTime(year: 2019, month: 8, day: 29)
-        let i1 = ISO_8601.Interval.startEnd(start: start, end: end)
-        let i2 = ISO_8601.Interval.startEnd(start: start, end: end)
-
-        #expect(i1 == i2)
-    }
-
-    @Test
-    func `Intervals with different types are not equal`() throws {
-        let start = try ISO_8601.DateTime(year: 2019, month: 8, day: 27)
-        let duration = try ISO_8601.Duration(days: 3)
-        let i1 = ISO_8601.Interval.startDuration(start: start, duration: duration)
-        let i2 = ISO_8601.Interval.duration(duration)
-
-        #expect(i1 != i2)
     }
 
     // MARK: - Codable

@@ -27,6 +27,7 @@ extension ISO_8601.Duration {
 }
 
 extension ISO_8601.Duration.Parser: Parser.`Protocol` {
+    public typealias Body = Never
     public typealias Failure = __DurationParserError
 
     @inlinable

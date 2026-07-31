@@ -268,11 +268,8 @@ extension ISO_8601.DateTime {
     public var ordinalDay: Int {
         let comp = components
         let monthDays = Time_Primitives.Time.Calendar.Gregorian.daysInMonths(year: comp.year)
-        var days = comp.day
-        for m in 0..<(comp.month - 1) {
-            days += monthDays[m]
-        }
-        return days
+        let precedingMonthDays = monthDays[0..<(comp.month - 1)].reduce(0, +)
+        return comp.day + precedingMonthDays
     }
 
     /// ISO week-year (may differ from calendar year at boundaries)
@@ -408,12 +405,6 @@ extension ISO_8601.DateTime {
 // MARK: - Codable
 
 extension ISO_8601.DateTime: Codable {
-    private enum CodingKeys: String, CodingKey {
-        case secondsSinceEpoch
-        case nanoseconds
-        case timezoneOffsetSeconds
-    }
-
     public init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let seconds = try container.decode(Int.self, forKey: .secondsSinceEpoch)
