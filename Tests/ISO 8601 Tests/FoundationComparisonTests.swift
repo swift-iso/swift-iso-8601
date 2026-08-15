@@ -67,15 +67,18 @@ extension `Foundation Comparison Tests`.Integration {
     @Test(
         arguments: [
             (
-                year: 2023, month: 1, day: 1, weekYear: 2022, week: 52, weekday: 7,
+                year: 2023, month: 1, day: 1,
+                expected: (weekYear: 2022, week: 52, weekday: 7),
                 desc: "2023-01-01 (Sunday) → 2022-W52"
             ),
             (
-                year: 2024, month: 1, day: 1, weekYear: 2024, week: 1, weekday: 1,
+                year: 2024, month: 1, day: 1,
+                expected: (weekYear: 2024, week: 1, weekday: 1),
                 desc: "2024-01-01 (Monday) → 2024-W01"
             ),
             (
-                year: 2025, month: 12, day: 29, weekYear: 2026, week: 1, weekday: 1,
+                year: 2025, month: 12, day: 29,
+                expected: (weekYear: 2026, week: 1, weekday: 1),
                 desc: "2025-12-29 (Monday) → 2026-W01"
             ),
         ]
@@ -84,17 +87,15 @@ extension `Foundation Comparison Tests`.Integration {
         year: Int,
         month: Int,
         day: Int,
-        weekYear: Int,
-        week: Int,
-        weekday: Int,
+        expected: (weekYear: Int, week: Int, weekday: Int),
         desc: String
     ) throws {
         let dt = try ISO_8601.DateTime(year: year, month: month, day: day)
         let weekDate = ISO_8601.WeekDate(dt)
 
-        #expect(weekDate.weekYear == weekYear, "\(desc) - week-year")
-        #expect(weekDate.week == week, "\(desc) - week number")
-        #expect(weekDate.weekday == weekday, "\(desc) - weekday")
+        #expect(weekDate.weekYear == expected.weekYear, "\(desc) - week-year")
+        #expect(weekDate.week == expected.week, "\(desc) - week number")
+        #expect(weekDate.weekday == expected.weekday, "\(desc) - weekday")
 
         // Verify against Foundation
         let calendar = Calendar(identifier: .iso8601)
@@ -102,8 +103,8 @@ extension `Foundation Comparison Tests`.Integration {
         let weekOfYear = calendar.component(.weekOfYear, from: date)
         let yearForWeekOfYear = calendar.component(.yearForWeekOfYear, from: date)
 
-        #expect(yearForWeekOfYear == weekYear, "Foundation agrees: \(desc) week-year")
-        #expect(weekOfYear == week, "Foundation agrees: \(desc) week number")
+        #expect(yearForWeekOfYear == expected.weekYear, "Foundation agrees: \(desc) week-year")
+        #expect(weekOfYear == expected.week, "Foundation agrees: \(desc) week number")
     }
 
     // MARK: - January 4 Rule (Always Week 1)
