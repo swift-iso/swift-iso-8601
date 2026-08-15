@@ -80,6 +80,21 @@ extension ISO_8601.DateTime {
         let nanosecond = remaining % 1000
 
         let baseTime = Time_Primitives.Time(secondsSinceEpoch: secondsSinceEpoch)
+        // SAFE: `millisecond`, `microsecond`, `nanosecond` are each derived from
+        // `nanoseconds` (already validated to 0..<1_000_000_000 above) via `/` and `%`
+        // against 1_000_000 / 1_000, so each is provably within its 0-999 range.
+        let millisecondValue: Time_Primitives.Time.Millisecond
+        let microsecondValue: Time_Primitives.Time.Microsecond
+        let nanosecondValue: Time_Primitives.Time.Nanosecond
+        do {
+            millisecondValue = try Time_Primitives.Time.Millisecond(millisecond)
+            microsecondValue = try Time_Primitives.Time.Microsecond(microsecond)
+            nanosecondValue = try Time_Primitives.Time.Nanosecond(nanosecond)
+        } catch {
+            fatalError(
+                "ISO_8601.DateTime: sub-second component derived from validated nanoseconds was out of range — \(error)"
+            )
+        }
         let time = Time_Primitives.Time(
             year: baseTime.year,
             month: baseTime.month,
@@ -87,9 +102,9 @@ extension ISO_8601.DateTime {
             hour: baseTime.hour,
             minute: baseTime.minute,
             second: baseTime.second,
-            millisecond: try! Time_Primitives.Time.Millisecond(millisecond),
-            microsecond: try! Time_Primitives.Time.Microsecond(microsecond),
-            nanosecond: try! Time_Primitives.Time.Nanosecond(nanosecond)
+            millisecond: millisecondValue,
+            microsecond: microsecondValue,
+            nanosecond: nanosecondValue
         )
         self.init(
             time: time,
@@ -112,6 +127,21 @@ extension ISO_8601.DateTime {
         let nanosecond = remaining % 1000
 
         let baseTime = Time_Primitives.Time(secondsSinceEpoch: secondsEpoch)
+        // SAFE: `millisecond`, `microsecond`, `nanosecond` are each derived from
+        // `nanoseconds` via `/` and `%` against 1_000_000 / 1_000, so each is
+        // provably within its 0-999 range regardless of the caller's `nanoseconds`.
+        let millisecondValue: Time_Primitives.Time.Millisecond
+        let microsecondValue: Time_Primitives.Time.Microsecond
+        let nanosecondValue: Time_Primitives.Time.Nanosecond
+        do {
+            millisecondValue = try Time_Primitives.Time.Millisecond(millisecond)
+            microsecondValue = try Time_Primitives.Time.Microsecond(microsecond)
+            nanosecondValue = try Time_Primitives.Time.Nanosecond(nanosecond)
+        } catch {
+            fatalError(
+                "ISO_8601.DateTime: sub-second component derived from nanoseconds was out of range — \(error)"
+            )
+        }
         let time = Time_Primitives.Time(
             year: baseTime.year,
             month: baseTime.month,
@@ -119,9 +149,9 @@ extension ISO_8601.DateTime {
             hour: baseTime.hour,
             minute: baseTime.minute,
             second: baseTime.second,
-            millisecond: try! Time_Primitives.Time.Millisecond(millisecond),
-            microsecond: try! Time_Primitives.Time.Microsecond(microsecond),
-            nanosecond: try! Time_Primitives.Time.Nanosecond(nanosecond)
+            millisecond: millisecondValue,
+            microsecond: microsecondValue,
+            nanosecond: nanosecondValue
         )
         self.init(
             time: time,
@@ -304,28 +334,43 @@ extension ISO_8601.DateTime {
         // ISO weekday: 1=Monday, 7=Sunday
         let isoDay = isoWeekday
         let daysSinceMonday = isoDay - 1
-        let currentTime = try! Time_Primitives.Time(
-            year: comp.year,
-            month: comp.month,
-            day: comp.day,
-            hour: 0,
-            minute: 0,
-            second: 0
-        )
+        // SAFE: `comp` is `self.components`, already a valid calendar reading —
+        // re-constructing `Time` from its own year/month/day cannot fail.
+        let currentTime: Time_Primitives.Time
+        do {
+            currentTime = try Time_Primitives.Time(
+                year: comp.year,
+                month: comp.month,
+                day: comp.day,
+                hour: 0,
+                minute: 0,
+                second: 0
+            )
+        } catch {
+            fatalError(
+                "ISO_8601.DateTime.isoWeek: components of a valid DateTime failed to reconstruct — \(error)"
+            )
+        }
         let mondayOfWeek =
             currentTime.secondsSinceEpoch
             / Time_Primitives.Time.Calendar.Gregorian.TimeConstants.secondsPerDay
             - daysSinceMonday
 
         // Find January 4th of this year (which is always in week 1)
-        let jan4Time = try! Time_Primitives.Time(
-            year: comp.year,
-            month: 1,
-            day: 4,
-            hour: 0,
-            minute: 0,
-            second: 0
-        )
+        // SAFE: January 4th exists in every Gregorian year.
+        let jan4Time: Time_Primitives.Time
+        do {
+            jan4Time = try Time_Primitives.Time(
+                year: comp.year,
+                month: 1,
+                day: 4,
+                hour: 0,
+                minute: 0,
+                second: 0
+            )
+        } catch {
+            fatalError("ISO_8601.DateTime.isoWeek: January 4th failed to construct — \(error)")
+        }
         let jan4 =
             jan4Time.secondsSinceEpoch
             / Time_Primitives.Time.Calendar.Gregorian.TimeConstants.secondsPerDay
@@ -368,14 +413,20 @@ extension ISO_8601.DateTime {
         // - January 1 is a Thursday, OR
         // - January 1 is a Wednesday and it's a leap year
 
-        let jan1Time = try! Time_Primitives.Time(
-            year: year,
-            month: 1,
-            day: 1,
-            hour: 0,
-            minute: 0,
-            second: 0
-        )
+        // SAFE: January 1st exists in every Gregorian year.
+        let jan1Time: Time_Primitives.Time
+        do {
+            jan1Time = try Time_Primitives.Time(
+                year: year,
+                month: 1,
+                day: 1,
+                hour: 0,
+                minute: 0,
+                second: 0
+            )
+        } catch {
+            fatalError("ISO_8601.DateTime.weeksInYear: January 1st failed to construct — \(error)")
+        }
         let jan1WeekdayEnum = jan1Time.weekday
         let jan1Weekday: Int
         switch jan1WeekdayEnum {

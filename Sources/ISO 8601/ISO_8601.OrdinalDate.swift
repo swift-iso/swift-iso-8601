@@ -90,14 +90,20 @@ extension ISO_8601.DateTime {
         let dayOfMonth = remainingDays + 1
 
         // Create DateTime (won't throw because ordinal day was validated)
-        self = try! ISO_8601.DateTime(
-            year: ordinalDate.year,
-            month: month,
-            day: dayOfMonth,
-            hour: 0,
-            minute: 0,
-            second: 0,
-            timezoneOffsetSeconds: 0
-        )
+        do {
+            self = try ISO_8601.DateTime(
+                year: ordinalDate.year,
+                month: month,
+                day: dayOfMonth,
+                hour: 0,
+                minute: 0,
+                second: 0,
+                timezoneOffsetSeconds: 0
+            )
+        } catch {
+            fatalError(
+                "ISO_8601.DateTime.init(_:OrdinalDate): month/day derived from a validated ordinal day was out of range — \(error)"
+            )
+        }
     }
 }

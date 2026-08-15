@@ -87,14 +87,22 @@ extension ISO_8601.DateTime {
     /// The time components will be 00:00:00 UTC.
     public init(_ weekDate: ISO_8601.WeekDate) {
         // Find January 4th of the week-year (which is always in week 1)
-        let jan4Time = try! Time_Primitives.Time(
-            year: weekDate.weekYear,
-            month: 1,
-            day: 4,
-            hour: 0,
-            minute: 0,
-            second: 0
-        )
+        // SAFE: January 4th exists in every Gregorian year.
+        let jan4Time: Time_Primitives.Time
+        do {
+            jan4Time = try Time_Primitives.Time(
+                year: weekDate.weekYear,
+                month: 1,
+                day: 4,
+                hour: 0,
+                minute: 0,
+                second: 0
+            )
+        } catch {
+            fatalError(
+                "ISO_8601.DateTime.init(_:WeekDate): January 4th failed to construct — \(error)"
+            )
+        }
         let jan4DaysSinceEpoch =
             jan4Time.secondsSinceEpoch
             / Time_Primitives.Time.Calendar.Gregorian.TimeConstants.secondsPerDay

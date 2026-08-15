@@ -115,10 +115,17 @@ extension ISO_8601.DateTime.Formatter {
         case .utc:
             // SAFE: `value.nanoseconds` is always 0..<1_000_000_000 by
             // construction on any valid `ISO_8601.DateTime`.
-            let utcTime = try! Time_Primitives.Time(
-                secondsSinceEpoch: value.epoch.seconds,
-                nanoseconds: value.nanoseconds
-            )
+            let utcTime: Time_Primitives.Time
+            do {
+                utcTime = try Time_Primitives.Time(
+                    secondsSinceEpoch: value.epoch.seconds,
+                    nanoseconds: value.nanoseconds
+                )
+            } catch {
+                fatalError(
+                    "ISO_8601.DateTime.Formatter: nanoseconds of a valid DateTime were out of range — \(error)"
+                )
+            }
             return ISO_8601.DateTime(time: utcTime, timezoneOffset: .utc)
 
         case .none, .offset:
