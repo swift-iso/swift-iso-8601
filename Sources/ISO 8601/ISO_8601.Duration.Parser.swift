@@ -6,7 +6,7 @@
 //
 
 public import ASCII_Decimal_Parser_Primitives
-public import Parser_Primitives
+import Parser_Primitives
 
 extension ISO_8601.Duration {
     /// Parses an ISO 8601 duration string.
