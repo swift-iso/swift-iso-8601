@@ -1,10 +1,3 @@
-//
-//  ISO_8601.Time.Weekday Tests.swift
-//  ISO 8601 Tests
-//
-//  Tests for ISO_8601.Time.Weekday
-//
-
 import Foundation
 import Testing
 
@@ -18,8 +11,6 @@ struct `ISO_8601.Time.Weekday Tests` {
 }
 
 extension `ISO_8601.Time.Weekday Tests`.Unit {
-
-    // MARK: - Known Dates
 
     @Test
     func `Calculate weekday for January 1, 2024 (Monday)`() {
@@ -65,15 +56,13 @@ extension `ISO_8601.Time.Weekday Tests`.Unit {
 
     @Test
     func `Calculate weekday for Sunday`() {
-        // January 7, 2024 is a Sunday
+
         let weekday = ISO_8601.Time.Weekday(year: 2024, month: 1, day: 7)
 
         #expect(weekday == .sunday)
-        #expect(weekday.isoNumber == 7)  // ISO: Sunday = 7
-        #expect(weekday.gregorianNumber == 0)  // Gregorian: Sunday = 0
+        #expect(weekday.isoNumber == 7)
+        #expect(weekday.gregorianNumber == 0)
     }
-
-    // MARK: - ISO vs Gregorian Numbering
 
     @Test
     func `ISO numbering for all days`() {
@@ -109,8 +98,6 @@ extension `ISO_8601.Time.Weekday Tests`.Unit {
         }
     }
 
-    // MARK: - Initialization from Numbers
-
     @Test
     func `Create from ISO number`() {
         #expect(ISO_8601.Time.Weekday(isoNumber: 1) == .monday)
@@ -133,8 +120,6 @@ extension `ISO_8601.Time.Weekday Tests`.Unit {
         #expect(ISO_8601.Time.Weekday(gregorianNumber: 6) == .saturday)
     }
 
-    // MARK: - CaseIterable
-
     @Test
     func `All cases are available`() {
         let allDays = ISO_8601.Time.Weekday.allCases
@@ -148,8 +133,6 @@ extension `ISO_8601.Time.Weekday Tests`.Unit {
         #expect(allDays.contains(.friday))
         #expect(allDays.contains(.saturday))
     }
-
-    // MARK: - Internal Consistency
 
     @Test
     func `Round-trip between ISO and enum`() {
@@ -186,11 +169,9 @@ extension `ISO_8601.Time.Weekday Tests`.`Edge Case` {
         #expect(ISO_8601.Time.Weekday(gregorianNumber: 10) == nil)
     }
 
-    // MARK: - Edge Cases
-
     @Test
     func `Calculate weekday for leap year February 29`() {
-        // February 29, 2024 is a Thursday
+
         let weekday = ISO_8601.Time.Weekday(year: 2024, month: 2, day: 29)
 
         #expect(weekday == .thursday)
@@ -198,30 +179,26 @@ extension `ISO_8601.Time.Weekday Tests`.`Edge Case` {
 
     @Test
     func `Calculate weekday for year boundary`() {
-        // December 31, 2023 is a Sunday
+
         let weekday1 = ISO_8601.Time.Weekday(year: 2023, month: 12, day: 31)
         #expect(weekday1 == .sunday)
 
-        // January 1, 2024 is a Monday
         let weekday2 = ISO_8601.Time.Weekday(year: 2024, month: 1, day: 1)
         #expect(weekday2 == .monday)
     }
 
     @Test
     func `Calculate weekday across centuries`() {
-        // January 1, 1900 was a Monday
+
         let weekday1900 = ISO_8601.Time.Weekday(year: 1900, month: 1, day: 1)
         #expect(weekday1900 == .monday)
 
-        // January 1, 2000 was a Saturday
         let weekday2000 = ISO_8601.Time.Weekday(year: 2000, month: 1, day: 1)
         #expect(weekday2000 == .saturday)
     }
 }
 
 extension `ISO_8601.Time.Weekday Tests`.Integration {
-
-    // MARK: - Codable
 
     @Test
     func `Weekday encodes to JSON`() throws {
@@ -242,16 +219,14 @@ extension `ISO_8601.Time.Weekday Tests`.Integration {
         #expect(weekday == .tuesday)
     }
 
-    // MARK: - Consistency Tests
-
     @Test
     func `Weekday calculation matches Components weekday`() throws {
-        // Test a few dates to ensure consistency with existing weekday calculation
+
         let testDates = [
-            (year: 2024, month: 1, day: 15),  // Monday
-            (year: 2024, month: 2, day: 14),  // Wednesday
-            (year: 2024, month: 12, day: 25),  // Wednesday
-            (year: 2000, month: 1, day: 1),  // Saturday
+            (year: 2024, month: 1, day: 15),
+            (year: 2024, month: 2, day: 14),
+            (year: 2024, month: 12, day: 25),
+            (year: 2000, month: 1, day: 1),
         ]
 
         for testDate in testDates {
@@ -267,7 +242,6 @@ extension `ISO_8601.Time.Weekday Tests`.Integration {
             )
             let components = dateTime.components
 
-            // Components.weekday is Zeller's format (0=Sunday)
             #expect(weekday.gregorianNumber == components.weekday)
         }
     }

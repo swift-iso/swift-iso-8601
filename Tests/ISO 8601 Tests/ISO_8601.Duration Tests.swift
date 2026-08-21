@@ -1,10 +1,3 @@
-//
-//  ISO_8601.Duration Tests.swift
-//  ISO 8601 Tests
-//
-//  Tests for ISO_8601.Duration
-//
-
 import Foundation
 import Testing
 
@@ -18,8 +11,6 @@ struct `ISO_8601.Duration Tests` {
 }
 
 extension `ISO_8601.Duration Tests`.Unit {
-
-    // MARK: - Creation
 
     @Test
     func `Create duration with all components`() throws {
@@ -74,8 +65,6 @@ extension `ISO_8601.Duration Tests`.Unit {
         #expect(duration.isZero == false)
     }
 
-    // MARK: - Formatting
-
     @Test
     func `Format duration with all components`() throws {
         let duration = try ISO_8601.Duration(
@@ -117,7 +106,6 @@ extension `ISO_8601.Duration Tests`.Unit {
         let duration = try ISO_8601.Duration(seconds: 5, nanoseconds: 500_000_000)
         let formatted = duration.description
 
-        // Should output "PT5.5S"
         #expect(formatted.contains("5.5S") || formatted.contains("5.500000000S"))
     }
 
@@ -127,8 +115,6 @@ extension `ISO_8601.Duration Tests`.Unit {
 
         #expect(duration.description == "PT0S")
     }
-
-    // MARK: - Parsing
 
     @Test
     func `Parse duration with all components`() throws {
@@ -182,8 +168,6 @@ extension `ISO_8601.Duration Tests`.Unit {
         #expect(duration.isZero)
     }
 
-    // MARK: - Equality
-
     @Test
     func `Durations with same values are equal`() throws {
         let d1 = try ISO_8601.Duration(years: 1, days: 15)
@@ -203,8 +187,6 @@ extension `ISO_8601.Duration Tests`.Unit {
 
 extension `ISO_8601.Duration Tests`.`Edge Case` {
 
-    // MARK: - Validation
-
     @Test
     func `Reject invalid nanoseconds`() throws {
         #expect(throws: ISO_8601.Date.Error.self) {
@@ -218,8 +200,6 @@ extension `ISO_8601.Duration Tests`.`Edge Case` {
 
         #expect(duration.nanoseconds == 999_999_999)
     }
-
-    // MARK: - Error Cases
 
     @Test
     func `Reject duration without P prefix`() throws {
@@ -237,8 +217,6 @@ extension `ISO_8601.Duration Tests`.`Edge Case` {
 }
 
 extension `ISO_8601.Duration Tests`.Integration {
-
-    // MARK: - Round-trip Tests
 
     @Test
     func `Round-trip full duration`() throws {
@@ -264,8 +242,6 @@ extension `ISO_8601.Duration Tests`.Integration {
 
         #expect(parsed == original)
     }
-
-    // MARK: - Codable
 
     @Test
     func `Duration encodes to JSON string`() throws {

@@ -1,28 +1,8 @@
-//
-//  ISO_8601.Digits.swift
-//  swift-iso-8601
-//
-//  Fixed-width decimal digit parser for ISO 8601 date/time components.
-//
-//  Module-internal grammar helper (formerly ISO_8601.Parse.Digits; dropped from
-//  the public surface when the ISO_8601.Parse namespace was dissolved). Marked
-//  @usableFromInline so the @inlinable leaf parsers may compose it.
-//
-
 public import ASCII_Decimal_Parser_Primitives
 import Parser_Primitives
 
 extension ISO_8601 {
-    /// Parses exactly `count` ASCII decimal digits into an Int.
-    ///
-    /// Unlike `ASCII.Decimal.Parser` which greedily consumes all digits,
-    /// this parser consumes exactly the specified number, enabling fixed-width
-    /// parsing of ISO 8601 components (e.g., 4-digit year, 2-digit month).
-    ///
-    /// Delegates to the L1 `ASCII.Decimal.Parser` with an `.exactly(count)`
-    /// digit-count policy, which additionally rejects integer overflow that the
-    /// historical hand-rolled accumulate loop silently wrapped — an accepted
-    /// superset that is unreachable for the small fixed-width fields parsed here.
+
     @usableFromInline
     struct Digits<Input: Collection.Slice.`Protocol`>: Sendable
     where Input: Sendable, Input.Element == Byte {

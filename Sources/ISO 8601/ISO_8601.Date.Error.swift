@@ -1,16 +1,9 @@
-//
-//  ISO_8601.Date.Error.swift
-//  swift-iso-8601
-//
-//  Error types for ISO 8601 date-time operations
-//
-
 public import Time_Primitives
 
 extension ISO_8601.Date {
-    /// Errors that can occur when parsing ISO 8601 date-time strings or creating date components
+
     public enum Error: Swift.Error, Sendable, Equatable {
-        // Parsing errors
+
         case invalidFormat(String)
         case invalidYear(String)
         case invalidMonth(String)
@@ -22,24 +15,20 @@ extension ISO_8601.Date {
         case invalidFractionalSecond(String)
         case invalidTimezone(String)
 
-        // ISO 8601 specific parsing errors
         case invalidWeekNumber(String)
         case invalidWeekday(String)
         case invalidOrdinalDay(String)
 
-        // Component validation errors
-        case monthOutOfRange(Int)  // Must be 1-12
-        case dayOutOfRange(Int, month: Int, year: Int)  // Must be valid for month/year
-        case hourOutOfRange(Int)  // Must be 0-23
-        case minuteOutOfRange(Int)  // Must be 0-59
-        case secondOutOfRange(Int)  // Must be 0-60 (allowing leap second)
+        case monthOutOfRange(Int)
+        case dayOutOfRange(Int, month: Int, year: Int)
+        case hourOutOfRange(Int)
+        case minuteOutOfRange(Int)
+        case secondOutOfRange(Int)
 
-        // ISO 8601 specific validation errors
-        case weekNumberOutOfRange(Int, year: Int)  // Must be 1-53 and valid for year
-        case weekdayOutOfRange(Int)  // Must be 1-7 (Monday=1, Sunday=7)
-        case ordinalDayOutOfRange(Int, year: Int)  // Must be 1-365 (366 in leap years)
+        case weekNumberOutOfRange(Int, year: Int)
+        case weekdayOutOfRange(Int)
+        case ordinalDayOutOfRange(Int, year: Int)
 
-        // Component validation delegation
         case invalidComponents(Time_Primitives.Time.Error)
     }
 }

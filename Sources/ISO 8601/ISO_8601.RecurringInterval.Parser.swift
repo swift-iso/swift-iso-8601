@@ -1,26 +1,8 @@
-//
-//  ISO_8601.RecurringInterval.Parser.swift
-//  swift-iso-8601
-//
-//  ISO 8601 recurring interval: R[n]/<interval>
-//
-
 public import ASCII_Decimal_Parser_Primitives
 import Parser_Primitives
 
 extension ISO_8601.RecurringInterval {
-    /// Parses an ISO 8601 recurring interval.
-    ///
-    /// Format: `R[n]/<interval>`
-    ///
-    /// - `R` prefix (0x52) indicates recurring
-    /// - Optional repetition count `n` (digits)
-    /// - `/` separator (0x2F)
-    /// - Interval body (parsed by `ISO_8601.Interval.Parser`)
-    ///
-    /// If `n` is omitted, repetitions are unlimited.
-    ///
-    /// Examples: `R5/2019-01-01T00:00:00Z/P1D`, `R/P1M`
+
     public struct Parser<Input: Collection.Slice.`Protocol`>: Sendable
     where Input: Sendable, Input.Element == Byte {
         @inlinable
@@ -34,7 +16,7 @@ extension ISO_8601.RecurringInterval.Parser: Parser.`Protocol` {
 
     @inlinable
     public func parse(_ input: inout Input) throws(Failure) -> ISO_8601.RecurringInterval {
-        // Expect 'R' (0x52)
+
         guard input.startIndex < input.endIndex,
             input[input.startIndex] == 0x52
         else {
@@ -42,29 +24,23 @@ extension ISO_8601.RecurringInterval.Parser: Parser.`Protocol` {
         }
         input = input[input.index(after: input.startIndex)...]
 
-        // Parse optional repetition count (digits before '/')
         var repetitions: Int? = nil
         if input.startIndex < input.endIndex {
             let byte = input[input.startIndex]
             if byte >= 0x30 && byte <= 0x39 {
-                // Leading digit guaranteed by the guard above, so the L1 greedy
-                // parser's `.noDigits` is unreachable. (It additionally rejects
-                // overflow the old wrapping loop ignored.)
+
                 do throws(ASCII.Decimal.Error) {
                     repetitions = try ASCII.Decimal.Parser<Input, Int>().parse(&input)
                 } catch {
                     switch error {
                     case .overflow: throw .overflow
 
-                    // Unreachable under the leading-digit guard + greedy/`.none`
-                    // policy; collapsed onto the next expected token for exhaustiveness.
                     case .noDigits, .insufficientDigits, .invalidSign: throw .expectedSlash
                     }
                 }
             }
         }
 
-        // Expect '/' (0x2F)
         guard input.startIndex < input.endIndex,
             input[input.startIndex] == 0x2F
         else {
@@ -72,7 +48,6 @@ extension ISO_8601.RecurringInterval.Parser: Parser.`Protocol` {
         }
         input = input[input.index(after: input.startIndex)...]
 
-        // Parse interval
         let interval: ISO_8601.Interval
         do throws(__IntervalParserError) {
             interval = try ISO_8601.Interval.Parser<Input>().parse(&input)
@@ -80,9 +55,6 @@ extension ISO_8601.RecurringInterval.Parser: Parser.`Protocol` {
             throw .intervalError(error)
         }
 
-        // Construct the domain value. The only failure mode is a negative
-        // repetition count, which is unreachable here (the count is parsed from
-        // ASCII digits ⇒ non-negative); mapped to the numeric bucket.
         do throws(ISO_8601.Date.Error) {
             return try ISO_8601.RecurringInterval(repetitions: repetitions, interval: interval)
         } catch {

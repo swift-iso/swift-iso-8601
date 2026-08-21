@@ -1,24 +1,8 @@
-//
-//  ISO_8601.Interval.Parser.swift
-//  swift-iso-8601
-//
-//  ISO 8601 interval: start/end, start/duration, duration/end, or duration
-//
-
 public import Byte_Primitives
 public import Parser_Primitives
 
 extension ISO_8601.Interval {
-    /// Parses an ISO 8601 interval.
-    ///
-    /// Four formats per ISO 8601:2019:
-    /// - `<datetime>/<datetime>` -- start and end
-    /// - `<datetime>/<duration>` -- start and duration
-    /// - `<duration>/<datetime>` -- duration and end
-    /// - `<duration>` -- duration only (no slash)
-    ///
-    /// The `/` separator (0x2F) splits the two components.
-    /// A leading `P` (0x50) indicates a duration component.
+
     public struct Parser<Input: Collection.Slice.`Protocol`>: Sendable
     where Input: Sendable, Input.Element == Byte {
         @inlinable
@@ -36,7 +20,6 @@ extension ISO_8601.Interval.Parser: Parser.`Protocol` {
             throw .dateTimeError(.expectedT)
         }
 
-        // Check if first component is a duration (starts with 'P')
         if input[input.startIndex] == 0x50 {
             let duration: ISO_8601.Duration
             do throws(__DurationParserError) {
@@ -45,7 +28,6 @@ extension ISO_8601.Interval.Parser: Parser.`Protocol` {
                 throw .durationError(error)
             }
 
-            // Check for '/' separator
             guard input.startIndex < input.endIndex else {
                 return .duration(duration)
             }
@@ -54,7 +36,6 @@ extension ISO_8601.Interval.Parser: Parser.`Protocol` {
             }
             input = input[input.index(after: input.startIndex)...]
 
-            // Second component must be a datetime
             let end: ISO_8601.DateTime
             do throws(__DateTimeParserError) {
                 end = try ISO_8601.DateTime.Parser<Input>().parse(&input)
@@ -64,7 +45,6 @@ extension ISO_8601.Interval.Parser: Parser.`Protocol` {
             return .durationEnd(duration: duration, end: end)
         }
 
-        // First component is a datetime
         let start: ISO_8601.DateTime
         do throws(__DateTimeParserError) {
             start = try ISO_8601.DateTime.Parser<Input>().parse(&input)
@@ -72,7 +52,6 @@ extension ISO_8601.Interval.Parser: Parser.`Protocol` {
             throw .dateTimeError(error)
         }
 
-        // Expect '/' separator
         guard input.startIndex < input.endIndex,
             input[input.startIndex] == 0x2F
         else {
@@ -80,7 +59,6 @@ extension ISO_8601.Interval.Parser: Parser.`Protocol` {
         }
         input = input[input.index(after: input.startIndex)...]
 
-        // Check if second component is a duration
         guard input.startIndex < input.endIndex else {
             throw .dateTimeError(.expectedT)
         }
@@ -95,7 +73,6 @@ extension ISO_8601.Interval.Parser: Parser.`Protocol` {
             return .startDuration(start: start, duration: duration)
         }
 
-        // Second component is a datetime
         let end: ISO_8601.DateTime
         do throws(__DateTimeParserError) {
             end = try ISO_8601.DateTime.Parser<Input>().parse(&input)

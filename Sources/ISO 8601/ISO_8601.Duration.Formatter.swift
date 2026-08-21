@@ -1,29 +1,18 @@
-//
-//  ISO_8601.Duration.Formatter.swift
-//  swift-iso-8601
-//
-//  ISO 8601 duration formatter
-//
-
 extension ISO_8601.Duration {
-    /// Formatter for ISO 8601 duration strings
+
     public enum Formatter {}
 }
 
 extension ISO_8601.Duration.Formatter {
-    /// Format a duration as an ISO 8601 P-format string
-    ///
-    /// - Parameter value: The duration to format
-    /// - Returns: ISO 8601 duration string (e.g., "P1Y2M3DT4H5M6.789S")
+
     public static func format(_ value: ISO_8601.Duration) -> String {
-        // Handle zero duration
+
         if value.isZero {
             return "PT0S"
         }
 
         var result = "P"
 
-        // Date components
         if value.years != 0 {
             result += "\(value.years)Y"
         }
@@ -34,7 +23,6 @@ extension ISO_8601.Duration.Formatter {
             result += "\(value.days)D"
         }
 
-        // Time components
         let hasTimeComponents =
             value.hours != 0 || value.minutes != 0 || value.seconds != 0
             || value.nanoseconds != 0
@@ -52,7 +40,7 @@ extension ISO_8601.Duration.Formatter {
                 if value.nanoseconds == 0 {
                     result += "\(value.seconds)S"
                 } else {
-                    // Format fractional seconds
+
                     let fractional = formatFractionalSeconds(
                         seconds: value.seconds,
                         nanoseconds: value.nanoseconds
@@ -66,7 +54,7 @@ extension ISO_8601.Duration.Formatter {
     }
 
     private static func formatFractionalSeconds(seconds: Int, nanoseconds: Int) -> String {
-        // Remove trailing zeros from nanoseconds
+
         var nano = nanoseconds
         var divisor = 1
         while nano > 0 && nano % 10 == 0 {

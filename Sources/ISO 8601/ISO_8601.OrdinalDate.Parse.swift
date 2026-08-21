@@ -1,20 +1,8 @@
-//
-//  ISO_8601.OrdinalDate.Parse.swift
-//  swift-iso-8601
-//
-//  ISO 8601 ordinal date: YYYY-DDD (extended) or YYYYDDD (basic)
-//
-
 public import Byte_Primitives
 public import Parser_Primitives
 
 extension ISO_8601.OrdinalDate {
-    /// Parses an ISO 8601 ordinal date.
-    ///
-    /// Extended format: `YYYY-DDD`
-    /// Basic format: `YYYYDDD`
-    ///
-    /// - `DDD` is the ordinal day of the year (001-366)
+
     public struct Parse<Input: Collection.Slice.`Protocol`>: Sendable
     where Input: Sendable, Input.Element == Byte {
         @inlinable
@@ -30,7 +18,6 @@ extension ISO_8601.OrdinalDate.Parse: Parser.`Protocol` {
     public func parse(_ input: inout Input) throws(Failure) -> Output {
         let year = try ISO_8601.Digits<Input>(count: 4).parse(&input)
 
-        // Detect extended format
         if input.startIndex < input.endIndex && input[input.startIndex] == 0x2D {
             input = input[input.index(after: input.startIndex)...]
         }

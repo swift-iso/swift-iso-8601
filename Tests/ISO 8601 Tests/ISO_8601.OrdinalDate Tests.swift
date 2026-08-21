@@ -1,10 +1,3 @@
-//
-//  ISO_8601.OrdinalDate Tests.swift
-//  ISO 8601 Tests
-//
-//  Tests for ISO_8601.OrdinalDate
-//
-
 import Foundation
 import Testing
 
@@ -18,8 +11,6 @@ struct `ISO_8601.OrdinalDate Tests` {
 }
 
 extension `ISO_8601.OrdinalDate Tests`.Unit {
-
-    // MARK: - Creation
 
     @Test
     func `Create ordinal date`() throws {
@@ -50,8 +41,6 @@ extension `ISO_8601.OrdinalDate Tests`.Unit {
         #expect(ordinal.day == 365)
     }
 
-    // MARK: - Equality
-
     @Test
     func `Ordinal dates with same values are equal`() throws {
         let od1 = try ISO_8601.OrdinalDate(year: 2024, day: 39)
@@ -70,8 +59,6 @@ extension `ISO_8601.OrdinalDate Tests`.Unit {
 }
 
 extension `ISO_8601.OrdinalDate Tests`.`Edge Case` {
-
-    // MARK: - Validation
 
     @Test
     func `Reject day 0`() throws {
@@ -97,8 +84,6 @@ extension `ISO_8601.OrdinalDate Tests`.`Edge Case` {
 
 extension `ISO_8601.OrdinalDate Tests`.Integration {
 
-    // MARK: - Conversion to DateTime
-
     @Test
     func `Convert ordinal day 1 to datetime`() throws {
         let ordinal = try ISO_8601.OrdinalDate(year: 2024, day: 1)
@@ -118,7 +103,7 @@ extension `ISO_8601.OrdinalDate Tests`.Integration {
         let comp = dateTime.components
         #expect(comp.year == 2024)
         #expect(comp.month == 2)
-        #expect(comp.day == 8)  // 31 days in Jan + 8 = 39
+        #expect(comp.day == 8)
     }
 
     @Test
@@ -142,8 +127,6 @@ extension `ISO_8601.OrdinalDate Tests`.Integration {
         #expect(comp.month == 12)
         #expect(comp.day == 31)
     }
-
-    // MARK: - Round-trip Conversion
 
     @Test
     func `Round-trip datetime to ordinal date`() throws {

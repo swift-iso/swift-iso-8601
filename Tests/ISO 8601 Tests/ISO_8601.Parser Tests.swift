@@ -1,10 +1,3 @@
-//
-//  ISO_8601.Parser Tests.swift
-//  ISO 8601 Tests
-//
-//  Tests for ISO_8601.DateTime.Parser
-//
-
 import Foundation
 import Testing
 import Time_Primitives
@@ -19,8 +12,6 @@ struct `ISO_8601.Parser Tests` {
 }
 
 extension `ISO_8601.Parser Tests`.Unit {
-
-    // MARK: - Calendar Date Parsing
 
     @Test
     func `Parse calendar date extended`() throws {
@@ -42,8 +33,6 @@ extension `ISO_8601.Parser Tests`.Unit {
         #expect(comp.day == 15)
     }
 
-    // MARK: - Week Date Parsing
-
     @Test
     func `Parse week date extended`() throws {
         let dt = try ISO_8601.DateTime("2024-W03-1")
@@ -64,8 +53,6 @@ extension `ISO_8601.Parser Tests`.Unit {
         #expect(weekDate.weekday == 1)
     }
 
-    // MARK: - Ordinal Date Parsing
-
     @Test
     func `Parse ordinal date extended`() throws {
         let dt = try ISO_8601.DateTime("2024-039")
@@ -83,8 +70,6 @@ extension `ISO_8601.Parser Tests`.Unit {
         #expect(ordinal.year == 2024)
         #expect(ordinal.day == 39)
     }
-
-    // MARK: - DateTime Parsing
 
     @Test
     func `Parse datetime with UTC timezone`() throws {
@@ -117,7 +102,7 @@ extension `ISO_8601.Parser Tests`.Unit {
     func `Parse datetime with positive offset extended`() throws {
         let dt = try ISO_8601.DateTime("2024-01-15T12:30:00+05:30")
 
-        #expect(dt.timezone.offsetSeconds == 19800)  // 5.5 hours
+        #expect(dt.timezone.offsetSeconds == 19800)
     }
 
     @Test
@@ -131,7 +116,7 @@ extension `ISO_8601.Parser Tests`.Unit {
     func `Parse datetime with negative offset`() throws {
         let dt = try ISO_8601.DateTime("2024-01-15T12:30:00-05:00")
 
-        #expect(dt.timezone.offsetSeconds == -18000)  // -5 hours
+        #expect(dt.timezone.offsetSeconds == -18000)
     }
 
     @Test
@@ -146,8 +131,6 @@ extension `ISO_8601.Parser Tests`.Unit {
 }
 
 extension `ISO_8601.Parser Tests`.`Edge Case` {
-
-    // MARK: - Error Cases
 
     @Test
     func `Reject invalid date format`() throws {
@@ -179,8 +162,6 @@ extension `ISO_8601.Parser Tests`.`Edge Case` {
 }
 
 extension `ISO_8601.Parser Tests`.Integration {
-
-    // MARK: - Round-trip Tests
 
     @Test
     func `Round-trip calendar date extended`() throws {

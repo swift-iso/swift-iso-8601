@@ -1,10 +1,3 @@
-//
-//  ISO_8601.DateTime Tests.swift
-//  ISO 8601 Tests
-//
-//  Tests for ISO_8601.DateTime including creation, formatting, and parsing
-//
-
 import Foundation
 import Testing
 import Time_Primitives
@@ -20,8 +13,6 @@ struct `ISO_8601.DateTime Tests` {
 
 extension `ISO_8601.DateTime Tests`.Unit {
 
-    // MARK: - Creation from Epoch
-
     @Test
     func `Create from seconds since epoch`() throws {
         let dateTime = try ISO_8601.DateTime(secondsSinceEpoch: 1_609_459_200)
@@ -33,13 +24,11 @@ extension `ISO_8601.DateTime Tests`.Unit {
     func `Create from epoch with timezone offset`() throws {
         let dateTime = try ISO_8601.DateTime(
             secondsSinceEpoch: 1_609_459_200,
-            timezoneOffsetSeconds: 3600  // +01:00
+            timezoneOffsetSeconds: 3600
         )
         #expect(dateTime.epoch.seconds == 1_609_459_200)
         #expect(dateTime.timezone.offsetSeconds == 3600)
     }
-
-    // MARK: - Creation from Components
 
     @Test
     func `Create from date components`() throws {
@@ -75,8 +64,6 @@ extension `ISO_8601.DateTime Tests`.Unit {
         #expect(dateTime.timezone.offsetSeconds == 3600)
     }
 
-    // MARK: - Components Extraction
-
     @Test
     func `Extract components from UTC datetime`() throws {
         let dateTime = try ISO_8601.DateTime(
@@ -99,7 +86,7 @@ extension `ISO_8601.DateTime Tests`.Unit {
 
     @Test
     func `Components reflect timezone offset`() throws {
-        // Create datetime at midnight UTC
+
         let utcDateTime = try ISO_8601.DateTime(
             year: 2024,
             month: 1,
@@ -109,32 +96,27 @@ extension `ISO_8601.DateTime Tests`.Unit {
             timezoneOffsetSeconds: 0
         )
 
-        // Same moment but displayed in +03:00 timezone
         let offsetDateTime = try ISO_8601.DateTime(
             secondsSinceEpoch: utcDateTime.epoch.seconds,
-            timezoneOffsetSeconds: 10800  // +03:00
+            timezoneOffsetSeconds: 10800
         )
 
         let components = offsetDateTime.components
-        // Should show 03:00 local time
+
         #expect(components.hour == 3)
     }
 
-    // MARK: - ISO Weekday
-
     @Test
     func `ISO weekday Monday is 1`() throws {
-        let dateTime = try ISO_8601.DateTime(year: 2024, month: 1, day: 1)  // Monday
+        let dateTime = try ISO_8601.DateTime(year: 2024, month: 1, day: 1)
         #expect(dateTime.isoWeekday == 1)
     }
 
     @Test
     func `ISO weekday Sunday is 7`() throws {
-        let dateTime = try ISO_8601.DateTime(year: 2024, month: 1, day: 7)  // Sunday
+        let dateTime = try ISO_8601.DateTime(year: 2024, month: 1, day: 7)
         #expect(dateTime.isoWeekday == 7)
     }
-
-    // MARK: - Ordinal Day
 
     @Test
     func `Ordinal day for January 1`() throws {
@@ -145,7 +127,7 @@ extension `ISO_8601.DateTime Tests`.Unit {
     @Test
     func `Ordinal day for February 8`() throws {
         let dateTime = try ISO_8601.DateTime(year: 2024, month: 2, day: 8)
-        #expect(dateTime.ordinalDay == 39)  // 31 days in Jan + 8
+        #expect(dateTime.ordinalDay == 39)
     }
 
     @Test
@@ -160,8 +142,6 @@ extension `ISO_8601.DateTime Tests`.Unit {
         #expect(dateTime.ordinalDay == 366)
     }
 
-    // MARK: - ISO Week Number
-
     @Test
     func `Week number for January 4 is always 1`() throws {
         let dateTime = try ISO_8601.DateTime(year: 2024, month: 1, day: 4)
@@ -174,15 +154,11 @@ extension `ISO_8601.DateTime Tests`.Unit {
         #expect(week2.isoWeek == 3)
     }
 
-    // MARK: - ISO Week Year
-
     @Test
     func `Week year matches calendar year for mid-year dates`() throws {
         let dateTime = try ISO_8601.DateTime(year: 2024, month: 6, day: 15)
         #expect(dateTime.isoWeekYear == 2024)
     }
-
-    // MARK: - Equality and Comparison
 
     @Test
     func `Equal datetimes have same epoch`() throws {
@@ -214,8 +190,6 @@ extension `ISO_8601.DateTime Tests`.Unit {
 }
 
 extension `ISO_8601.DateTime Tests`.`Edge Case` {
-
-    // MARK: - Validation
 
     @Test
     func `Rejects invalid month`() throws {
@@ -253,8 +227,6 @@ extension `ISO_8601.DateTime Tests`.`Edge Case` {
 }
 
 extension `ISO_8601.DateTime Tests`.Integration {
-
-    // MARK: - Conversions
 
     @Test
     func `Convert to week date`() throws {

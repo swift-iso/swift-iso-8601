@@ -1,10 +1,3 @@
-//
-//  ISO_8601.RecurringInterval Tests.swift
-//  ISO 8601 Tests
-//
-//  Tests for ISO_8601.RecurringInterval
-//
-
 import Foundation
 import Testing
 
@@ -18,8 +11,6 @@ struct `ISO_8601.RecurringInterval Tests` {
 }
 
 extension `ISO_8601.RecurringInterval Tests`.Unit {
-
-    // MARK: - Creation
 
     @Test
     func `Create recurring interval with count`() throws {
@@ -43,8 +34,6 @@ extension `ISO_8601.RecurringInterval Tests`.Unit {
         #expect(recurring.isUnlimited == true)
     }
 
-    // MARK: - Formatting
-
     @Test
     func `Format recurring interval with count`() throws {
         let start = try ISO_8601.DateTime(year: 2019, month: 1, day: 1)
@@ -61,7 +50,7 @@ extension `ISO_8601.RecurringInterval Tests`.Unit {
     @Test
     func `Format unlimited recurring interval`() throws {
         let start = try ISO_8601.DateTime(year: 2019, month: 1, day: 1)
-        let duration = try ISO_8601.Duration(days: 7)  // 1 week = 7 days
+        let duration = try ISO_8601.Duration(days: 7)
         let interval = ISO_8601.Interval.startDuration(start: start, duration: duration)
         let recurring = try ISO_8601.RecurringInterval(repetitions: nil, interval: interval)
         let formatted = recurring.description
@@ -79,8 +68,6 @@ extension `ISO_8601.RecurringInterval Tests`.Unit {
 
         #expect(formatted == "R12/P1M")
     }
-
-    // MARK: - Parsing
 
     @Test
     func `Parse recurring interval with count`() throws {
@@ -174,8 +161,6 @@ extension `ISO_8601.RecurringInterval Tests`.Unit {
         #expect(endComp.day == 8)
     }
 
-    // MARK: - Equality
-
     @Test
     func `Recurring intervals with same values are equal`() throws {
         let duration = try ISO_8601.Duration(days: 1)
@@ -228,8 +213,6 @@ extension `ISO_8601.RecurringInterval Tests`.`Edge Case` {
         #expect(recurring.repetitions == 0)
     }
 
-    // MARK: - Error Cases
-
     @Test
     func `Reject recurring without R prefix`() throws {
         #expect(throws: __RecurringIntervalParserError.self) {
@@ -261,8 +244,6 @@ extension `ISO_8601.RecurringInterval Tests`.`Edge Case` {
 
 extension `ISO_8601.RecurringInterval Tests`.Integration {
 
-    // MARK: - Round-trip Tests
-
     @Test
     func `Round-trip recurring interval with count`() throws {
         let start = try ISO_8601.DateTime(year: 2019, month: 1, day: 1)
@@ -277,7 +258,7 @@ extension `ISO_8601.RecurringInterval Tests`.Integration {
 
     @Test
     func `Round-trip unlimited recurring interval`() throws {
-        let duration = try ISO_8601.Duration(days: 7)  // 1 week = 7 days
+        let duration = try ISO_8601.Duration(days: 7)
         let interval = ISO_8601.Interval.duration(duration)
         let original = try ISO_8601.RecurringInterval(repetitions: nil, interval: interval)
         let formatted = original.description
@@ -285,8 +266,6 @@ extension `ISO_8601.RecurringInterval Tests`.Integration {
 
         #expect(parsed == original)
     }
-
-    // MARK: - Codable
 
     @Test
     func `Recurring interval encodes to JSON string`() throws {

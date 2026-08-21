@@ -1,29 +1,16 @@
-//
-//  ISO_8601.Time.Formatter.swift
-//  swift-iso-8601
-//
-//  ISO 8601 time formatter
-//
-
 import Time_Primitives
 
 extension ISO_8601.Time {
-    /// Formatter for ISO 8601 time strings
+
     public enum Formatter {}
 }
 
 extension ISO_8601.Time.Formatter {
-    /// Format a time as an ISO 8601 string
-    ///
-    /// - Parameters:
-    ///   - value: The time to format
-    ///   - format: Use extended format with colons (default: `.extended`)
-    /// - Returns: ISO 8601 time string (e.g., "12:30:45" or "123045")
+
     public static func format(_ value: ISO_8601.Time, format: Format = .extended) -> String {
         let extended = format == .extended
         var result = ""
 
-        // Hour (always present)
         let hourStr = value.hour < 10 ? "0\(value.hour)" : "\(value.hour)"
 
         if let minute = value.minute {
@@ -38,12 +25,11 @@ extension ISO_8601.Time.Formatter {
                     result = "\(hourStr)\(minStr)\(secStr)"
                 }
 
-                // Add fractional seconds if present
                 if value.nanoseconds > 0 {
                     result += formatFractionalSeconds(value.nanoseconds)
                 }
             } else {
-                // Hour and minute only
+
                 if extended {
                     result = "\(hourStr):\(minStr)"
                 } else {
@@ -51,11 +37,10 @@ extension ISO_8601.Time.Formatter {
                 }
             }
         } else {
-            // Hour only
+
             result = hourStr
         }
 
-        // Add timezone if present
         if let offset = value.timezone.offsetSeconds {
             if offset == 0 {
                 result += "Z"
@@ -68,7 +53,7 @@ extension ISO_8601.Time.Formatter {
     }
 
     private static func formatFractionalSeconds(_ nanoseconds: Int) -> String {
-        // Remove trailing zeros
+
         var nano = nanoseconds
         while nano > 0 && nano % 10 == 0 {
             nano /= 10

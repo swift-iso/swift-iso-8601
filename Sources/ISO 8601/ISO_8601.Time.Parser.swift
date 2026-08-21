@@ -1,27 +1,14 @@
-//
-//  ISO_8601.Time.Parser.swift
-//  swift-iso-8601
-//
-//  ISO 8601 time parser
-//
-
 import Time_Primitives
 
-// MARK: - Parsing
-
 extension ISO_8601.Time {
-    /// Parser for ISO 8601 time strings
+
     public enum Parser {}
 }
 
 extension ISO_8601.Time.Parser {
-    /// Parse an ISO 8601 time string
-    ///
-    /// - Parameter value: The time string (e.g., "12:30:45", "123045Z", "12:30")
-    /// - Returns: Time instance
-    /// - Throws: `ISO_8601.Date.Error` if parsing fails
+
     public static func parse(_ value: String) throws(ISO_8601.Date.Error) -> ISO_8601.Time {
-        // Extract timezone portion (Z, +HH:MM, -HH:MM, etc.)
+
         var timePart = value
         var timezoneOffset: Int?
 
@@ -44,7 +31,7 @@ extension ISO_8601.Time.Parser {
         var nanoseconds = 0
 
         if timePart.contains(":") {
-            // Extended format: HH:MM:SS or HH:MM or HH
+
             let parts = timePart.split(separator: ":").map(String.init)
             guard !parts.isEmpty else {
                 throw ISO_8601.Date.Error.invalidTime("Empty time")
@@ -62,25 +49,24 @@ extension ISO_8601.Time.Parser {
                 minute = m
 
                 if parts.count >= 3 {
-                    // Parse seconds with possible fractional part
+
                     let (sec, nano) = try parseFractionalSeconds(parts[2])
                     second = sec
                     nanoseconds = nano
                 }
             }
         } else {
-            // Basic format: HHMMSS or HHMM or HH
-            // Check for fractional seconds first
+
             let (intPart, fracPart) = extractFractionalPart(timePart)
 
             if intPart.count == 2 {
-                // HH only
+
                 guard let h = Int(intPart) else {
                     throw ISO_8601.Date.Error.invalidHour(intPart)
                 }
                 hour = h
             } else if intPart.count == 4 {
-                // HHMM
+
                 let hourStr = String(intPart.prefix(2))
                 let minuteStr = String(intPart.dropFirst(2))
 
@@ -94,7 +80,7 @@ extension ISO_8601.Time.Parser {
                 hour = h
                 minute = m
             } else if intPart.count == 6 || !fracPart.isEmpty {
-                // HHMMSS with possible fractional
+
                 let hourStr = String(intPart.prefix(2))
                 let minuteStr = String(intPart.dropFirst(2).prefix(2))
                 let secondStr = String(intPart.dropFirst(4).prefix(2))
@@ -133,14 +119,14 @@ extension ISO_8601.Time.Parser {
     private static func parseFractionalSeconds(
         _ value: String
     ) throws(ISO_8601.Date.Error) -> (seconds: Int, nanoseconds: Int) {
-        // Check for decimal point or comma
+
         let separator: Character
         if value.contains(".") {
             separator = "."
         } else if value.contains(",") {
             separator = ","
         } else {
-            // No fractional part
+
             guard let s = Int(value) else {
                 throw ISO_8601.Date.Error.invalidSecond(value)
             }
@@ -163,7 +149,7 @@ extension ISO_8601.Time.Parser {
     private static func parseFractionalPart(
         _ fracStr: String
     ) throws(ISO_8601.Date.Error) -> Int {
-        // Pad or truncate to 9 digits (nanoseconds)
+
         var paddedFrac = fracStr
         if fracStr.count < 9 {
             paddedFrac = fracStr + String(repeating: "0", count: 9 - fracStr.count)
@@ -198,7 +184,7 @@ extension ISO_8601.Time.Parser {
         let minutes: Int
 
         if value.contains(":") {
-            // Extended format: HH:MM
+
             let parts = value.split(separator: ":").map(String.init)
             guard parts.count == 2 else {
                 throw ISO_8601.Date.Error.invalidFormat("Invalid timezone offset")
@@ -214,7 +200,7 @@ extension ISO_8601.Time.Parser {
             hours = h
             minutes = m
         } else {
-            // Basic format: HHMM
+
             guard value.count == 4 else {
                 throw ISO_8601.Date.Error.invalidFormat("Invalid timezone offset length")
             }

@@ -1,22 +1,8 @@
-//
-//  ISO_8601.WeekDate.Parse.swift
-//  swift-iso-8601
-//
-//  ISO 8601 week date: YYYY-Www-d (extended) or YYYYWwwd (basic)
-//
-
 public import Byte_Primitives
 public import Parser_Primitives
 
 extension ISO_8601.WeekDate {
-    /// Parses an ISO 8601 week date.
-    ///
-    /// Extended format: `YYYY-Www-d`
-    /// Basic format: `YYYYWwwd`
-    ///
-    /// - `W` (0x57) is the literal week designator
-    /// - `ww` is the week number (01-53)
-    /// - `d` is the weekday (1=Monday, 7=Sunday)
+
     public struct Parse<Input: Collection.Slice.`Protocol`>: Sendable
     where Input: Sendable, Input.Element == Byte {
         @inlinable
@@ -32,7 +18,6 @@ extension ISO_8601.WeekDate.Parse: Parser.`Protocol` {
     public func parse(_ input: inout Input) throws(Failure) -> Output {
         let weekYear = try ISO_8601.Digits<Input>(count: 4).parse(&input)
 
-        // Detect extended format: '-' before 'W'
         let extended: Bool
         if input.startIndex < input.endIndex && input[input.startIndex] == 0x2D {
             extended = true
@@ -41,7 +26,6 @@ extension ISO_8601.WeekDate.Parse: Parser.`Protocol` {
             extended = false
         }
 
-        // Expect 'W' (0x57)
         guard input.startIndex < input.endIndex,
             input[input.startIndex] == 0x57
         else {
@@ -51,7 +35,7 @@ extension ISO_8601.WeekDate.Parse: Parser.`Protocol` {
 
         let week = try ISO_8601.Digits<Input>(count: 2).parse(&input)
         guard week >= 1 && week <= 53 else {
-            throw .invalidMonth(week)  // reuse for week range
+            throw .invalidMonth(week)
         }
 
         if extended {

@@ -1,10 +1,3 @@
-//
-//  ISO_8601.Formatter Tests.swift
-//  ISO 8601 Tests
-//
-//  Tests for ISO_8601.DateTime.Formatter
-//
-
 import Foundation
 import Testing
 
@@ -18,8 +11,6 @@ struct `ISO_8601.Formatter Tests` {
 }
 
 extension `ISO_8601.Formatter Tests`.Unit {
-
-    // MARK: - Calendar Date Formatting
 
     @Test
     func `Format calendar date extended`() throws {
@@ -45,8 +36,6 @@ extension `ISO_8601.Formatter Tests`.Unit {
         #expect(formatted == "20240115")
     }
 
-    // MARK: - Week Date Formatting
-
     @Test
     func `Format week date extended`() throws {
         let dt = try ISO_8601.DateTime(year: 2024, month: 1, day: 15)
@@ -56,7 +45,6 @@ extension `ISO_8601.Formatter Tests`.Unit {
             time: .none
         )
 
-        // Week 3, Monday (Jan 15, 2024)
         #expect(formatted.hasPrefix("2024-W"))
     }
 
@@ -72,8 +60,6 @@ extension `ISO_8601.Formatter Tests`.Unit {
         #expect(formatted.hasPrefix("2024W"))
         #expect(!formatted.contains("-"))
     }
-
-    // MARK: - Ordinal Date Formatting
 
     @Test
     func `Format ordinal date extended`() throws {
@@ -98,8 +84,6 @@ extension `ISO_8601.Formatter Tests`.Unit {
 
         #expect(formatted == "2024039")
     }
-
-    // MARK: - Time Formatting
 
     @Test
     func `Format time extended`() throws {
@@ -141,8 +125,6 @@ extension `ISO_8601.Formatter Tests`.Unit {
         #expect(formatted == "20240115T123045")
     }
 
-    // MARK: - Timezone Formatting
-
     @Test
     func `Format with UTC timezone`() throws {
         let dt = try ISO_8601.DateTime(
@@ -166,7 +148,7 @@ extension `ISO_8601.Formatter Tests`.Unit {
     func `Format with offset timezone extended`() throws {
         let dt = try ISO_8601.DateTime(
             secondsSinceEpoch: 1_705_324_200,
-            timezoneOffsetSeconds: 19800  // +05:30
+            timezoneOffsetSeconds: 19800
         )
         let formatted = ISO_8601.DateTime.Formatter.format(
             dt,
@@ -182,7 +164,7 @@ extension `ISO_8601.Formatter Tests`.Unit {
     func `Format with offset timezone basic`() throws {
         let dt = try ISO_8601.DateTime(
             secondsSinceEpoch: 1_705_324_200,
-            timezoneOffsetSeconds: 19800  // +05:30
+            timezoneOffsetSeconds: 19800
         )
         let formatted = ISO_8601.DateTime.Formatter.format(
             dt,
@@ -198,7 +180,7 @@ extension `ISO_8601.Formatter Tests`.Unit {
     func `Format with negative offset`() throws {
         let dt = try ISO_8601.DateTime(
             secondsSinceEpoch: 1_705_324_200,
-            timezoneOffsetSeconds: -18000  // -05:00
+            timezoneOffsetSeconds: -18000
         )
         let formatted = ISO_8601.DateTime.Formatter.format(
             dt,
@@ -209,8 +191,6 @@ extension `ISO_8601.Formatter Tests`.Unit {
 
         #expect(formatted.hasSuffix("-05:00"))
     }
-
-    // MARK: - Default Format (description)
 
     @Test
     func `Default format uses extended calendar with UTC`() throws {
@@ -226,8 +206,6 @@ extension `ISO_8601.Formatter Tests`.Unit {
 
         #expect(formatted == "2024-01-15T12:30:45Z")
     }
-
-    // MARK: - Combined Formats
 
     @Test
     func `Format basic complete datetime`() throws {

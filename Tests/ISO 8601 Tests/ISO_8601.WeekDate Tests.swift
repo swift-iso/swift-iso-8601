@@ -1,10 +1,3 @@
-//
-//  ISO_8601.WeekDate Tests.swift
-//  ISO 8601 Tests
-//
-//  Tests for ISO_8601.WeekDate
-//
-
 import Foundation
 import Testing
 
@@ -18,8 +11,6 @@ struct `ISO_8601.WeekDate Tests` {
 }
 
 extension `ISO_8601.WeekDate Tests`.Unit {
-
-    // MARK: - Creation
 
     @Test
     func `Create week date`() throws {
@@ -35,8 +26,6 @@ extension `ISO_8601.WeekDate Tests`.Unit {
         let weekDate = try ISO_8601.WeekDate(weekYear: 2024, week: 1, weekday: weekday)
         #expect(weekDate.weekday == weekday)
     }
-
-    // MARK: - Equality
 
     @Test
     func `Week dates with same values are equal`() throws {
@@ -57,8 +46,6 @@ extension `ISO_8601.WeekDate Tests`.Unit {
 
 extension `ISO_8601.WeekDate Tests`.`Edge Case` {
 
-    // MARK: - Validation
-
     @Test(arguments: [0, 8, -1, 10])
     func `Reject invalid weekday`(weekday: Int) throws {
         #expect(throws: ISO_8601.Date.Error.self) {
@@ -75,7 +62,7 @@ extension `ISO_8601.WeekDate Tests`.`Edge Case` {
 
     @Test
     func `Reject week 53 in year with only 52 weeks`() throws {
-        // 2023 has only 52 weeks
+
         #expect(throws: ISO_8601.Date.Error.self) {
             _ = try ISO_8601.WeekDate(weekYear: 2023, week: 53, weekday: 1)
         }
@@ -84,15 +71,13 @@ extension `ISO_8601.WeekDate Tests`.`Edge Case` {
 
 extension `ISO_8601.WeekDate Tests`.Integration {
 
-    // MARK: - Conversion to DateTime
-
     @Test
     func `Convert week date to datetime`() throws {
         let weekDate = try ISO_8601.WeekDate(weekYear: 2024, week: 1, weekday: 1)
         let dateTime = ISO_8601.DateTime(weekDate)
 
         let comp = dateTime.components
-        #expect(comp.year == 2024 || comp.year == 2023)  // Week 1 might start in previous year
+        #expect(comp.year == 2024 || comp.year == 2023)
     }
 
     @Test
@@ -103,15 +88,12 @@ extension `ISO_8601.WeekDate Tests`.Integration {
         #expect(dateTime.isoWeekday == 2)
     }
 
-    // MARK: - Round-trip Conversion
-
     @Test
     func `Round-trip datetime to week date`() throws {
         let original = try ISO_8601.DateTime(year: 2024, month: 1, day: 15)
         let weekDate = ISO_8601.WeekDate(original)
         let converted = ISO_8601.DateTime(weekDate)
 
-        // Should be the same date
         #expect(original.components.year == converted.components.year)
         #expect(original.components.month == converted.components.month)
         #expect(original.components.day == converted.components.day)

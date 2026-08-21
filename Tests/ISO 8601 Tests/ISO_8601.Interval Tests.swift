@@ -1,10 +1,3 @@
-//
-//  ISO_8601.Interval Tests.swift
-//  ISO 8601 Tests
-//
-//  Tests for ISO_8601.Interval
-//
-
 import Foundation
 import Testing
 
@@ -18,8 +11,6 @@ struct `ISO_8601.Interval Tests` {
 }
 
 extension `ISO_8601.Interval Tests`.Unit {
-
-    // MARK: - Start/End Intervals
 
     @Test
     func `Create start-end interval`() throws {
@@ -68,8 +59,6 @@ extension `ISO_8601.Interval Tests`.Unit {
         #expect(endComp.day == 29)
     }
 
-    // MARK: - Duration Only Intervals
-
     @Test
     func `Create duration-only interval`() throws {
         let duration = try ISO_8601.Duration(days: 3)
@@ -101,8 +90,6 @@ extension `ISO_8601.Interval Tests`.Unit {
 
         #expect(dur.days == 3)
     }
-
-    // MARK: - Start/Duration Intervals
 
     @Test
     func `Create start-duration interval`() throws {
@@ -145,8 +132,6 @@ extension `ISO_8601.Interval Tests`.Unit {
         #expect(dur.days == 3)
     }
 
-    // MARK: - Duration/End Intervals
-
     @Test
     func `Create duration-end interval`() throws {
         let duration = try ISO_8601.Duration(days: 3)
@@ -188,8 +173,6 @@ extension `ISO_8601.Interval Tests`.Unit {
         #expect(endComp.day == 29)
     }
 
-    // MARK: - Complex Examples
-
     @Test
     func `Parse interval with time components`() throws {
         let interval = try ISO_8601.Interval(
@@ -230,8 +213,6 @@ extension `ISO_8601.Interval Tests`.Unit {
         #expect(dur.seconds == 6)
     }
 
-    // MARK: - Equality
-
     @Test
     func `Intervals with same values are equal`() throws {
         let start = try ISO_8601.DateTime(year: 2019, month: 8, day: 27)
@@ -255,8 +236,6 @@ extension `ISO_8601.Interval Tests`.Unit {
 
 extension `ISO_8601.Interval Tests`.`Edge Case` {
 
-    // MARK: - Error Cases
-
     @Test
     func `Reject interval without slash and not duration`() throws {
         #expect(throws: __IntervalParserError.self) {
@@ -273,8 +252,6 @@ extension `ISO_8601.Interval Tests`.`Edge Case` {
 }
 
 extension `ISO_8601.Interval Tests`.Integration {
-
-    // MARK: - Round-trip Tests
 
     @Test
     func `Round-trip start-end interval`() throws {
@@ -318,8 +295,6 @@ extension `ISO_8601.Interval Tests`.Integration {
 
         #expect(parsed == original)
     }
-
-    // MARK: - Codable
 
     @Test
     func `Interval encodes to JSON string`() throws {

@@ -1,20 +1,8 @@
-//
-//  ISO_8601.CalendarDate.Parse.swift
-//  swift-iso-8601
-//
-//  ISO 8601 calendar date: YYYY-MM-DD (extended) or YYYYMMDD (basic)
-//
-
 public import Byte_Primitives
 public import Parser_Primitives
 
 extension ISO_8601.CalendarDate {
-    /// Parses an ISO 8601 calendar date.
-    ///
-    /// Extended format: `YYYY-MM-DD`
-    /// Basic format: `YYYYMMDD`
-    ///
-    /// Validates month (1-12) and day (1-31) ranges.
+
     public struct Parse<Input: Collection.Slice.`Protocol`>: Sendable
     where Input: Sendable, Input.Element == Byte {
         @inlinable
@@ -30,7 +18,6 @@ extension ISO_8601.CalendarDate.Parse: Parser.`Protocol` {
     public func parse(_ input: inout Input) throws(Failure) -> Output {
         let year = try ISO_8601.Digits<Input>(count: 4).parse(&input)
 
-        // Detect extended format (hyphen separator)
         let extended: Bool
         if input.startIndex < input.endIndex && input[input.startIndex] == 0x2D {
             extended = true

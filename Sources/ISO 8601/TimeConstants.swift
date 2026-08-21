@@ -1,10 +1,3 @@
-//
-//  File.swift
-//  swift-iso-8601
-//
-//  Created by Coen ten Thije Boonkkamp on 18/11/2025.
-//
-
 enum TimeConstants {}
 
 extension TimeConstants {

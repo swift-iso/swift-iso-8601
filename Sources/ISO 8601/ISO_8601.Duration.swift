@@ -1,68 +1,24 @@
-//
-//  ISO_8601.Duration.swift
-//  swift-iso-8601
-//
-//  ISO 8601 Duration representation (P format)
-//
-
 import Byte_Parser_Primitives
 import Parser_Primitives
 
 extension ISO_8601 {
-    /// ISO 8601 Duration representation
-    ///
-    /// Represents a duration of time using the P format: `P[n]Y[n]M[n]DT[n]H[n]M[n]S`
-    ///
-    /// ## Format
-    /// - `P` prefix indicates period/duration
-    /// - `T` separates date components from time components
-    /// - Components can be omitted if zero
-    ///
-    /// ## Examples
-    /// - `P3Y6M4DT12H30M5S` - 3 years, 6 months, 4 days, 12 hours, 30 minutes, 5 seconds
-    /// - `P1Y` - 1 year
-    /// - `PT5M` - 5 minutes
-    /// - `P3D` - 3 days
-    /// - `PT0.5S` - half a second
-    ///
-    /// ```swift
-    /// let duration = try ISO_8601.Duration(years: 1, months: 6, days: 15)
-    /// let formatted = duration.description  // "P1Y6M15D"
-    /// let parsed = try ISO_8601.Duration("PT2H30M")
-    /// ```
+
     public struct Duration: Sendable, Equatable, Hashable {
-        /// Years component
+
         public let years: Int
 
-        /// Months component (note: month length varies)
         public let months: Int
 
-        /// Days component (note: day length can vary with DST)
         public let days: Int
 
-        /// Hours component
         public let hours: Int
 
-        /// Minutes component
         public let minutes: Int
 
-        /// Seconds component (integer part)
         public let seconds: Int
 
-        /// Nanoseconds component (fractional seconds)
         public let nanoseconds: Int
 
-        /// Create a duration with specified components
-        ///
-        /// - Parameters:
-        ///   - years: Number of years (default: 0)
-        ///   - months: Number of months (default: 0)
-        ///   - days: Number of days (default: 0)
-        ///   - hours: Number of hours (default: 0)
-        ///   - minutes: Number of minutes (default: 0)
-        ///   - seconds: Number of seconds (default: 0)
-        ///   - nanoseconds: Number of nanoseconds (default: 0, range: 0-999999999)
-        /// - Throws: `ISO_8601.Date.Error` if nanoseconds is out of range
         public init(
             years: Int = 0,
             months: Int = 0,
@@ -87,25 +43,19 @@ extension ISO_8601 {
     }
 }
 
-// MARK: - Zero Check
-
 extension ISO_8601.Duration {
-    /// Check if this duration represents zero time
+
     public var isZero: Bool {
         years == 0 && months == 0 && days == 0 && hours == 0 && minutes == 0 && seconds == 0
             && nanoseconds == 0
     }
 }
 
-// MARK: - Formatting
-
 extension ISO_8601.Duration: CustomStringConvertible {
     public var description: String {
         Formatter.format(self)
     }
 }
-
-// MARK: - Codable
 
 extension ISO_8601.Duration: Codable {
     public init(from decoder: any Decoder) throws {
@@ -120,13 +70,8 @@ extension ISO_8601.Duration: Codable {
     }
 }
 
-// MARK: - String Parsing
-
 extension ISO_8601.Duration {
-    /// Parses an ISO 8601 duration string (`P[n]Y[n]M[n]DT[n]H[n]M[n]S`).
-    ///
-    /// - Parameter string: The ISO 8601 duration string (e.g. `P3Y6M4DT12H30M5S`, `PT2H30M`).
-    /// - Throws: ``Parser/Error`` if the string is not a complete, valid duration.
+
     public init(_ string: String) throws(ISO_8601.Duration.Parser.Error) {
         var input = Byte.Input(utf8: string)
         let value = try ISO_8601.Duration.Parser<Byte.Input>().parse(&input)

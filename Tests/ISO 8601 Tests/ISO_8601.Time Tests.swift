@@ -1,10 +1,3 @@
-//
-//  ISO_8601.Time Tests.swift
-//  ISO 8601 Tests
-//
-//  Tests for ISO_8601.Time
-//
-
 import Foundation
 import Testing
 
@@ -18,8 +11,6 @@ struct `ISO_8601.Time Tests` {
 }
 
 extension `ISO_8601.Time Tests`.Unit {
-
-    // MARK: - Creation
 
     @Test
     func `Create full time`() throws {
@@ -46,7 +37,7 @@ extension `ISO_8601.Time Tests`.Unit {
     func `Create time with timezone`() throws {
         let time = try ISO_8601.Time(hour: 12, minute: 30, second: 45, timezoneOffsetSeconds: 19800)
 
-        #expect(time.timezone.offsetSeconds == 19800)  // +05:30
+        #expect(time.timezone.offsetSeconds == 19800)
     }
 
     @Test
@@ -75,8 +66,6 @@ extension `ISO_8601.Time Tests`.Unit {
         #expect(time.minute == 0)
         #expect(time.second == 0)
     }
-
-    // MARK: - Formatting
 
     @Test
     func `Format full time extended`() throws {
@@ -132,7 +121,7 @@ extension `ISO_8601.Time Tests`.Unit {
 
     @Test
     func `Format time with positive offset extended`() throws {
-        // +05:30
+
         let time = try ISO_8601.Time(hour: 12, minute: 30, second: 45, timezoneOffsetSeconds: 19800)
 
         #expect(time.description == "12:30:45+05:30")
@@ -153,7 +142,7 @@ extension `ISO_8601.Time Tests`.Unit {
             minute: 30,
             second: 45,
             timezoneOffsetSeconds: -18000
-        )  // -05:00
+        )
 
         #expect(time.description == "12:30:45-05:00")
     }
@@ -164,8 +153,6 @@ extension `ISO_8601.Time Tests`.Unit {
 
         #expect(time.description == "24:00:00")
     }
-
-    // MARK: - Parsing
 
     @Test
     func `Parse full time extended`() throws {
@@ -282,8 +269,6 @@ extension `ISO_8601.Time Tests`.Unit {
         #expect(time.nanoseconds == 123_000_000)
     }
 
-    // MARK: - Equality
-
     @Test
     func `Times with same values are equal`() throws {
         let t1 = try ISO_8601.Time(hour: 12, minute: 30, second: 45)
@@ -310,8 +295,6 @@ extension `ISO_8601.Time Tests`.Unit {
 }
 
 extension `ISO_8601.Time Tests`.`Edge Case` {
-
-    // MARK: - Validation
 
     @Test
     func `Reject hour out of range`() throws {
@@ -358,8 +341,6 @@ extension `ISO_8601.Time Tests`.`Edge Case` {
 
 extension `ISO_8601.Time Tests`.Integration {
 
-    // MARK: - Round-trip Tests
-
     @Test
     func `Round-trip full time`() throws {
         let original = try ISO_8601.Time(hour: 12, minute: 30, second: 45)
@@ -391,8 +372,6 @@ extension `ISO_8601.Time Tests`.Integration {
 
         #expect(parsed == original)
     }
-
-    // MARK: - Codable
 
     @Test
     func `Time encodes to JSON string`() throws {

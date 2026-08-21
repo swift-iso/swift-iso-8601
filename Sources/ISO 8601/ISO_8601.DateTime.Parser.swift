@@ -1,28 +1,9 @@
-//
-//  ISO_8601.DateTime.Parser.swift
-//  swift-iso-8601
-//
-//  ISO 8601 date-time: Date ["T" Time [Timezone]]
-//
-//  Output is the domain value ISO_8601.DateTime. The date field is discriminated
-//  positionally (§E(B)) — presence of 'W', dash-count / digit-run-length before
-//  'T' or end — then the one matching sub-grammar leaf runs
-//  (CalendarDate.Parse | WeekDate.Parse | OrdinalDate.Parse). The 'T' separator
-//  and the time/timezone are optional (date-only inputs like "2024-01-15" are
-//  valid). 24:00:00 rolls over to 00:00:00 of the next day per ISO 8601.
-//
-
 public import Byte_Primitives
 public import Parser_Primitives
 public import Time_Primitives
 
 extension ISO_8601.DateTime {
-    /// Parses an ISO 8601 date-time into an ``ISO_8601/DateTime``.
-    ///
-    /// Accepts all three date representations in extended and basic form
-    /// (calendar `2024-01-15` / `20240115`, week `2024-W03-1` / `2024W031`,
-    /// ordinal `2024-039` / `2024039`), optionally followed by `T` + a time
-    /// (seconds optional) and an optional timezone (`Z`, `±HH:MM`, `±HHMM`).
+
     public struct Parser<Input: Collection.Slice.`Protocol`>: Sendable
     where Input: Sendable, Input.Element == Byte {
         @inlinable
@@ -36,8 +17,7 @@ extension ISO_8601.DateTime.Parser: Parser.`Protocol` {
 
     @inlinable
     public func parse(_ input: inout Input) throws(Failure) -> ISO_8601.DateTime {
-        // 1. Discriminate the date format positionally (§E(B)): scan the date
-        //    field (up to 'T' 0x54, '/' 0x2F, or end) without consuming.
+
         var probe = input.startIndex
         var hasWeekDesignator = false
         var dashCount = 0
@@ -53,14 +33,11 @@ extension ISO_8601.DateTime.Parser: Parser.`Protocol` {
             fieldLength += 1
             input.formIndex(after: &probe)
         }
-        // ISO-8601 date forms are positionally unambiguous: 'W' ⇒ week;
-        // otherwise a single dash (YYYY-DDD) or a dash-free 7-run (YYYYDDD)
-        // ⇒ ordinal; everything else ⇒ calendar.
+
         let isWeek = hasWeekDesignator
         let isOrdinal =
             !hasWeekDesignator && (dashCount == 1 || (dashCount == 0 && fieldLength == 7))
 
-        // 2. Run the one matching leaf and reduce to calendar (year, month, day).
         let year: Int
         let month: Int
         let day: Int
@@ -108,7 +85,6 @@ extension ISO_8601.DateTime.Parser: Parser.`Protocol` {
             (year, month, day) = (parsed.year, parsed.month, parsed.day)
         }
 
-        // 3. Optional time, introduced by 'T' (0x54). Seconds are optional.
         var hour = 0
         var minute = 0
         var second = 0
@@ -125,7 +101,6 @@ extension ISO_8601.DateTime.Parser: Parser.`Protocol` {
                 (time.hour, time.minute, time.second, time.nanoseconds)
         }
 
-        // 4. Optional timezone: 'Z' (0x5A), '+' (0x2B), '-' (0x2D).
         var timezoneOffset = 0
         if input.startIndex < input.endIndex {
             let byte = input[input.startIndex]
@@ -140,16 +115,13 @@ extension ISO_8601.DateTime.Parser: Parser.`Protocol` {
             }
         }
 
-        // 5. 24:00:00 ⇒ 00:00:00 of the next day (ISO 8601).
         if hour == 24 {
             guard minute == 0, second == 0, nanoseconds == 0 else {
                 throw .invalidComponents(
                     .invalidTime("24:xx:xx is not valid, only 24:00:00 is allowed")
                 )
             }
-            // Local midnight of the *next* day at `timezoneOffset`, expressed as
-            // its true UTC instant: naive-UTC(components) minus the offset (see
-            // step 6 for the same local-wall-clock-to-UTC convention).
+
             let localMidnight: Time_Primitives.Time
             do throws(Time_Primitives.Time.Error) {
                 localMidnight = try Time_Primitives.Time(
@@ -176,11 +148,6 @@ extension ISO_8601.DateTime.Parser: Parser.`Protocol` {
             }
         }
 
-        // 6. The parsed components are local wall-clock values at
-        //    `timezoneOffset`, not UTC. Validate them as a calendar date/time
-        //    (day-of-month, leap year, hour/minute/second range, …), then
-        //    convert to the true UTC instant: epoch = naive-UTC(components)
-        //    minus the offset (e.g. local 12:30 at +02:00 is 10:30 UTC).
         let millisecond = nanoseconds / 1_000_000
         let microsecondRemainder = nanoseconds % 1_000_000
         let microsecond = microsecondRemainder / 1000
