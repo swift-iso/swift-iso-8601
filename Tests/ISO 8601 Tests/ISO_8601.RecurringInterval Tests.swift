@@ -81,10 +81,9 @@ extension `ISO_8601.RecurringInterval Tests`.Unit {
             return
         }
 
-        let startComp = start.components
-        #expect(startComp.year == 2019)
-        #expect(startComp.month == 1)
-        #expect(startComp.day == 1)
+        #expect(start.date.year == 2019)
+        #expect(start.date.month == 1)
+        #expect(start.date.day == 1)
         #expect(dur.days == 1)
     }
 
@@ -136,10 +135,9 @@ extension `ISO_8601.RecurringInterval Tests`.Unit {
         #expect(dur.hours == 2)
         #expect(dur.minutes == 30)
 
-        let endComp = end.components
-        #expect(endComp.year == 2019)
-        #expect(endComp.month == 12)
-        #expect(endComp.day == 31)
+        #expect(end.date.year == 2019)
+        #expect(end.date.month == 12)
+        #expect(end.date.day == 31)
     }
 
     @Test
@@ -155,10 +153,8 @@ extension `ISO_8601.RecurringInterval Tests`.Unit {
             return
         }
 
-        let startComp = start.components
-        #expect(startComp.day == 1)
-        let endComp = end.components
-        #expect(endComp.day == 8)
+        #expect(start.date.day == 1)
+        #expect(end.date.day == 8)
     }
 
     @Test
@@ -199,7 +195,7 @@ extension `ISO_8601.RecurringInterval Tests`.`Edge Case` {
         let duration = try ISO_8601.Duration(days: 1)
         let interval = ISO_8601.Interval.duration(duration)
 
-        #expect(throws: ISO_8601.Date.Error.self) {
+        #expect(throws: ISO_8601.RecurringInterval.Error.self) {
             _ = try ISO_8601.RecurringInterval(repetitions: -1, interval: interval)
         }
     }

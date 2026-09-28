@@ -1,184 +1,148 @@
+public import ASCII
 public import Byte
+public import Cursor
 public import Parser
-public import Time
 
 extension ISO_8601.DateTime {
 
-    public struct Parser<Input: Collection.Slice.`Protocol`>: Sendable
-    where Input: Sendable, Input.Element == Byte {
+    public struct Parser<Input: Cursor.`Protocol`>: Sendable
+    where Input.Element == Byte, Input.Failure == Never {
+
         @inlinable
         public init() {}
     }
 }
 
-extension ISO_8601.DateTime.Parser: Parser.`Protocol` {
-    public typealias Body = Never
+extension ISO_8601.DateTime.Parser: Parsing {
+
     public typealias Failure = __DateTimeParserError
 
     @inlinable
     public func parse(_ input: inout Input) throws(Failure) -> ISO_8601.DateTime {
-
-        var probe = input.startIndex
-        var hasWeekDesignator = false
-        var dashCount = 0
-        var fieldLength = 0
-        while probe < input.endIndex {
-            let byte = input[probe]
-            if byte == 0x54 || byte == 0x2F { break }
-            if byte == 0x57 {
-                hasWeekDesignator = true
-            } else if byte == 0x2D {
-                dashCount += 1
-            }
-            fieldLength += 1
-            input.formIndex(after: &probe)
+        let date = try Self.date(&input)
+        let time = try Self.time(&input)
+        let offset = try Self.offset(&input)
+        guard time.hour < 24 || (time.minute, time.second, time.nanoseconds) == (0, 0, 0) else {
+            throw .invalidEndOfDay
         }
-
-        let isWeek = hasWeekDesignator
-        let isOrdinal =
-            !hasWeekDesignator && (dashCount == 1 || (dashCount == 0 && fieldLength == 7))
-
-        let year: Int
-        let month: Int
-        let day: Int
-        if isWeek {
-            let parsed: ISO_8601.WeekDate.Parse<Input>.Output
-            do throws(__ISO8601ParseError) {
-                parsed = try ISO_8601.WeekDate.Parse<Input>().parse(&input)
-            } catch {
-                throw .dateError(error)
-            }
-            let weekDate: ISO_8601.WeekDate
-            do throws(ISO_8601.Date.Error) {
-                weekDate = try ISO_8601.WeekDate(
-                    weekYear: parsed.weekYear,
-                    week: parsed.week,
-                    weekday: parsed.weekday
-                )
-            } catch {
-                throw .invalidComponents(error)
-            }
-            let components = ISO_8601.DateTime(weekDate).components
-            (year, month, day) = (components.year, components.month, components.day)
-        } else if isOrdinal {
-            let parsed: ISO_8601.OrdinalDate.Parse<Input>.Output
-            do throws(__ISO8601ParseError) {
-                parsed = try ISO_8601.OrdinalDate.Parse<Input>().parse(&input)
-            } catch {
-                throw .dateError(error)
-            }
-            let ordinalDate: ISO_8601.OrdinalDate
-            do throws(ISO_8601.Date.Error) {
-                ordinalDate = try ISO_8601.OrdinalDate(year: parsed.year, day: parsed.day)
-            } catch {
-                throw .invalidComponents(error)
-            }
-            let components = ISO_8601.DateTime(ordinalDate).components
-            (year, month, day) = (components.year, components.month, components.day)
-        } else {
-            let parsed: ISO_8601.CalendarDate.Parse<Input>.Output
-            do throws(__ISO8601ParseError) {
-                parsed = try ISO_8601.CalendarDate.Parse<Input>().parse(&input)
-            } catch {
-                throw .dateError(error)
-            }
-            (year, month, day) = (parsed.year, parsed.month, parsed.day)
-        }
-
-        var hour = 0
-        var minute = 0
-        var second = 0
-        var nanoseconds = 0
-        if input.startIndex < input.endIndex, input[input.startIndex] == 0x54 {
-            input = input[input.index(after: input.startIndex)...]
-            let time: ISO_8601.Time.Parse<Input>.Output
-            do throws(__ISO8601ParseError) {
-                time = try ISO_8601.Time.Parse<Input>().parse(&input)
-            } catch {
-                throw .timeError(error)
-            }
-            (hour, minute, second, nanoseconds) =
-                (time.hour, time.minute, time.second, time.nanoseconds)
-        }
-
-        var timezoneOffset = 0
-        if input.startIndex < input.endIndex {
-            let byte = input[input.startIndex]
-            if byte == 0x5A || byte == 0x2B || byte == 0x2D {
-                let offset: ISO_8601.Timezone.Offset.Parse<Input>.Output
-                do throws(__ISO8601ParseError) {
-                    offset = try ISO_8601.Timezone.Offset.Parse<Input>().parse(&input)
-                } catch {
-                    throw .timezoneError(error)
-                }
-                timezoneOffset = offset.totalSeconds
-            }
-        }
-
-        if hour == 24 {
-            guard minute == 0, second == 0, nanoseconds == 0 else {
-                throw .invalidComponents(
-                    .invalidTime("24:xx:xx is not valid, only 24:00:00 is allowed")
-                )
-            }
-
-            let localMidnight: Time.Time
-            do throws(Time.Time.Error) {
-                localMidnight = try Time.Time(
-                    year: year,
-                    month: month,
-                    day: day,
-                    hour: 0,
-                    minute: 0,
-                    second: 0
-                )
-            } catch {
-                throw .invalidComponents(.invalidComponents(error))
-            }
-            let trueEpochOfMidnight = localMidnight.secondsSinceEpoch - timezoneOffset
-            do throws(ISO_8601.Date.Error) {
-                return try ISO_8601.DateTime(
-                    secondsSinceEpoch: trueEpochOfMidnight
-                        + Time.Time.Calendar.Gregorian.TimeConstants.secondsPerDay,
-                    nanoseconds: 0,
-                    timezoneOffsetSeconds: timezoneOffset
-                )
-            } catch {
-                throw .invalidComponents(error)
-            }
-        }
-
-        let millisecond = nanoseconds / 1_000_000
-        let microsecondRemainder = nanoseconds % 1_000_000
-        let microsecond = microsecondRemainder / 1000
-        let nanosecond = microsecondRemainder % 1000
-
-        let localTime: Time.Time
-        do throws(Time.Time.Error) {
-            localTime = try Time.Time(
-                year: year,
-                month: month,
-                day: day,
-                hour: hour,
-                minute: minute,
-                second: second,
-                millisecond: millisecond,
-                microsecond: microsecond,
-                nanosecond: nanosecond
-            )
-        } catch {
-            throw .invalidComponents(.invalidComponents(error))
-        }
-        let trueEpochSeconds = localTime.secondsSinceEpoch - timezoneOffset
-
-        do throws(ISO_8601.Date.Error) {
+        do throws(ISO_8601.DateTime.Error) {
             return try ISO_8601.DateTime(
-                secondsSinceEpoch: trueEpochSeconds,
-                nanoseconds: nanoseconds,
-                timezoneOffsetSeconds: timezoneOffset
+                date: time.hour == 24 ? Self.following(date) : date,
+                hour: time.hour % 24,
+                minute: time.minute,
+                second: time.second,
+                nanoseconds: time.nanoseconds,
+                offset: offset
             )
         } catch {
-            throw .invalidComponents(error)
+            throw .dateTime(error)
+        }
+    }
+}
+
+extension ISO_8601.DateTime.Parser {
+
+    @usableFromInline
+    static func following(
+        _ date: ISO_8601.CalendarDate
+    ) throws(ISO_8601.DateTime.Error) -> ISO_8601.CalendarDate {
+        do throws(ISO_8601.CalendarDate.Error) {
+            return try ISO_8601.CalendarDate(daysSinceUnixEpoch: date.daysSinceUnixEpoch + 1)
+        } catch {
+            throw .date(error)
+        }
+    }
+
+    @usableFromInline
+    static func date(_ input: inout Input) throws(Failure) -> ISO_8601.CalendarDate {
+        let mark = input.checkpoint
+        var shape = (week: false, dashes: 0, length: 0)
+        while let code = input.upcoming(), code != .T, code != .slash {
+            _ = input.next()
+            shape = (shape.week || code == .W, shape.dashes + (code == .hyphen ? 1 : 0), shape.length + 1)
+        }
+        input.seek(to: mark)
+        return switch shape {
+        case (true, _, _): try weekDate(&input)
+        case (false, 1, _), (false, 0, 7): try ordinalDate(&input)
+        default: try calendarDate(&input)
+        }
+    }
+
+    @usableFromInline
+    static func calendarDate(_ input: inout Input) throws(Failure) -> ISO_8601.CalendarDate {
+        let parsed: ISO_8601.CalendarDate.Parse<Input>.Output
+        do throws(__ISO8601ParseError) {
+            parsed = try ISO_8601.CalendarDate.Parse<Input>().parse(&input)
+        } catch {
+            throw .dateError(error)
+        }
+        do throws(ISO_8601.CalendarDate.Error) {
+            return try ISO_8601.CalendarDate(year: parsed.year, month: parsed.month, day: parsed.day)
+        } catch {
+            throw .dateTime(.date(error))
+        }
+    }
+
+    @usableFromInline
+    static func weekDate(_ input: inout Input) throws(Failure) -> ISO_8601.CalendarDate {
+        let parsed: ISO_8601.WeekDate.Parse<Input>.Output
+        do throws(__ISO8601ParseError) {
+            parsed = try ISO_8601.WeekDate.Parse<Input>().parse(&input)
+        } catch {
+            throw .dateError(error)
+        }
+        do throws(ISO_8601.WeekDate.Error) {
+            return ISO_8601.CalendarDate(
+                try ISO_8601.WeekDate(weekYear: parsed.weekYear, week: parsed.week, weekday: parsed.weekday)
+            )
+        } catch {
+            throw .weekDate(error)
+        }
+    }
+
+    @usableFromInline
+    static func ordinalDate(_ input: inout Input) throws(Failure) -> ISO_8601.CalendarDate {
+        let parsed: ISO_8601.OrdinalDate.Parse<Input>.Output
+        do throws(__ISO8601ParseError) {
+            parsed = try ISO_8601.OrdinalDate.Parse<Input>().parse(&input)
+        } catch {
+            throw .dateError(error)
+        }
+        do throws(ISO_8601.OrdinalDate.Error) {
+            return ISO_8601.CalendarDate(try ISO_8601.OrdinalDate(year: parsed.year, day: parsed.day))
+        } catch {
+            throw .ordinalDate(error)
+        }
+    }
+
+    @usableFromInline
+    static func time(_ input: inout Input) throws(Failure) -> ISO_8601.Time.Parse<Input>.Output {
+        guard input.advance(past: .T) else {
+            return ISO_8601.Time.Parse<Input>.Output(hour: 0, minute: 0, second: 0, nanoseconds: 0)
+        }
+        do throws(__ISO8601ParseError) {
+            return try ISO_8601.Time.Parse<Input>().parse(&input)
+        } catch {
+            throw .timeError(error)
+        }
+    }
+
+    @usableFromInline
+    static func offset(_ input: inout Input) throws(Failure) -> ISO_8601.Timezone.Offset {
+        guard let code = input.upcoming(), code == .Z || code == .plus || code == .hyphen else {
+            return .utc
+        }
+        let parsed: ISO_8601.Timezone.Offset.Parse<Input>.Output
+        do throws(__ISO8601ParseError) {
+            parsed = try ISO_8601.Timezone.Offset.Parse<Input>().parse(&input)
+        } catch {
+            throw .timezoneError(error)
+        }
+        do throws(ISO_8601.Timezone.Offset.Error) {
+            return try ISO_8601.Timezone.Offset(seconds: parsed.totalSeconds)
+        } catch {
+            throw .offset(error)
         }
     }
 }

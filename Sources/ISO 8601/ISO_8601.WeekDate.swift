@@ -1,8 +1,6 @@
-import Time
-
 extension ISO_8601 {
 
-    public struct WeekDate: Sendable, Equatable, Hashable {
+    public struct WeekDate: Sendable, Hashable {
 
         public let weekYear: Int
 
@@ -10,86 +8,55 @@ extension ISO_8601 {
 
         public let weekday: Int
 
-        public init(weekYear: Int, week: Int, weekday: Int) throws(ISO_8601.Date.Error) {
-
-            guard (1...7).contains(weekday) else {
-                throw ISO_8601.Date.Error.weekdayOutOfRange(weekday)
+        public init(weekYear: Int, week: Int, weekday: Int) throws(Error) {
+            guard (1...7).contains(weekday) else { throw .weekdayOutOfRange(weekday) }
+            guard Self.weekYears.contains(weekYear) else { throw .yearOutOfRange(weekYear) }
+            guard (1...Self.numberOfWeeks(inWeekYear: weekYear)).contains(week) else {
+                throw .weekOutOfRange(week, weekYear: weekYear)
             }
-
-            let maxWeeks = ISO_8601.DateTime.weeksInYear(weekYear)
-            guard (1...maxWeeks).contains(week) else {
-                throw ISO_8601.Date.Error.weekNumberOutOfRange(week, year: weekYear)
-            }
-
+            guard
+                ISO_8601.CalendarDate.representableDays.contains(
+                    Self.daysSinceUnixEpoch(weekYear: weekYear, week: week, weekday: weekday)
+                )
+            else { throw .yearOutOfRange(weekYear) }
             self.weekYear = weekYear
             self.week = week
             self.weekday = weekday
         }
 
-        internal init(uncheckedWeekYear weekYear: Int, week: Int, weekday: Int) {
-            self.weekYear = weekYear
-            self.week = week
+        public init(_ date: ISO_8601.CalendarDate) {
+            let days = date.daysSinceUnixEpoch
+            let weekday = ISO_8601.Weekday(daysSinceUnixEpoch: days).isoNumber
+            let thursday = ISO_8601.CalendarDate.civil(daysSinceUnixEpoch: days - weekday + 4)
+            let thursdayOrdinal =
+                days - weekday + 4
+                - ISO_8601.CalendarDate.daysSinceUnixEpoch(year: thursday.year, month: 1, day: 1)
+            self.weekYear = thursday.year
+            self.week = thursdayOrdinal / 7 + 1
             self.weekday = weekday
-        }
-
-        public init(_ dateTime: ISO_8601.DateTime) {
-            self.init(
-                uncheckedWeekYear: dateTime.isoWeekYear,
-                week: dateTime.isoWeek,
-                weekday: dateTime.isoWeekday
-            )
         }
     }
 }
 
-extension ISO_8601.DateTime {
+extension ISO_8601.WeekDate {
 
-    public init(_ weekDate: ISO_8601.WeekDate) {
-
-        let jan4Time: Time.Time
-        do {
-            jan4Time = try Time.Time(
-                year: weekDate.weekYear,
-                month: 1,
-                day: 4,
-                hour: 0,
-                minute: 0,
-                second: 0
-            )
-        } catch {
-            fatalError(
-                "ISO_8601.DateTime.init(_:WeekDate): January 4th failed to construct — \(error)"
-            )
+    public static func numberOfWeeks(inWeekYear weekYear: Int) -> Int {
+        switch ISO_8601.Weekday(
+            daysSinceUnixEpoch: ISO_8601.CalendarDate.daysSinceUnixEpoch(year: weekYear, month: 1, day: 1)
+        ) {
+        case .thursday: 53
+        case .wednesday: ISO_8601.CalendarDate.isLeapYear(weekYear) ? 53 : 52
+        default: 52
         }
-        let jan4DaysSinceEpoch =
-            jan4Time.secondsSinceEpoch
-            / Time.Time.Calendar.Gregorian.TimeConstants.secondsPerDay
+    }
 
-        let jan4WeekdayEnum = jan4Time.weekday
-        let jan4Weekday: Int
-        switch jan4WeekdayEnum {
-        case .sunday: jan4Weekday = 0
-        case .monday: jan4Weekday = 1
-        case .tuesday: jan4Weekday = 2
-        case .wednesday: jan4Weekday = 3
-        case .thursday: jan4Weekday = 4
-        case .friday: jan4Weekday = 5
-        case .saturday: jan4Weekday = 6
-        }
-        let jan4ISOWeekday = jan4Weekday == 0 ? 7 : jan4Weekday
+    static var weekYears: ClosedRange<Int> {
+        ISO_8601.CalendarDate.years.lowerBound - 1...ISO_8601.CalendarDate.years.upperBound + 1
+    }
 
-        let mondayOfWeek1 = jan4DaysSinceEpoch - (jan4ISOWeekday - 1)
-
-        let daysSinceEpoch = mondayOfWeek1 + ((weekDate.week - 1) * 7) + (weekDate.weekday - 1)
-
-        let totalSeconds =
-            daysSinceEpoch * Time.Time.Calendar.Gregorian.TimeConstants.secondsPerDay
-
-        self.init(
-
-            __unchecked: (),
-            secondsEpoch: totalSeconds,
-            timezoneOffsetSeconds: 0
-        )
+    static func daysSinceUnixEpoch(weekYear: Int, week: Int, weekday: Int) -> Int {
+        let january4 = ISO_8601.CalendarDate.daysSinceUnixEpoch(year: weekYear, month: 1, day: 4)
+        let mondayOfWeek1 = january4 - ISO_8601.Weekday(daysSinceUnixEpoch: january4).isoNumber + 1
+        return mondayOfWeek1 + (week - 1) * 7 + weekday - 1
     }
 }

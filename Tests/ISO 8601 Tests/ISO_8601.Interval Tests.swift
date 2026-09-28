@@ -48,15 +48,13 @@ extension `ISO_8601.Interval Tests`.Unit {
             return
         }
 
-        let startComp = start.components
-        #expect(startComp.year == 2019)
-        #expect(startComp.month == 8)
-        #expect(startComp.day == 27)
+        #expect(start.date.year == 2019)
+        #expect(start.date.month == 8)
+        #expect(start.date.day == 27)
 
-        let endComp = end.components
-        #expect(endComp.year == 2019)
-        #expect(endComp.month == 8)
-        #expect(endComp.day == 29)
+        #expect(end.date.year == 2019)
+        #expect(end.date.month == 8)
+        #expect(end.date.day == 29)
     }
 
     @Test
@@ -125,10 +123,9 @@ extension `ISO_8601.Interval Tests`.Unit {
             return
         }
 
-        let startComp = start.components
-        #expect(startComp.year == 2019)
-        #expect(startComp.month == 8)
-        #expect(startComp.day == 27)
+        #expect(start.date.year == 2019)
+        #expect(start.date.month == 8)
+        #expect(start.date.day == 27)
         #expect(dur.days == 3)
     }
 
@@ -167,10 +164,9 @@ extension `ISO_8601.Interval Tests`.Unit {
         }
 
         #expect(dur.days == 3)
-        let endComp = end.components
-        #expect(endComp.year == 2019)
-        #expect(endComp.month == 8)
-        #expect(endComp.day == 29)
+        #expect(end.date.year == 2019)
+        #expect(end.date.month == 8)
+        #expect(end.date.day == 29)
     }
 
     @Test
@@ -184,13 +180,11 @@ extension `ISO_8601.Interval Tests`.Unit {
             return
         }
 
-        let startComp = start.components
-        #expect(startComp.hour == 12)
-        #expect(startComp.minute == 30)
+        #expect(start.hour == 12)
+        #expect(start.minute == 30)
 
-        let endComp = end.components
-        #expect(endComp.hour == 18)
-        #expect(endComp.minute == 45)
+        #expect(end.hour == 18)
+        #expect(end.minute == 45)
     }
 
     @Test
@@ -202,8 +196,7 @@ extension `ISO_8601.Interval Tests`.Unit {
             return
         }
 
-        let startComp = start.components
-        #expect(startComp.year == 2019)
+        #expect(start.date.year == 2019)
 
         #expect(dur.years == 1)
         #expect(dur.months == 2)

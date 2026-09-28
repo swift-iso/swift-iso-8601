@@ -10,5 +10,7 @@ public enum __DurationParserError: Swift.Error, Sendable, Equatable {
 
     case overflow
 
+    case duration(ISO_8601.Duration.Error)
+
     case unexpectedTrailingInput
 }

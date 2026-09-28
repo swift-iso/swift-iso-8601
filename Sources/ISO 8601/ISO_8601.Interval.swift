@@ -1,8 +1,5 @@
 import Byte
-import Byte_Standard_Library_Integration
 import Cursor
-import Cursor_Standard_Library_Integration
-import Parser
 
 extension ISO_8601 {
 

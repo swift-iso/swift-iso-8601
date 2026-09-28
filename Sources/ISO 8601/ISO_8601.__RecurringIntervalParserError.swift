@@ -8,5 +8,7 @@ public enum __RecurringIntervalParserError: Swift.Error, Sendable, Equatable {
 
     case overflow
 
+    case recurringInterval(ISO_8601.RecurringInterval.Error)
+
     case unexpectedTrailingInput
 }

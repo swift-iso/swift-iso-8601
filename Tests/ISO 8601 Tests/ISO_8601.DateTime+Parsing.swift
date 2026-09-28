@@ -1,5 +1,6 @@
 import Foundation
 import Testing
+import Time
 
 @testable import ISO_8601
 
@@ -28,7 +29,7 @@ extension ISO_8601.DateTime.Parsing.Unit {
         formatter.formatOptions = [.withInternetDateTime]
         let foundationDate = try #require(formatter.date(from: string))
 
-        #expect(dt.epoch.seconds == Int(foundationDate.timeIntervalSince1970))
+        #expect(dt.instant == Time.Instant(offset: .seconds(Int64(foundationDate.timeIntervalSince1970))))
     }
 }
 
@@ -39,7 +40,7 @@ extension ISO_8601.DateTime.Parsing.`Edge Case` {
         let dt = try ISO_8601.DateTime("2024-01-15T12:30:00+02:00")
         let utcOnly = try ISO_8601.DateTime("2024-01-15T10:30:00Z")
 
-        #expect(dt.epoch.seconds == utcOnly.epoch.seconds)
+        #expect(dt.instant == utcOnly.instant)
         #expect(dt == utcOnly)
     }
 
@@ -49,7 +50,7 @@ extension ISO_8601.DateTime.Parsing.`Edge Case` {
         let dt = try ISO_8601.DateTime("2024-01-15T12:30:00-05:00")
         let utcOnly = try ISO_8601.DateTime("2024-01-15T17:30:00Z")
 
-        #expect(dt.epoch.seconds == utcOnly.epoch.seconds)
+        #expect(dt.instant == utcOnly.instant)
         #expect(dt == utcOnly)
     }
 
@@ -59,11 +60,11 @@ extension ISO_8601.DateTime.Parsing.`Edge Case` {
         let dt = try ISO_8601.DateTime("2024-01-15T00:30:00+02:00")
         let expected = try ISO_8601.DateTime("2024-01-14T22:30:00Z")
 
-        #expect(dt.epoch.seconds == expected.epoch.seconds)
+        #expect(dt.instant == expected.instant)
 
-        #expect(dt.components.day == 15)
-        #expect(dt.components.hour == 0)
-        #expect(dt.components.minute == 30)
+        #expect(dt.date.day == 15)
+        #expect(dt.hour == 0)
+        #expect(dt.minute == 30)
     }
 
     @Test
@@ -72,7 +73,7 @@ extension ISO_8601.DateTime.Parsing.`Edge Case` {
         let dt = try ISO_8601.DateTime("2024-01-15T23:30:00-02:00")
         let expected = try ISO_8601.DateTime("2024-01-16T01:30:00Z")
 
-        #expect(dt.epoch.seconds == expected.epoch.seconds)
+        #expect(dt.instant == expected.instant)
     }
 
     @Test
@@ -81,7 +82,7 @@ extension ISO_8601.DateTime.Parsing.`Edge Case` {
         let dt = try ISO_8601.DateTime("2024-01-15T24:00:00+02:00")
         let expected = try ISO_8601.DateTime("2024-01-15T22:00:00Z")
 
-        #expect(dt.epoch.seconds == expected.epoch.seconds)
+        #expect(dt.instant == expected.instant)
     }
 
     @Test
@@ -89,6 +90,6 @@ extension ISO_8601.DateTime.Parsing.`Edge Case` {
         let plusZero = try ISO_8601.DateTime("2024-01-15T12:30:00+00:00")
         let zulu = try ISO_8601.DateTime("2024-01-15T12:30:00Z")
 
-        #expect(plusZero.epoch.seconds == zulu.epoch.seconds)
+        #expect(plusZero.instant == zulu.instant)
     }
 }

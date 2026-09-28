@@ -8,7 +8,15 @@ public enum __DateTimeParserError: Swift.Error, Sendable, Equatable {
 
     case timezoneError(__ISO8601ParseError)
 
-    case invalidComponents(ISO_8601.Date.Error)
+    case weekDate(ISO_8601.WeekDate.Error)
+
+    case ordinalDate(ISO_8601.OrdinalDate.Error)
+
+    case offset(ISO_8601.Timezone.Offset.Error)
+
+    case dateTime(ISO_8601.DateTime.Error)
+
+    case invalidEndOfDay
 
     case unexpectedTrailingInput
 }

@@ -20,7 +20,7 @@ extension `ISO_8601.Time Tests`.Unit {
         #expect(time.minute == 30)
         #expect(time.second == 45)
         #expect(time.nanoseconds == 0)
-        #expect(time.timezone.offsetSeconds == nil)
+        #expect(time.offset == nil)
     }
 
     @Test
@@ -35,9 +35,9 @@ extension `ISO_8601.Time Tests`.Unit {
 
     @Test
     func `Create time with timezone`() throws {
-        let time = try ISO_8601.Time(hour: 12, minute: 30, second: 45, timezoneOffsetSeconds: 19800)
+        let time = try ISO_8601.Time(hour: 12, minute: 30, second: 45, offset: .init(seconds: 19800))
 
-        #expect(time.timezone.offsetSeconds == 19800)
+        #expect(time.offset?.seconds == 19800)
     }
 
     @Test
@@ -114,7 +114,7 @@ extension `ISO_8601.Time Tests`.Unit {
 
     @Test
     func `Format time with UTC timezone`() throws {
-        let time = try ISO_8601.Time(hour: 12, minute: 30, second: 45, timezoneOffsetSeconds: 0)
+        let time = try ISO_8601.Time(hour: 12, minute: 30, second: 45, offset: .init(seconds: 0))
 
         #expect(time.description == "12:30:45Z")
     }
@@ -122,14 +122,14 @@ extension `ISO_8601.Time Tests`.Unit {
     @Test
     func `Format time with positive offset extended`() throws {
 
-        let time = try ISO_8601.Time(hour: 12, minute: 30, second: 45, timezoneOffsetSeconds: 19800)
+        let time = try ISO_8601.Time(hour: 12, minute: 30, second: 45, offset: .init(seconds: 19800))
 
         #expect(time.description == "12:30:45+05:30")
     }
 
     @Test
     func `Format time with positive offset basic`() throws {
-        let time = try ISO_8601.Time(hour: 12, minute: 30, second: 45, timezoneOffsetSeconds: 19800)
+        let time = try ISO_8601.Time(hour: 12, minute: 30, second: 45, offset: .init(seconds: 19800))
         let formatted = ISO_8601.Time.Formatter.format(time, format: .basic)
 
         #expect(formatted == "123045+0530")
@@ -141,7 +141,7 @@ extension `ISO_8601.Time Tests`.Unit {
             hour: 12,
             minute: 30,
             second: 45,
-            timezoneOffsetSeconds: -18000
+            offset: .init(seconds: -18000)
         )
 
         #expect(time.description == "12:30:45-05:00")
@@ -162,7 +162,7 @@ extension `ISO_8601.Time Tests`.Unit {
         #expect(time.minute == 30)
         #expect(time.second == 45)
         #expect(time.nanoseconds == 0)
-        #expect(time.timezone.offsetSeconds == nil)
+        #expect(time.offset == nil)
     }
 
     @Test
@@ -226,28 +226,28 @@ extension `ISO_8601.Time Tests`.Unit {
         #expect(time.hour == 12)
         #expect(time.minute == 30)
         #expect(time.second == 45)
-        #expect(time.timezone.offsetSeconds == 0)
+        #expect(time.offset?.seconds == 0)
     }
 
     @Test
     func `Parse time with positive offset extended`() throws {
         let time = try ISO_8601.Time.Parser.parse("12:30:45+05:30")
 
-        #expect(time.timezone.offsetSeconds == 19800)
+        #expect(time.offset?.seconds == 19800)
     }
 
     @Test
     func `Parse time with positive offset basic`() throws {
         let time = try ISO_8601.Time.Parser.parse("123045+0530")
 
-        #expect(time.timezone.offsetSeconds == 19800)
+        #expect(time.offset?.seconds == 19800)
     }
 
     @Test
     func `Parse time with negative offset`() throws {
         let time = try ISO_8601.Time.Parser.parse("12:30:45-05:00")
 
-        #expect(time.timezone.offsetSeconds == -18000)
+        #expect(time.offset?.seconds == -18000)
     }
 
     @Test
@@ -287,8 +287,8 @@ extension `ISO_8601.Time Tests`.Unit {
 
     @Test
     func `Times with different timezones are not equal`() throws {
-        let t1 = try ISO_8601.Time(hour: 12, minute: 30, timezoneOffsetSeconds: 0)
-        let t2 = try ISO_8601.Time(hour: 12, minute: 30, timezoneOffsetSeconds: 3600)
+        let t1 = try ISO_8601.Time(hour: 12, minute: 30, offset: .init(seconds: 0))
+        let t2 = try ISO_8601.Time(hour: 12, minute: 30, offset: .init(seconds: 3600))
 
         #expect(t1 != t2)
     }
@@ -298,35 +298,35 @@ extension `ISO_8601.Time Tests`.`Edge Case` {
 
     @Test
     func `Reject hour out of range`() throws {
-        #expect(throws: ISO_8601.Date.Error.self) {
+        #expect(throws: ISO_8601.Time.Error.self) {
             _ = try ISO_8601.Time(hour: 25)
         }
     }
 
     @Test
     func `Reject minute out of range`() throws {
-        #expect(throws: ISO_8601.Date.Error.self) {
+        #expect(throws: ISO_8601.Time.Error.self) {
             _ = try ISO_8601.Time(hour: 12, minute: 60)
         }
     }
 
     @Test
     func `Reject second out of range`() throws {
-        #expect(throws: ISO_8601.Date.Error.self) {
+        #expect(throws: ISO_8601.Time.Error.self) {
             _ = try ISO_8601.Time(hour: 12, minute: 30, second: 61)
         }
     }
 
     @Test
     func `Reject invalid nanoseconds`() throws {
-        #expect(throws: ISO_8601.Date.Error.self) {
+        #expect(throws: ISO_8601.Time.Error.self) {
             _ = try ISO_8601.Time(hour: 12, nanoseconds: 1_000_000_000)
         }
     }
 
     @Test
     func `Reject 24 hours with non-zero components`() throws {
-        #expect(throws: ISO_8601.Date.Error.self) {
+        #expect(throws: ISO_8601.Time.Error.self) {
             _ = try ISO_8601.Time(hour: 24, minute: 30)
         }
     }
@@ -356,7 +356,7 @@ extension `ISO_8601.Time Tests`.Integration {
             hour: 12,
             minute: 30,
             second: 45,
-            timezoneOffsetSeconds: 19800
+            offset: .init(seconds: 19800)
         )
         let formatted = original.description
         let parsed = try ISO_8601.Time.Parser.parse(formatted)
@@ -392,6 +392,6 @@ extension `ISO_8601.Time Tests`.Integration {
         #expect(time.hour == 12)
         #expect(time.minute == 30)
         #expect(time.second == 45)
-        #expect(time.timezone.offsetSeconds == 0)
+        #expect(time.offset?.seconds == 0)
     }
 }

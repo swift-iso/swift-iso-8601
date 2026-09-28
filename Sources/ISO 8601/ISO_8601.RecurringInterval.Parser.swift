@@ -1,64 +1,50 @@
-public import ASCII_Decimal_Parser
-import Parser
+public import ASCII
+public import Byte
+public import Cursor
+public import Parser
 
 extension ISO_8601.RecurringInterval {
 
-    public struct Parser<Input: Collection.Slice.`Protocol`>: Sendable
-    where Input: Sendable, Input.Element == Byte {
+    public struct Parser<Input: Cursor.`Protocol`>: Sendable
+    where Input.Element == Byte, Input.Failure == Never {
+
         @inlinable
         public init() {}
     }
 }
 
-extension ISO_8601.RecurringInterval.Parser: Parser.`Protocol` {
-    public typealias Body = Never
+extension ISO_8601.RecurringInterval.Parser: Parsing {
+
     public typealias Failure = __RecurringIntervalParserError
 
     @inlinable
     public func parse(_ input: inout Input) throws(Failure) -> ISO_8601.RecurringInterval {
-
-        guard input.startIndex < input.endIndex,
-            input[input.startIndex] == 0x52
-        else {
-            throw .expectedR
-        }
-        input = input[input.index(after: input.startIndex)...]
-
-        var repetitions: Int? = nil
-        if input.startIndex < input.endIndex {
-            let byte = input[input.startIndex]
-            if byte >= 0x30 && byte <= 0x39 {
-
-                do throws(ASCII.Decimal.Error) {
-                    repetitions = try ASCII.Decimal.Parser<Input, Int>().parse(&input)
-                } catch {
-                    switch error {
-                    case .overflow: throw .overflow
-
-                    case .noDigits, .insufficientDigits, .invalidSign: throw .expectedSlash
-                    }
-                }
-            }
-        }
-
-        guard input.startIndex < input.endIndex,
-            input[input.startIndex] == 0x2F
-        else {
-            throw .expectedSlash
-        }
-        input = input[input.index(after: input.startIndex)...]
-
+        guard input.advance(past: .R) else { throw .expectedR }
+        let repetitions = try Self.repetitions(&input)
+        guard input.advance(past: .slash) else { throw .expectedSlash }
         let interval: ISO_8601.Interval
         do throws(__IntervalParserError) {
             interval = try ISO_8601.Interval.Parser<Input>().parse(&input)
         } catch {
             throw .intervalError(error)
         }
-
-        do throws(ISO_8601.Date.Error) {
+        do throws(ISO_8601.RecurringInterval.Error) {
             return try ISO_8601.RecurringInterval(repetitions: repetitions, interval: interval)
         } catch {
-            throw .overflow
+            throw .recurringInterval(error)
+        }
+    }
+}
+
+extension ISO_8601.RecurringInterval.Parser {
+
+    @usableFromInline
+    static func repetitions(_ input: inout Input) throws(Failure) -> Int? {
+        guard input.upcoming()?.isDigit == true else { return nil }
+        do throws(ASCII.Decimal.Error) {
+            return try ASCII.Decimal.Parser<Input, Int>().parse(&input)
+        } catch {
+            throw error == .overflow ? .overflow : .expectedSlash
         }
     }
 }

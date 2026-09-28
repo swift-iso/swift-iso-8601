@@ -189,7 +189,7 @@ extension `ISO_8601.Duration Tests`.`Edge Case` {
 
     @Test
     func `Reject invalid nanoseconds`() throws {
-        #expect(throws: ISO_8601.Date.Error.self) {
+        #expect(throws: ISO_8601.Duration.Error.self) {
             _ = try ISO_8601.Duration(nanoseconds: 1_000_000_000)
         }
     }

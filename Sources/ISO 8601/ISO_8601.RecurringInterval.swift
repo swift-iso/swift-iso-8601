@@ -1,8 +1,5 @@
 import Byte
-import Byte_Standard_Library_Integration
 import Cursor
-import Cursor_Standard_Library_Integration
-import Parser
 
 extension ISO_8601 {
 
@@ -12,12 +9,8 @@ extension ISO_8601 {
 
         public let interval: Interval
 
-        public init(repetitions: Int?, interval: Interval) throws(ISO_8601.Date.Error) {
-            if let reps = repetitions {
-                guard reps >= 0 else {
-                    throw ISO_8601.Date.Error.invalidFormat("Repetitions must be non-negative")
-                }
-            }
+        public init(repetitions: Int?, interval: Interval) throws(Error) {
+            guard (repetitions ?? 0) >= 0 else { throw .negativeRepetitions(repetitions ?? 0) }
             self.repetitions = repetitions
             self.interval = interval
         }

@@ -1,5 +1,3 @@
-import Time
-
 extension ISO_8601.DateTime {
 
     public enum Formatter {}
@@ -13,194 +11,68 @@ extension ISO_8601.DateTime.Formatter {
         time: TimeFormat = .time(extended: true),
         timezone: TimezoneFormat = .utc
     ) -> String {
-        var result = ""
-
-        switch time {
-        case .none:
-
-            result += formatDatePortion(value, format: date)
-
-        case .time(let extended):
-
-            let renderValue = renderedValue(for: value, timezone: timezone)
-
-            result += formatDatePortion(renderValue, format: date)
-            result += "T"
-            result += formatTime(renderValue, extended: extended)
-
-            switch timezone {
-            case .none:
-                break
-
-            case .utc:
-                result += "Z"
-
-            case .offset(let offsetExtended):
-                result += formatTimezoneOffset(
-                    value.timezone.offsetSeconds,
-                    extended: offsetExtended
-                )
-            }
+        let seconds = switch (time, timezone) {
+        case (.time, .utc):
+            value.date.daysSinceUnixEpoch * 86_400 + value.secondOfDay - value.offset.seconds
+        case (.none, _), (.time, .none), (.time, .offset):
+            value.date.daysSinceUnixEpoch * 86_400 + value.secondOfDay
         }
-
-        return result
+        let secondOfDay = (seconds % 86_400 + 86_400) % 86_400
+        let days = (seconds - secondOfDay) / 86_400
+        return switch time {
+        case .none:
+            formatDate(days: days, format: date)
+        case .time(let extended):
+            formatDate(days: days, format: date)
+                + "T"
+                + formatTime(secondOfDay: secondOfDay, nanoseconds: value.nanoseconds, extended: extended)
+                + formatTimezone(value.offset, format: timezone)
+        }
     }
+}
 
-    private static func formatDatePortion(
-        _ value: ISO_8601.DateTime,
-        format: DateFormat
-    )
-        -> String
-    {
-        switch format {
+extension ISO_8601.DateTime.Formatter {
+
+    private static func formatDate(days: Int, format: DateFormat) -> String {
+        let date = ISO_8601.CalendarDate(unchecked: ISO_8601.CalendarDate.civil(daysSinceUnixEpoch: days))
+        let weekDate = ISO_8601.WeekDate(date)
+        return switch format {
         case .calendar(let extended):
-            return formatCalendarDate(value, extended: extended)
+            [
+                ISO_8601.Numeral.padded(date.year, width: 4),
+                ISO_8601.Numeral.padded(date.month, width: 2),
+                ISO_8601.Numeral.padded(date.day, width: 2),
+            ].joined(separator: extended ? "-" : "")
 
         case .week(let extended):
-            return formatWeekDate(value, extended: extended)
+            [
+                ISO_8601.Numeral.padded(weekDate.weekYear, width: 4),
+                "W" + ISO_8601.Numeral.padded(weekDate.week, width: 2),
+                String(weekDate.weekday),
+            ].joined(separator: extended ? "-" : "")
 
         case .ordinal(let extended):
-            return formatOrdinalDate(value, extended: extended)
+            [
+                ISO_8601.Numeral.padded(date.year, width: 4),
+                ISO_8601.Numeral.padded(date.ordinalDay, width: 3),
+            ].joined(separator: extended ? "-" : "")
         }
     }
 
-    private static func renderedValue(
-        for value: ISO_8601.DateTime,
-        timezone: TimezoneFormat
-    ) -> ISO_8601.DateTime {
-        switch timezone {
-        case .utc:
-
-            let utcTime: Time.Time
-            do {
-                utcTime = try Time.Time(
-                    secondsSinceEpoch: value.epoch.seconds,
-                    nanoseconds: value.nanoseconds
-                )
-            } catch {
-                fatalError(
-                    "ISO_8601.DateTime.Formatter: nanoseconds of a valid DateTime were out of range — \(error)"
-                )
-            }
-            return ISO_8601.DateTime(time: utcTime, timezoneOffset: .utc)
-
-        case .none, .offset:
-            return value
-        }
-    }
-}
-
-extension ISO_8601.DateTime.Formatter {
-    private static func formatCalendarDate(_ value: ISO_8601.DateTime, extended: Bool) -> String {
-        let comp = value.components
-        let year = formatFourDigits(comp.year)
-        let month = formatTwoDigits(comp.month)
-        let day = formatTwoDigits(comp.day)
-
-        if extended {
-            return "\(year)-\(month)-\(day)"
-        } else {
-            return "\(year)\(month)\(day)"
-        }
+    private static func formatTime(secondOfDay: Int, nanoseconds: Int, extended: Bool) -> String {
+        [
+            ISO_8601.Numeral.padded(secondOfDay / 3_600, width: 2),
+            ISO_8601.Numeral.padded(secondOfDay % 3_600 / 60, width: 2),
+            ISO_8601.Numeral.padded(secondOfDay % 60, width: 2),
+        ].joined(separator: extended ? ":" : "")
+            + ISO_8601.Numeral.fraction(nanoseconds: nanoseconds)
     }
 
-    private static func formatWeekDate(_ value: ISO_8601.DateTime, extended: Bool) -> String {
-        let year = formatFourDigits(value.isoWeekYear)
-        let week = formatTwoDigits(value.isoWeek)
-        let weekday = value.isoWeekday
-
-        if extended {
-            return "\(year)-W\(week)-\(weekday)"
-        } else {
-            return "\(year)W\(week)\(weekday)"
+    private static func formatTimezone(_ offset: ISO_8601.Timezone.Offset, format: TimezoneFormat) -> String {
+        switch format {
+        case .none: ""
+        case .utc: "Z"
+        case .offset(let extended): offset.formatted(extended: extended)
         }
-    }
-
-    private static func formatOrdinalDate(_ value: ISO_8601.DateTime, extended: Bool) -> String {
-        let comp = value.components
-        let year = formatFourDigits(comp.year)
-        let day = formatThreeDigits(value.ordinalDay)
-
-        if extended {
-            return "\(year)-\(day)"
-        } else {
-            return "\(year)\(day)"
-        }
-    }
-
-    private static func formatTime(_ value: ISO_8601.DateTime, extended: Bool) -> String {
-        let comp = value.components
-        let hour = formatTwoDigits(comp.hour)
-        let minute = formatTwoDigits(comp.minute)
-        let second = formatTwoDigits(comp.second)
-
-        var result: String
-        if extended {
-            result = "\(hour):\(minute):\(second)"
-        } else {
-            result = "\(hour)\(minute)\(second)"
-        }
-
-        if comp.nanoseconds > 0 {
-            result += formatFractionalSeconds(comp.nanoseconds)
-        }
-
-        return result
-    }
-
-    private static func formatFractionalSeconds(_ nanoseconds: Int) -> String {
-
-        var nano = nanoseconds
-        while nano > 0 && nano % 10 == 0 {
-            nano /= 10
-        }
-
-        if nano == 0 {
-            return ""
-        }
-
-        return ".\(nano)"
-    }
-
-    private static func formatTimezoneOffset(_ offsetSeconds: Int, extended: Bool) -> String {
-        let sign = offsetSeconds >= 0 ? "+" : "-"
-        let absOffset = abs(offsetSeconds)
-        let hours = absOffset / Time.Calendar.Gregorian.TimeConstants.secondsPerHour
-        let minutes =
-            (absOffset % Time.Calendar.Gregorian.TimeConstants.secondsPerHour)
-            / Time.Calendar.Gregorian.TimeConstants.secondsPerMinute
-
-        let hoursStr = formatTwoDigits(hours)
-        let minutesStr = formatTwoDigits(minutes)
-
-        if extended {
-            return "\(sign)\(hoursStr):\(minutesStr)"
-        } else {
-            return "\(sign)\(hoursStr)\(minutesStr)"
-        }
-    }
-}
-
-extension ISO_8601.DateTime.Formatter {
-
-    private static func formatTwoDigits(_ value: Int) -> String {
-        let tens = value / 10
-        let ones = value % 10
-        return "\(tens)\(ones)"
-    }
-
-    private static func formatThreeDigits(_ value: Int) -> String {
-        let hundreds = value / 100
-        let tens = (value % 100) / 10
-        let ones = value % 10
-        return "\(hundreds)\(tens)\(ones)"
-    }
-
-    private static func formatFourDigits(_ value: Int) -> String {
-        let thousands = value / 1000
-        let hundreds = (value % 1000) / 100
-        let tens = (value % 100) / 10
-        let ones = value % 10
-        return "\(thousands)\(hundreds)\(tens)\(ones)"
     }
 }

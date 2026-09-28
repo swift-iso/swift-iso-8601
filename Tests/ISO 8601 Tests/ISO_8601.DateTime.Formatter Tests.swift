@@ -15,10 +15,7 @@ extension ISO_8601.DateTime.Formatter.Tests.Unit {
         throws
     {
         let utcAnchor = try ISO_8601.DateTime("2024-01-15T10:30:00Z")
-        let displayedAtPlusTwo = try ISO_8601.DateTime(
-            secondsSinceEpoch: utcAnchor.epoch.seconds,
-            timezoneOffsetSeconds: 7200
-        )
+        let displayedAtPlusTwo = try ISO_8601.DateTime(utcAnchor.instant, offset: .init(seconds: 7200))
 
         let formatted = ISO_8601.DateTime.Formatter.format(
             displayedAtPlusTwo,
@@ -35,10 +32,7 @@ extension ISO_8601.DateTime.Formatter.Tests.Unit {
         throws
     {
         let utcAnchor = try ISO_8601.DateTime("2024-01-15T10:30:00Z")
-        let displayedAtPlusTwo = try ISO_8601.DateTime(
-            secondsSinceEpoch: utcAnchor.epoch.seconds,
-            timezoneOffsetSeconds: 7200
-        )
+        let displayedAtPlusTwo = try ISO_8601.DateTime(utcAnchor.instant, offset: .init(seconds: 7200))
 
         let formatted = ISO_8601.DateTime.Formatter.format(
             displayedAtPlusTwo,
@@ -58,10 +52,7 @@ extension ISO_8601.DateTime.Formatter.Tests.`Edge Case` {
     {
 
         let utcAnchor = try ISO_8601.DateTime("2024-01-15T23:15:00Z")
-        let displayedAtPlusThree = try ISO_8601.DateTime(
-            secondsSinceEpoch: utcAnchor.epoch.seconds,
-            timezoneOffsetSeconds: 10800
-        )
+        let displayedAtPlusThree = try ISO_8601.DateTime(utcAnchor.instant, offset: .init(seconds: 10800))
 
         let formatted = ISO_8601.DateTime.Formatter.format(
             displayedAtPlusThree,
@@ -76,10 +67,7 @@ extension ISO_8601.DateTime.Formatter.Tests.`Edge Case` {
     @Test
     func `Offset format for the same instant still rolls forward to the local day`() throws {
         let utcAnchor = try ISO_8601.DateTime("2024-01-15T23:15:00Z")
-        let displayedAtPlusThree = try ISO_8601.DateTime(
-            secondsSinceEpoch: utcAnchor.epoch.seconds,
-            timezoneOffsetSeconds: 10800
-        )
+        let displayedAtPlusThree = try ISO_8601.DateTime(utcAnchor.instant, offset: .init(seconds: 10800))
 
         let formatted = ISO_8601.DateTime.Formatter.format(
             displayedAtPlusThree,

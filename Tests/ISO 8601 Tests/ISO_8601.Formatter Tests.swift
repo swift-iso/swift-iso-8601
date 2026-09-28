@@ -1,5 +1,6 @@
 import Foundation
 import Testing
+import Time
 
 @testable import ISO_8601
 
@@ -146,10 +147,7 @@ extension `ISO_8601.Formatter Tests`.Unit {
 
     @Test
     func `Format with offset timezone extended`() throws {
-        let dt = try ISO_8601.DateTime(
-            secondsSinceEpoch: 1_705_324_200,
-            timezoneOffsetSeconds: 19800
-        )
+        let dt = try ISO_8601.DateTime(Time.Instant(offset: .seconds(1_705_324_200)), offset: .init(seconds: 19800))
         let formatted = ISO_8601.DateTime.Formatter.format(
             dt,
             date: .calendar(extended: true),
@@ -162,10 +160,7 @@ extension `ISO_8601.Formatter Tests`.Unit {
 
     @Test
     func `Format with offset timezone basic`() throws {
-        let dt = try ISO_8601.DateTime(
-            secondsSinceEpoch: 1_705_324_200,
-            timezoneOffsetSeconds: 19800
-        )
+        let dt = try ISO_8601.DateTime(Time.Instant(offset: .seconds(1_705_324_200)), offset: .init(seconds: 19800))
         let formatted = ISO_8601.DateTime.Formatter.format(
             dt,
             date: .calendar(extended: true),
@@ -178,10 +173,7 @@ extension `ISO_8601.Formatter Tests`.Unit {
 
     @Test
     func `Format with negative offset`() throws {
-        let dt = try ISO_8601.DateTime(
-            secondsSinceEpoch: 1_705_324_200,
-            timezoneOffsetSeconds: -18000
-        )
+        let dt = try ISO_8601.DateTime(Time.Instant(offset: .seconds(1_705_324_200)), offset: .init(seconds: -18000))
         let formatted = ISO_8601.DateTime.Formatter.format(
             dt,
             date: .calendar(extended: true),

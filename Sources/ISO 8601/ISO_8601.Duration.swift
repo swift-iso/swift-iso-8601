@@ -1,12 +1,9 @@
 import Byte
-import Byte_Standard_Library_Integration
 import Cursor
-import Cursor_Standard_Library_Integration
-import Parser
 
 extension ISO_8601 {
 
-    public struct Duration: Sendable, Equatable, Hashable {
+    public struct Duration: Sendable, Hashable {
 
         public let years: Int
 
@@ -30,11 +27,10 @@ extension ISO_8601 {
             minutes: Int = 0,
             seconds: Int = 0,
             nanoseconds: Int = 0
-        ) throws(ISO_8601.Date.Error) {
+        ) throws(Error) {
             guard (0..<1_000_000_000).contains(nanoseconds) else {
-                throw ISO_8601.Date.Error.invalidFractionalSecond(String(nanoseconds))
+                throw .nanosecondsOutOfRange(nanoseconds)
             }
-
             self.years = years
             self.months = months
             self.days = days
@@ -49,22 +45,21 @@ extension ISO_8601 {
 extension ISO_8601.Duration {
 
     public var isZero: Bool {
-        years == 0 && months == 0 && days == 0 && hours == 0 && minutes == 0 && seconds == 0
-            && nanoseconds == 0
+        [years, months, days, hours, minutes, seconds, nanoseconds].allSatisfy { $0 == 0 }
     }
 }
 
 extension ISO_8601.Duration: CustomStringConvertible {
+
     public var description: String {
         Formatter.format(self)
     }
 }
 
 extension ISO_8601.Duration: Codable {
+
     public init(from decoder: any Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        let string = try container.decode(String.self)
-        self = try ISO_8601.Duration(string)
+        self = try ISO_8601.Duration(try decoder.singleValueContainer().decode(String.self))
     }
 
     public func encode(to encoder: any Encoder) throws {

@@ -17,27 +17,25 @@ extension `ISO_8601.Parser Tests`.Unit {
     func `Parse calendar date extended`() throws {
         let dt = try ISO_8601.DateTime("2024-01-15")
 
-        let comp = dt.components
-        #expect(comp.year == 2024)
-        #expect(comp.month == 1)
-        #expect(comp.day == 15)
+        #expect(dt.date.year == 2024)
+        #expect(dt.date.month == 1)
+        #expect(dt.date.day == 15)
     }
 
     @Test
     func `Parse calendar date basic`() throws {
         let dt = try ISO_8601.DateTime("20240115")
 
-        let comp = dt.components
-        #expect(comp.year == 2024)
-        #expect(comp.month == 1)
-        #expect(comp.day == 15)
+        #expect(dt.date.year == 2024)
+        #expect(dt.date.month == 1)
+        #expect(dt.date.day == 15)
     }
 
     @Test
     func `Parse week date extended`() throws {
         let dt = try ISO_8601.DateTime("2024-W03-1")
 
-        let weekDate = ISO_8601.WeekDate(dt)
+        let weekDate = ISO_8601.WeekDate(dt.date)
         #expect(weekDate.weekYear == 2024)
         #expect(weekDate.week == 3)
         #expect(weekDate.weekday == 1)
@@ -47,7 +45,7 @@ extension `ISO_8601.Parser Tests`.Unit {
     func `Parse week date basic`() throws {
         let dt = try ISO_8601.DateTime("2024W031")
 
-        let weekDate = ISO_8601.WeekDate(dt)
+        let weekDate = ISO_8601.WeekDate(dt.date)
         #expect(weekDate.weekYear == 2024)
         #expect(weekDate.week == 3)
         #expect(weekDate.weekday == 1)
@@ -57,7 +55,7 @@ extension `ISO_8601.Parser Tests`.Unit {
     func `Parse ordinal date extended`() throws {
         let dt = try ISO_8601.DateTime("2024-039")
 
-        let ordinal = ISO_8601.OrdinalDate(dt)
+        let ordinal = ISO_8601.OrdinalDate(dt.date)
         #expect(ordinal.year == 2024)
         #expect(ordinal.day == 39)
     }
@@ -66,7 +64,7 @@ extension `ISO_8601.Parser Tests`.Unit {
     func `Parse ordinal date basic`() throws {
         let dt = try ISO_8601.DateTime("2024039")
 
-        let ordinal = ISO_8601.OrdinalDate(dt)
+        let ordinal = ISO_8601.OrdinalDate(dt.date)
         #expect(ordinal.year == 2024)
         #expect(ordinal.day == 39)
     }
@@ -75,58 +73,55 @@ extension `ISO_8601.Parser Tests`.Unit {
     func `Parse datetime with UTC timezone`() throws {
         let dt = try ISO_8601.DateTime("2024-01-15T12:30:00Z")
 
-        let comp = dt.components
-        #expect(comp.year == 2024)
-        #expect(comp.month == 1)
-        #expect(comp.day == 15)
-        #expect(comp.hour == 12)
-        #expect(comp.minute == 30)
-        #expect(comp.second == 0)
-        #expect(dt.timezone.offsetSeconds == 0)
+        #expect(dt.date.year == 2024)
+        #expect(dt.date.month == 1)
+        #expect(dt.date.day == 15)
+        #expect(dt.hour == 12)
+        #expect(dt.minute == 30)
+        #expect(dt.second == 0)
+        #expect(dt.offset.seconds == 0)
     }
 
     @Test
     func `Parse datetime basic format with UTC`() throws {
         let dt = try ISO_8601.DateTime("20240115T123000Z")
 
-        let comp = dt.components
-        #expect(comp.year == 2024)
-        #expect(comp.month == 1)
-        #expect(comp.day == 15)
-        #expect(comp.hour == 12)
-        #expect(comp.minute == 30)
-        #expect(comp.second == 0)
+        #expect(dt.date.year == 2024)
+        #expect(dt.date.month == 1)
+        #expect(dt.date.day == 15)
+        #expect(dt.hour == 12)
+        #expect(dt.minute == 30)
+        #expect(dt.second == 0)
     }
 
     @Test
     func `Parse datetime with positive offset extended`() throws {
         let dt = try ISO_8601.DateTime("2024-01-15T12:30:00+05:30")
 
-        #expect(dt.timezone.offsetSeconds == 19800)
+        #expect(dt.offset.seconds == 19800)
     }
 
     @Test
     func `Parse datetime with positive offset basic`() throws {
         let dt = try ISO_8601.DateTime("2024-01-15T12:30:00+0530")
 
-        #expect(dt.timezone.offsetSeconds == 19800)
+        #expect(dt.offset.seconds == 19800)
     }
 
     @Test
     func `Parse datetime with negative offset`() throws {
         let dt = try ISO_8601.DateTime("2024-01-15T12:30:00-05:00")
 
-        #expect(dt.timezone.offsetSeconds == -18000)
+        #expect(dt.offset.seconds == -18000)
     }
 
     @Test
     func `Parse datetime without seconds`() throws {
         let dt = try ISO_8601.DateTime("2024-01-15T12:30Z")
 
-        let comp = dt.components
-        #expect(comp.hour == 12)
-        #expect(comp.minute == 30)
-        #expect(comp.second == 0)
+        #expect(dt.hour == 12)
+        #expect(dt.minute == 30)
+        #expect(dt.second == 0)
     }
 }
 

@@ -16,34 +16,34 @@ extension `Foundation Comparison Tests`.`Edge Case` {
     @Test
     func `Ordinal date: Feb 29 in leap year is day 60`() throws {
         let dt = try ISO_8601.DateTime(year: 2024, month: 2, day: 29)
-        #expect(dt.ordinalDay == 60, "Feb 29 in leap year should be day 60")
+        #expect(dt.date.ordinalDay == 60, "Feb 29 in leap year should be day 60")
 
-        let ordinal = ISO_8601.OrdinalDate(dt)
+        let ordinal = ISO_8601.OrdinalDate(dt.date)
         #expect(ordinal.day == 60)
 
-        let reconstituted = ISO_8601.DateTime(ordinal)
-        #expect(reconstituted.components.month == 2)
-        #expect(reconstituted.components.day == 29)
+        let reconstituted = try ISO_8601.DateTime(date: ISO_8601.CalendarDate(ordinal))
+        #expect(reconstituted.date.month == 2)
+        #expect(reconstituted.date.day == 29)
     }
 
     @Test
     func `Ordinal date: Day 60 in common year is March 1`() throws {
         let ordinal = try ISO_8601.OrdinalDate(year: 2023, day: 60)
-        let dt = ISO_8601.DateTime(ordinal)
+        let dt = try ISO_8601.DateTime(date: ISO_8601.CalendarDate(ordinal))
 
-        #expect(dt.components.month == 3, "Day 60 in common year should be March")
-        #expect(dt.components.day == 1, "Day 60 in common year should be March 1")
+        #expect(dt.date.month == 3, "Day 60 in common year should be March")
+        #expect(dt.date.day == 1, "Day 60 in common year should be March 1")
     }
 
     @Test
     func `Ordinal date: Day 366 valid in leap year, invalid in common year`() throws {
 
         let leapYearOrdinal = try ISO_8601.OrdinalDate(year: 2024, day: 366)
-        let dt = ISO_8601.DateTime(leapYearOrdinal)
-        #expect(dt.components.month == 12)
-        #expect(dt.components.day == 31)
+        let dt = try ISO_8601.DateTime(date: ISO_8601.CalendarDate(leapYearOrdinal))
+        #expect(dt.date.month == 12)
+        #expect(dt.date.day == 31)
 
-        #expect(throws: ISO_8601.Date.Error.self) {
+        #expect(throws: ISO_8601.OrdinalDate.Error.self) {
             _ = try ISO_8601.OrdinalDate(year: 2023, day: 366)
         }
     }
@@ -78,7 +78,7 @@ extension `Foundation Comparison Tests`.Integration {
         desc: String
     ) throws {
         let dt = try ISO_8601.DateTime(year: year, month: month, day: day)
-        let weekDate = ISO_8601.WeekDate(dt)
+        let weekDate = ISO_8601.WeekDate(dt.date)
 
         #expect(weekDate.weekYear == expected.weekYear, "\(desc) - week-year")
         #expect(weekDate.week == expected.week, "\(desc) - week number")
@@ -98,7 +98,7 @@ extension `Foundation Comparison Tests`.Integration {
     )
     func `ISO 8601 rule: January 4 is always in week 1`(year: Int) throws {
         let dt = try ISO_8601.DateTime(year: year, month: 1, day: 4)
-        let weekDate = ISO_8601.WeekDate(dt)
+        let weekDate = ISO_8601.WeekDate(dt.date)
 
         #expect(weekDate.weekYear == year, "Jan 4, \(year) should be in year \(year)")
         #expect(weekDate.week == 1, "Jan 4, \(year) must be in week 1 by ISO 8601 definition")
@@ -124,11 +124,11 @@ extension `Foundation Comparison Tests`.Integration {
     )
     func `Weeks in year`(year: Int, expectedWeeks: Int, desc: String) throws {
 
-        let lastDay = Time.Time.Calendar.Gregorian.isLeapYear(year) ? 31 : 30
+        let lastDay = ISO_8601.CalendarDate.isLeapYear(year) ? 31 : 30
         let dt = try ISO_8601.DateTime(year: year, month: 12, day: lastDay)
 
         if expectedWeeks == 53 {
-            let weekDate = ISO_8601.WeekDate(dt)
+            let weekDate = ISO_8601.WeekDate(dt.date)
             #expect(weekDate.weekYear == year, "\(desc) - year should have week 53")
             #expect(weekDate.week == 53, "\(desc) - should have 53 weeks")
 
@@ -138,7 +138,7 @@ extension `Foundation Comparison Tests`.Integration {
             #expect(weekOfYear == 53, "Foundation confirms: \(desc) has 53 weeks")
         }
 
-        let weeks = ISO_8601.DateTime.weeksInYear(year)
+        let weeks = ISO_8601.WeekDate.numberOfWeeks(inWeekYear: year)
         #expect(weeks == expectedWeeks, "\(desc) should have exactly \(expectedWeeks) weeks")
     }
 
@@ -146,10 +146,10 @@ extension `Foundation Comparison Tests`.Integration {
     func `ISO weekday numbering: Monday=1, Sunday=7`() throws {
 
         let monday = try ISO_8601.DateTime(year: 2024, month: 1, day: 1)
-        #expect(monday.isoWeekday == 1, "Monday should be 1")
+        #expect(monday.date.weekday.isoNumber == 1, "Monday should be 1")
 
         let sunday = try ISO_8601.DateTime(year: 2024, month: 1, day: 7)
-        #expect(sunday.isoWeekday == 7, "Sunday should be 7")
+        #expect(sunday.date.weekday.isoNumber == 7, "Sunday should be 7")
 
         let calendar = Calendar(identifier: .iso8601)
         let mondayDate = DateComponents(calendar: calendar, year: 2024, month: 1, day: 1).date!
@@ -163,9 +163,9 @@ extension `Foundation Comparison Tests`.Integration {
     @Test
     func `Parse extended format: 2024-01-15`() throws {
         let dt = try ISO_8601.DateTime("2024-01-15")
-        #expect(dt.components.year == 2024)
-        #expect(dt.components.month == 1)
-        #expect(dt.components.day == 15)
+        #expect(dt.date.year == 2024)
+        #expect(dt.date.month == 1)
+        #expect(dt.date.day == 15)
 
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withFullDate, .withDashSeparatorInDate]
@@ -179,9 +179,9 @@ extension `Foundation Comparison Tests`.Integration {
     @Test
     func `Parse basic format: 20240115`() throws {
         let dt = try ISO_8601.DateTime("20240115")
-        #expect(dt.components.year == 2024)
-        #expect(dt.components.month == 1)
-        #expect(dt.components.day == 15)
+        #expect(dt.date.year == 2024)
+        #expect(dt.date.month == 1)
+        #expect(dt.date.day == 15)
 
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withFullDate]
@@ -198,7 +198,7 @@ extension `Foundation Comparison Tests`.Integration {
 
         let dt = try ISO_8601.DateTime(year: 1776, month: 7, day: 4)
 
-        let dayNum = dt.components.weekday
+        let dayNum = dt.date.weekday.gregorianNumber
 
         #expect(dayNum == 4, "July 4, 1776 should be Thursday (weekday 4)")
 
@@ -221,16 +221,16 @@ extension `Foundation Comparison Tests`.Integration {
     func `Round-trip conversions`(year: Int, month: Int, day: Int, desc: String) throws {
         let original = try ISO_8601.DateTime(year: year, month: month, day: day)
 
-        let weekDate = ISO_8601.WeekDate(original)
-        let fromWeekDate = ISO_8601.DateTime(weekDate)
-        #expect(fromWeekDate.components.year == year, "\(desc) - week date year")
-        #expect(fromWeekDate.components.month == month, "\(desc) - week date month")
-        #expect(fromWeekDate.components.day == day, "\(desc) - week date day")
+        let weekDate = ISO_8601.WeekDate(original.date)
+        let fromWeekDate = try ISO_8601.DateTime(date: ISO_8601.CalendarDate(weekDate))
+        #expect(fromWeekDate.date.year == year, "\(desc) - week date year")
+        #expect(fromWeekDate.date.month == month, "\(desc) - week date month")
+        #expect(fromWeekDate.date.day == day, "\(desc) - week date day")
 
-        let ordinal = ISO_8601.OrdinalDate(original)
-        let fromOrdinal = ISO_8601.DateTime(ordinal)
-        #expect(fromOrdinal.components.year == year, "\(desc) - ordinal year")
-        #expect(fromOrdinal.components.month == month, "\(desc) - ordinal month")
-        #expect(fromOrdinal.components.day == day, "\(desc) - ordinal day")
+        let ordinal = ISO_8601.OrdinalDate(original.date)
+        let fromOrdinal = try ISO_8601.DateTime(date: ISO_8601.CalendarDate(ordinal))
+        #expect(fromOrdinal.date.year == year, "\(desc) - ordinal year")
+        #expect(fromOrdinal.date.month == month, "\(desc) - ordinal month")
+        #expect(fromOrdinal.date.day == day, "\(desc) - ordinal day")
     }
 }

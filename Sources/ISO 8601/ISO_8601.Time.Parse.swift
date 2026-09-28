@@ -1,89 +1,38 @@
+public import ASCII
 public import Byte
+public import Cursor
 public import Parser
 
 extension ISO_8601.Time {
 
-    public struct Parse<Input: Collection.Slice.`Protocol`>: Sendable
-    where Input: Sendable, Input.Element == Byte {
+    public struct Parse<Input: Cursor.`Protocol`>: Sendable
+    where Input.Element == Byte, Input.Failure == Never {
+
         @inlinable
         public init() {}
     }
 }
 
-extension ISO_8601.Time.Parse: Parser.`Protocol` {
-    public typealias Body = Never
+extension ISO_8601.Time.Parse: Parsing {
+
     public typealias Failure = __ISO8601ParseError
 
     @inlinable
     public func parse(_ input: inout Input) throws(Failure) -> Output {
         let hour = try ISO_8601.Digits<Input>(count: 2).parse(&input)
-        guard hour >= 0 && hour <= 24 else { throw .invalidHour(hour) }
-
-        let extended: Bool
-        if input.startIndex < input.endIndex && input[input.startIndex] == 0x3A {
-            extended = true
-            input = input[input.index(after: input.startIndex)...]
-        } else {
-            extended = false
-        }
-
+        guard (0...24).contains(hour) else { throw .invalidHour(hour) }
+        let extended = input.advance(past: .colon)
         let minute = try ISO_8601.Digits<Input>(count: 2).parse(&input)
-        guard minute >= 0 && minute <= 59 else { throw .invalidMinute(minute) }
-
-        let hasSeconds: Bool
-        if extended {
-            if input.startIndex < input.endIndex && input[input.startIndex] == 0x3A {
-                input = input[input.index(after: input.startIndex)...]
-                hasSeconds = true
-            } else {
-                hasSeconds = false
-            }
-        } else if input.startIndex < input.endIndex {
-            let byte = input[input.startIndex]
-            hasSeconds = byte >= 0x30 && byte <= 0x39
-        } else {
-            hasSeconds = false
-        }
-
-        var second = 0
-        var nanoseconds = 0
-        if hasSeconds {
-            second = try ISO_8601.Digits<Input>(count: 2).parse(&input)
-
-            guard second >= 0 && second <= 60 else { throw .invalidSecond(second) }
-
-            if input.startIndex < input.endIndex {
-                let sep = input[input.startIndex]
-                if sep == 0x2E || sep == 0x2C {
-                    input = input[input.index(after: input.startIndex)...]
-                    var fraction = 0
-                    var digits = 0
-                    var index = input.startIndex
-                    while index < input.endIndex {
-                        let byte = input[index]
-                        guard byte >= 0x30 && byte <= 0x39 else { break }
-                        if digits < 9 {
-                            fraction = fraction &* 10 &+ Int(byte.underlying &- 0x30)
-                        }
-                        input.formIndex(after: &index)
-                        digits += 1
-                    }
-                    input = input[index...]
-
-                    while digits < 9 {
-                        fraction = fraction &* 10
-                        digits += 1
-                    }
-                    nanoseconds = fraction
-                }
-            }
-        }
-
+        guard (0...59).contains(minute) else { throw .invalidMinute(minute) }
+        let hasSeconds = extended ? input.advance(past: .colon) : input.upcoming()?.isDigit == true
+        guard hasSeconds else { return Output(hour: hour, minute: minute, second: 0, nanoseconds: 0) }
+        let second = try ISO_8601.Digits<Input>(count: 2).parse(&input)
+        guard (0...60).contains(second) else { throw .invalidSecond(second) }
         return Output(
             hour: hour,
             minute: minute,
             second: second,
-            nanoseconds: nanoseconds
+            nanoseconds: input.nanosecondFraction() ?? 0
         )
     }
 }

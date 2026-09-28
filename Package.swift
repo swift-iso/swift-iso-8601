@@ -15,48 +15,28 @@ let package = Package(
         .library(name: "ISO 8601", targets: ["ISO 8601"])
     ],
     dependencies: [
+        .package(url: "https://github.com/swift-atoms/swift-ascii.git", branch: "main", traits: ["Parser"]),
         .package(url: "https://github.com/swift-atoms/swift-byte.git", branch: "main"),
         .package(url: "https://github.com/swift-atoms/swift-cursor.git", branch: "main"),
-        .package(
-            url: "https://github.com/swift-atoms/swift-standard-library-extensions.git",
-            branch: "main"
-        ),
-        .package(
-            url: "https://github.com/swift-molecules/swift-time.git",
-            branch: "main"
-        ),
-        .package(
-            url: "https://github.com/swift-molecules/swift-ascii.git",
-            branch: "main"
-        ),
-        .package(
-            url: "https://github.com/swift-molecules/swift-parser.git",
-            branch: "main"
-        ),
-        .package(
-            url: "https://github.com/swift-molecules/swift-ascii-parser.git",
-            branch: "main"
-        ),
+        .package(url: "https://github.com/swift-atoms/swift-parser.git", branch: "main"),
+        .package(url: "https://github.com/swift-atoms/swift-time.git", branch: "main"),
     ],
     targets: [
         .target(
             name: "ISO 8601",
             dependencies: [
-                .product(name: "Standard Library Extensions", package: "swift-standard-library-extensions"),
-                .product(name: "Time", package: "swift-time"),
                 .product(name: "ASCII", package: "swift-ascii"),
-                .product(name: "ASCII Decimal Parser", package: "swift-ascii-parser"),
                 .product(name: "Byte", package: "swift-byte"),
-                .product(name: "Byte Standard Library Integration", package: "swift-byte"),
                 .product(name: "Cursor", package: "swift-cursor"),
-                .product(name: "Cursor Standard Library Integration", package: "swift-cursor"),
                 .product(name: "Parser", package: "swift-parser"),
+                .product(name: "Time", package: "swift-time"),
             ]
         ),
         .testTarget(
             name: "ISO 8601 Tests",
             dependencies: [
-                .target(name: "ISO 8601")
+                .target(name: "ISO 8601"),
+                .product(name: "Time", package: "swift-time"),
             ]
         ),
     ],
@@ -70,6 +50,7 @@ for target in package.targets where ![.system, .binary, .plugin, .macro].contain
         .enableUpcomingFeature("InternalImportsByDefault"),
         .enableUpcomingFeature("MemberImportVisibility"),
         .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+        .enableUpcomingFeature("InferIsolatedConformances"),
         .enableExperimentalFeature("Lifetimes"),
     ]
 
