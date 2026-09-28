@@ -11,7 +11,5 @@ extension ISO_8601.DateTime {
         case secondOutOfRange(Int)
 
         case nanosecondsOutOfRange(Int)
-
-        case subnanosecondInstant
     }
 }

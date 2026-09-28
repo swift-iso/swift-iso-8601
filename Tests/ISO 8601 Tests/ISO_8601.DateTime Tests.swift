@@ -15,15 +15,15 @@ extension `ISO_8601.DateTime Tests`.Unit {
 
     @Test
     func `Create from seconds since epoch`() throws {
-        let dateTime = try ISO_8601.DateTime(Time.Instant(offset: .seconds(1_609_459_200)))
-        #expect(dateTime.instant == Time.Instant(offset: .seconds(1_609_459_200)))
+        let dateTime = try ISO_8601.DateTime(Time.Instant(secondsSinceUnixEpoch: 1_609_459_200))
+        #expect(dateTime.instant == Time.Instant(secondsSinceUnixEpoch: 1_609_459_200))
         #expect(dateTime.offset.seconds == 0)
     }
 
     @Test
     func `Create from epoch with timezone offset`() throws {
-        let dateTime = try ISO_8601.DateTime(Time.Instant(offset: .seconds(1_609_459_200)), offset: .init(seconds: 3600))
-        #expect(dateTime.instant == Time.Instant(offset: .seconds(1_609_459_200)))
+        let dateTime = try ISO_8601.DateTime(Time.Instant(secondsSinceUnixEpoch: 1_609_459_200), offset: .init(seconds: 3600))
+        #expect(dateTime.instant == Time.Instant(secondsSinceUnixEpoch: 1_609_459_200))
         #expect(dateTime.offset.seconds == 3600)
     }
 

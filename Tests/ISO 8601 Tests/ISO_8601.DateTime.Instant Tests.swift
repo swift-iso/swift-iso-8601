@@ -28,7 +28,7 @@ extension `ISO_8601.DateTime.Instant Tests`.Unit {
     )
     func `Date-time maps to its instant and back`(text: String, seconds: Int64, nanoseconds: Int64) throws {
         let dateTime = try ISO_8601.DateTime(text)
-        let instant = Time.Instant(offset: .seconds(seconds) + .nanoseconds(nanoseconds))
+        let instant = try Time.Instant(secondsSinceUnixEpoch: seconds, nanosecondFraction: Int32(nanoseconds))
 
         #expect(dateTime.instant == instant)
 
@@ -44,7 +44,7 @@ extension `ISO_8601.DateTime.Instant Tests`.Unit {
 
     @Test
     func `Epoch is the first moment of 1970 in UTC`() throws {
-        let epoch = try ISO_8601.DateTime(Time.Instant(offset: .zero))
+        let epoch = try ISO_8601.DateTime(Time.Instant(secondsSinceUnixEpoch: 0))
 
         #expect(epoch.date == (try ISO_8601.CalendarDate(year: 1970, month: 1, day: 1)))
         #expect(epoch.hour == 0)
@@ -54,7 +54,7 @@ extension `ISO_8601.DateTime.Instant Tests`.Unit {
 
     @Test
     func `Leap day maps to its wall clock under a negative offset`() throws {
-        let instant = Time.Instant(offset: .seconds(1_709_210_096))
+        let instant = Time.Instant(secondsSinceUnixEpoch: 1_709_210_096)
         let dateTime = try ISO_8601.DateTime(instant, offset: .init(seconds: -5 * 3_600))
 
         #expect(dateTime.date == (try ISO_8601.CalendarDate(year: 2024, month: 2, day: 29)))
@@ -66,7 +66,7 @@ extension `ISO_8601.DateTime.Instant Tests`.Unit {
 
     @Test
     func `Negative offset crosses back into the previous day before 1970`() throws {
-        let instant = Time.Instant(offset: .seconds(0))
+        let instant = Time.Instant(secondsSinceUnixEpoch: 0)
         let dateTime = try ISO_8601.DateTime(instant, offset: .init(seconds: -3_600))
 
         #expect(dateTime.date == (try ISO_8601.CalendarDate(year: 1969, month: 12, day: 31)))
@@ -77,16 +77,10 @@ extension `ISO_8601.DateTime.Instant Tests`.Unit {
 
 extension `ISO_8601.DateTime.Instant Tests`.`Edge Case` {
 
-    @Test
-    func `Sub-nanosecond instant is rejected`() throws {
-        #expect(throws: ISO_8601.DateTime.Error.subnanosecondInstant) {
-            _ = try ISO_8601.DateTime(Time.Instant(offset: Swift.Duration(attoseconds: 1)))
-        }
-    }
 
     @Test
     func `Instant whose local date passes year 9999 is rejected`() throws {
-        let lastSecond = Time.Instant(offset: .seconds(253_402_300_799))
+        let lastSecond = Time.Instant(secondsSinceUnixEpoch: 253_402_300_799)
 
         #expect(throws: ISO_8601.DateTime.Error.date(.daysSinceUnixEpochOutOfRange(2_932_897))) {
             _ = try ISO_8601.DateTime(lastSecond, offset: .init(seconds: 3_600))

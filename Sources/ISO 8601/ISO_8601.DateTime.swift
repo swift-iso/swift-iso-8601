@@ -74,14 +74,12 @@ extension ISO_8601.DateTime {
 extension ISO_8601.DateTime {
 
     public init(
-        _ instant: Time::Time.Instant,
+        _ instant: Time.Instant,
         offset: ISO_8601.Timezone.Offset = .utc
     ) throws(Error) {
-        guard instant.offset.attoseconds.isMultiple(of: 1_000_000_000) else {
-            throw .subnanosecondInstant
-        }
         let local =
-            instant.offset.attoseconds / 1_000_000_000
+            Int128(instant.secondsSinceUnixEpoch) * Self.nanosecondsPerSecond
+            + Int128(instant.nanosecondFraction)
             + Int128(offset.seconds) * Self.nanosecondsPerSecond
         let nanosecondOfDay =
             (local % Self.nanosecondsPerDay + Self.nanosecondsPerDay) % Self.nanosecondsPerDay
@@ -104,8 +102,16 @@ extension ISO_8601.DateTime {
         )
     }
 
-    public var instant: Time::Time.Instant {
-        Time::Time.Instant(offset: Swift.Duration(attoseconds: nanosecondsSinceUnixEpoch * 1_000_000_000))
+    public var instant: Time.Instant {
+        let total: Int128 = nanosecondsSinceUnixEpoch
+        let perSecond: Int128 = Self.nanosecondsPerSecond
+        let fraction: Int128 = (total % perSecond + perSecond) % perSecond
+        let seconds: Int128 = (total - fraction) / perSecond
+        return Time.Instant(
+            _unchecked: (),
+            secondsSinceUnixEpoch: Int64(seconds),
+            nanosecondFraction: Int32(fraction)
+        )
     }
 }
 

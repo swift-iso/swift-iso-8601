@@ -29,7 +29,7 @@ extension ISO_8601.DateTime.Parsing.Unit {
         formatter.formatOptions = [.withInternetDateTime]
         let foundationDate = try #require(formatter.date(from: string))
 
-        #expect(dt.instant == Time.Instant(offset: .seconds(Int64(foundationDate.timeIntervalSince1970))))
+        #expect(dt.instant == Time.Instant(secondsSinceUnixEpoch: Int64(foundationDate.timeIntervalSince1970)))
     }
 }
 
