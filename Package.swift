@@ -18,7 +18,7 @@ let package = Package(
         .package(url: "https://github.com/swift-atoms/swift-ascii.git", branch: "main", traits: ["Parser"]),
         .package(url: "https://github.com/swift-atoms/swift-byte.git", branch: "main"),
         .package(url: "https://github.com/swift-atoms/swift-cursor.git", branch: "main"),
-        .package(url: "https://github.com/swift-atoms/swift-parser.git", branch: "main"),
+        .package(url: "https://github.com/swift-atoms/swift-parser.git", branch: "main", traits: ["Map", "IteratorLeaves", "Product", "Skip", "Append"]),
         .package(url: "https://github.com/swift-atoms/swift-time.git", branch: "main"),
     ],
     targets: [
