@@ -29,6 +29,7 @@ extension ISO_8601.Timezone.Offset.Parse: Parsing {
             if input.advance(past: .colon) || input.upcoming()?.isDigit == true {
                 try ISO_8601.Digits<Input>(count: 2).parse(&input)
             } else { 0 }
+        guard minute <= 59 else { throw .invalidMinute(minute) }
         return Output(totalSeconds: sign * (hour * 3_600 + minute * 60))
     }
 }
