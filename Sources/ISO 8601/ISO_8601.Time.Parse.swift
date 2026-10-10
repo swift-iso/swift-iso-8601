@@ -14,11 +14,6 @@ extension ISO_8601.Time {
 }
 
 extension ISO_8601.Time.Parse: Parsing {
-    public var body: Never {
-        borrowing get {
-            return fatalError("\(Self.self) is a leaf: implement its conformance requirements directly")
-        }
-    }
 
     public typealias Failure = __ISO8601ParseError
 
