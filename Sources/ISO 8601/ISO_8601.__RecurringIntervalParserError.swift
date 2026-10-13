@@ -1,4 +1,4 @@
-public enum __RecurringIntervalParserError: Swift.Error, Sendable, Equatable {
+public enum __RecurringIntervalParserError: Swift::Error, Sendable, Equatable {
 
     case expectedR
 

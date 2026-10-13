@@ -1,6 +1,6 @@
 public import ASCII
 
-public enum __ISO8601ParseError: Swift.Error, Sendable, Equatable {
+public enum __ISO8601ParseError: Swift::Error, Sendable, Equatable {
 
     case expectedDigit
 

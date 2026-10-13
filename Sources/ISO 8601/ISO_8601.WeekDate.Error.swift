@@ -1,6 +1,6 @@
 extension ISO_8601.WeekDate {
 
-    public enum Error: Swift.Error, Sendable, Equatable {
+    public enum Error: Swift::Error, Sendable, Equatable {
 
         case yearOutOfRange(Int)
 

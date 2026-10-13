@@ -1,6 +1,6 @@
 extension ISO_8601.Time.Parser {
 
-    public enum Error: Swift.Error, Sendable, Equatable {
+    public enum Error: Swift::Error, Sendable, Equatable {
 
         case syntax(__ISO8601ParseError)
 

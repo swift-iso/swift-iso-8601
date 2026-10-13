@@ -1,4 +1,4 @@
-public enum __DateTimeParserError: Swift.Error, Sendable, Equatable {
+public enum __DateTimeParserError: Swift::Error, Sendable, Equatable {
 
     case expectedT
 

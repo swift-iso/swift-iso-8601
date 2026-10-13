@@ -1,6 +1,6 @@
 extension ISO_8601.DateTime {
 
-    public enum Error: Swift.Error, Sendable, Equatable {
+    public enum Error: Swift::Error, Sendable, Equatable {
 
         case date(ISO_8601.CalendarDate.Error)
 

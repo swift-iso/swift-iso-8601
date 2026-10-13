@@ -1,4 +1,4 @@
-public enum __IntervalParserError: Swift.Error, Sendable, Equatable {
+public enum __IntervalParserError: Swift::Error, Sendable, Equatable {
 
     case dateTimeError(__DateTimeParserError)
 

@@ -1,7 +1,7 @@
 public import ASCII
 public import Byte
 public import Cursor
-public import Parser
+import Parser
 
 extension ISO_8601.RecurringInterval {
 

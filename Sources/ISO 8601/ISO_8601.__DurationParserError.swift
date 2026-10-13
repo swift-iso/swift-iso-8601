@@ -1,4 +1,4 @@
-public enum __DurationParserError: Swift.Error, Sendable, Equatable {
+public enum __DurationParserError: Swift::Error, Sendable, Equatable {
 
     case expectedP
 
