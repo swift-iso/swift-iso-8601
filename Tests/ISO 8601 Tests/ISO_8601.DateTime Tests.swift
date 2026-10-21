@@ -93,7 +93,6 @@ extension `ISO_8601.DateTime Tests`.Unit {
 
         let offsetDateTime = try ISO_8601.DateTime(utcDateTime.instant, offset: .init(seconds: 10800))
 
-
         #expect(offsetDateTime.hour == 3)
     }
 

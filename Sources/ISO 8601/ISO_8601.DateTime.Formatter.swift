@@ -11,12 +11,13 @@ extension ISO_8601.DateTime.Formatter {
         time: TimeFormat = .time(extended: true),
         timezone: TimezoneFormat = .utc
     ) -> String {
-        let seconds = switch (time, timezone) {
-        case (.time, .utc):
-            value.date.daysSinceUnixEpoch * 86_400 + value.secondOfDay - value.offset.seconds
-        case (.none, _), (.time, .none), (.time, .offset):
-            value.date.daysSinceUnixEpoch * 86_400 + value.secondOfDay
-        }
+        let seconds =
+            switch (time, timezone) {
+            case (.time, .utc):
+                value.date.daysSinceUnixEpoch * 86_400 + value.secondOfDay - value.offset.seconds
+            case (.none, _), (.time, .none), (.time, .offset):
+                value.date.daysSinceUnixEpoch * 86_400 + value.secondOfDay
+            }
         let secondOfDay = (seconds % 86_400 + 86_400) % 86_400
         let days = (seconds - secondOfDay) / 86_400
         return switch time {

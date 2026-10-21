@@ -73,8 +73,7 @@ extension ISO_8601.CalendarDate {
 extension ISO_8601.CalendarDate {
 
     static var representableDays: ClosedRange<Int> {
-        daysSinceUnixEpoch(year: years.lowerBound, month: 1, day: 1)
-            ... daysSinceUnixEpoch(year: years.upperBound, month: 12, day: 31)
+        daysSinceUnixEpoch(year: years.lowerBound, month: 1, day: 1)...daysSinceUnixEpoch(year: years.upperBound, month: 12, day: 31)
     }
 
     static func daysSinceUnixEpoch(year: Int, month: Int, day: Int) -> Int {

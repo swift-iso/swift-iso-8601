@@ -77,7 +77,6 @@ extension `ISO_8601.DateTime.Instant Tests`.Unit {
 
 extension `ISO_8601.DateTime.Instant Tests`.`Edge Case` {
 
-
     @Test
     func `Instant whose local date passes year 9999 is rejected`() throws {
         let lastSecond = Time.Instant(secondsSinceUnixEpoch: 253_402_300_799)
