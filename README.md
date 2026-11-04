@@ -1,74 +1,23 @@
 # swift-iso-8601
 
-![Development Status](https://img.shields.io/badge/status-active--development-blue.svg)
+Use this package when you need to read or write ISO 8601 text: dates and times, durations, intervals and repeating intervals. Start from `ISO_8601.DateTime` for a point in time, `ISO_8601.Duration` for an amount of time, and `ISO_8601.Interval` or `ISO_8601.RecurringInterval` for spans. For the internet timestamp profile only, use swift-rfc-3339.
 
-Swift implementation of the ISO 8601:2019 date and time format.
+## Laws
 
-## Standard Reference
-
-- **ISO**: 8601:2019
-- **Title**: Date and time — Representations for information interchange
-
-## Supported Formats
-
-ISO 8601 supports three date representations.
-
-### Calendar Date
-
-```swift
-// Extended format
-"2024-01-15T12:30:00Z"
-
-// Basic format
-"20240115T123000Z"
-```
-
-### Week Date
-
-```swift
-// Extended format
-"2024-W03-2T12:30:00Z"  // Year 2024, Week 3, Tuesday
-
-// Basic format
-"2024W032T123000Z"
-```
-
-### Ordinal Date
-
-```swift
-// Extended format
-"2024-039T12:30:00Z"  // Year 2024, day 39
-
-// Basic format
-"2024039T123000Z"
-```
-
-## Installation
-
-Add the package to your `Package.swift` dependencies:
-
-```swift
-dependencies: [
-    .package(url: "https://github.com/swift-iso/swift-iso-8601.git", from: "0.2.3")
-]
-```
-
-Add the product to a target that needs it:
-
-```swift
-.target(
-    name: "YourTarget",
-    dependencies: [
-        .product(name: "ISO 8601", package: "swift-iso-8601")
-    ]
-)
-```
-
-## License
-
-Apache 2.0. See [LICENSE.md](LICENSE.md).
-
-## References
-
-- [ISO 8601:2019](https://www.iso.org/iso-8601-date-and-time-format.html) — Official standard.
-- [RFC 3339](https://www.rfc-editor.org/rfc/rfc3339.html) — ISO 8601 profile for Internet protocols.
+- Years run from 0000 to 9999 and are written with exactly four digits. A date outside that range is refused, including the local date of an instant shown at an offset.
+- `ISO_8601.DateTime.init(_:)` reads calendar, week and ordinal dates, in basic or extended form. A date containing W is a week date. A date with one hyphen, or seven characters and no hyphen, is an ordinal date. Anything else is a calendar date.
+- A date with no time means midnight. A date-time with no zone designator is taken as UTC.
+- The hour 24 is accepted only as 24:00:00 and becomes midnight of the next day.
+- `ISO_8601.DateTime` refuses second 60, so a leap second can't be parsed into one. `ISO_8601.Time` keeps second 60.
+- A decimal fraction of a second may follow a period or a comma. Digits past the ninth are dropped, not rounded.
+- Two `ISO_8601.DateTime` values are equal, hash the same and order by the instant they denote. 12:30+02:00 equals 10:30Z, and each keeps its own offset.
+- `ISO_8601.DateTime.Formatter.format(_:date:time:timezone:)` defaults to the extended calendar form in UTC. With the UTC zone it writes the instant converted to UTC with Z. With an offset it writes the local wall clock and the offset. With no zone it writes the local wall clock bare.
+- `ISO_8601.DateTime.description` uses Z when the offset is zero and the extended offset otherwise. A fraction is written without trailing zeros, and is left out when zero.
+- An offset is at most 23:59 either way and a whole number of minutes. An offset of zero, however written, is the same as Z, and descriptions print it as Z.
+- `ISO_8601.Time` keeps the precision it was given, so an hour alone or an hour and minute print back the same way. A missing offset means local time, which is different from Z. Two times are equal only when every field, including the offset, is equal.
+- `ISO_8601.Duration` is never normalized. 90 minutes stays 90 minutes and is not equal to 1 hour 30 minutes. A zero duration prints as `PT0S`.
+- `ISO_8601.Interval.description` writes its date-times in UTC with Z, so a start or end given with an offset prints converted.
+- In an `ISO_8601.RecurringInterval`, R with no count means unlimited repetitions. A count of zero is allowed.
+- `ISO_8601.Weekday` numbers Monday as 1 and Sunday as 7 in `ISO_8601.Weekday.isoNumber`, but encodes as its raw value, which counts from Sunday as 0.
+- A week year has 53 weeks when January 1 is a Thursday, or a Wednesday in a leap year. Otherwise it has 52. Week 1 is the week that contains January 4.
+- `ISO_8601.DateTime`, `ISO_8601.Time`, `ISO_8601.Duration`, `ISO_8601.Interval` and `ISO_8601.RecurringInterval` encode as their description string and decode by parsing it.
