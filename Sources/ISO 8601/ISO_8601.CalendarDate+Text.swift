@@ -4,6 +4,7 @@ extension ISO_8601.CalendarDate {
     public init?(extended text: some StringProtocol) {
         let parts = text.split(separator: "-", omittingEmptySubsequences: false)
         guard parts.count == 3, parts[0].count == 4, parts[1].count == 2, parts[2].count == 2,
+            parts.allSatisfy(Self.isDigits),
             let year = Int(parts[0]), let month = Int(parts[1]), let day = Int(parts[2])
         else { return nil }
         do throws(Error) {
@@ -21,6 +22,11 @@ extension ISO_8601.CalendarDate {
     /// `YYYYMMDD`.
     public var basic: String {
         Self.digits(year, 4) + Self.digits(month, 2) + Self.digits(day, 2)
+    }
+
+    /// Whether `text` is ASCII digits alone: `Int` also reads a leading sign, which no date writes.
+    static func isDigits(_ text: some StringProtocol) -> Bool {
+        text.utf8.allSatisfy { (0x30...0x39).contains($0) }
     }
 
     static func digits(_ value: Int, _ count: Int) -> String {

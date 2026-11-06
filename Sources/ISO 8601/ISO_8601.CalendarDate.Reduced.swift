@@ -43,7 +43,7 @@ extension ISO_8601.CalendarDate {
 
 extension ISO_8601.CalendarDate.Reduced {
 
-    public enum Precision: Sendable, Hashable, CaseIterable {
+    public enum Precision: String, Sendable, Hashable, CaseIterable, Codable {
         case day
         case month
         case year

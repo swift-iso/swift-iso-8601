@@ -28,6 +28,7 @@ extension ISO_8601.CalendarDate.Month {
     public init?(extended text: some StringProtocol) {
         let parts = text.split(separator: "-", omittingEmptySubsequences: false)
         guard parts.count == 2, parts[0].count == 4, parts[1].count == 2,
+            parts.allSatisfy(ISO_8601.CalendarDate.isDigits),
             let year = Int(parts[0]), let month = Int(parts[1])
         else { return nil }
         do throws(ISO_8601.CalendarDate.Error) {
