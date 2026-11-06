@@ -2,14 +2,16 @@ import Testing
 
 @testable import ISO_8601
 
-extension ISO_8601.DateTime.Formatter {
+enum `ISO_8601.DateTime.Formatter Tests` {}
+
+extension `ISO_8601.DateTime.Formatter Tests` {
     @Suite struct Tests {
         @Suite struct Unit {}
         @Suite struct `Edge Case` {}
     }
 }
 
-extension ISO_8601.DateTime.Formatter.Tests.Unit {
+extension `ISO_8601.DateTime.Formatter Tests`.Tests.Unit {
     @Test
     func `UTC format renders the true UTC instant, not the offset-shifted local wall clock`()
         throws
@@ -45,7 +47,7 @@ extension ISO_8601.DateTime.Formatter.Tests.Unit {
     }
 }
 
-extension ISO_8601.DateTime.Formatter.Tests.`Edge Case` {
+extension `ISO_8601.DateTime.Formatter Tests`.Tests.`Edge Case` {
     @Test
     func `UTC format rolls the date across the day boundary when the offset requires it`()
         throws

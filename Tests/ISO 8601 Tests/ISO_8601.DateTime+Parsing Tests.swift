@@ -4,14 +4,14 @@ import Time
 
 @testable import ISO_8601
 
-extension ISO_8601.DateTime {
+extension `ISO_8601.DateTime Tests` {
     @Suite struct Parsing {
         @Suite struct Unit {}
         @Suite struct `Edge Case` {}
     }
 }
 
-extension ISO_8601.DateTime.Parsing.Unit {
+extension `ISO_8601.DateTime Tests`.Parsing.Unit {
     @Test(
         arguments: [
             "2024-01-15T12:30:00+02:00",
@@ -33,7 +33,7 @@ extension ISO_8601.DateTime.Parsing.Unit {
     }
 }
 
-extension ISO_8601.DateTime.Parsing.`Edge Case` {
+extension `ISO_8601.DateTime Tests`.Parsing.`Edge Case` {
     @Test
     func `Positive offset shifts the instant earlier than the wall-clock reading`() throws {
 
