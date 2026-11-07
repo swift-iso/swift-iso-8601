@@ -24,7 +24,7 @@ struct `Leap second representation` {
 
     @Test(arguments: ["2016-12-31T23:59:60Z", "2016-12-31T18:59:60-05:00"])
     func `the Unix-backed date-time parser rejects the 2016-12-31 leap second in any offset`(_ text: String) {
-        #expect(throws: (any Error).self) {
+        #expect(throws: (any Swift.Error).self) {
             try ISO_8601.DateTime(text)
         }
     }

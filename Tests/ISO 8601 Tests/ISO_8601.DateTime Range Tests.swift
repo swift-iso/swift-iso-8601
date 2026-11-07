@@ -11,7 +11,7 @@ struct `DateTime ranges` {
         "2024-367", "2023-366", "2024-01-15T12:00:00+0100x",
     ])
     func `an out-of-range or malformed value is refused`(_ text: String) {
-        #expect(throws: (any Error).self) {
+        #expect(throws: (any Swift.Error).self) {
             try ISO_8601.DateTime(text)
         }
     }
