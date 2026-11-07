@@ -4,14 +4,18 @@ import Time
 
 @testable import ISO_8601
 
-@Suite
-struct `Foundation Comparison Tests` {
-    @Suite struct Unit {}
-    @Suite struct `Edge Case` {}
-    @Suite struct Integration {}
+enum `FoundationComparison Tests` {}
+
+extension `FoundationComparison Tests` {
+    @Suite
+    struct `Foundation Comparison Tests` {
+        @Suite struct Unit {}
+        @Suite struct `Edge Case` {}
+        @Suite struct Integration {}
+    }
 }
 
-extension `Foundation Comparison Tests`.`Edge Case` {
+extension `FoundationComparison Tests`.`Foundation Comparison Tests`.`Edge Case` {
 
     @Test
     func `Ordinal date: Feb 29 in leap year is day 60`() throws {
@@ -49,7 +53,7 @@ extension `Foundation Comparison Tests`.`Edge Case` {
     }
 }
 
-extension `Foundation Comparison Tests`.Integration {
+extension `FoundationComparison Tests`.`Foundation Comparison Tests`.Integration {
 
     @Test(
         arguments: [
