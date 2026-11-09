@@ -23,8 +23,11 @@ extension ISO_8601.Duration.Parser: Parsing {
         var fields = (years: 0, months: 0, days: 0, hours: 0, minutes: 0, seconds: 0, nanoseconds: 0)
         var inTimePart = false
         var hasComponent = false
+        var hasTimeComponent = false
+        var lastRank = -1
         while let code = input.upcoming(), code == .T || code.isDigit {
-            guard !input.advance(past: .T) else {
+            if input.advance(past: .T) {
+                guard !inTimePart else { throw .componentOutOfOrder }
                 inTimePart = true
                 continue
             }
@@ -34,21 +37,27 @@ extension ISO_8601.Duration.Parser: Parsing {
             } catch {
                 throw error == .overflow ? .overflow : .invalidDigit
             }
-            let fraction = input.nanosecondFraction() ?? 0
+            let fraction = input.nanosecondFraction()
             guard let designator = input.upcoming() else { throw .expectedComponentDesignator }
             _ = input.next()
-            hasComponent = true
+            let rank: Int
             switch (inTimePart, designator) {
-            case (true, .H): fields.hours = value
-            case (true, .M): fields.minutes = value
-            case (true, .S): (fields.seconds, fields.nanoseconds) = (value, fraction)
-            case (false, .Y): fields.years = value
-            case (false, .M): fields.months = value
-            case (false, .D): fields.days = value
+            case (false, .Y): (rank, fields.years) = (0, value)
+            case (false, .M): (rank, fields.months) = (1, value)
+            case (false, .D): (rank, fields.days) = (2, value)
+            case (true, .H): (rank, fields.hours) = (3, value)
+            case (true, .M): (rank, fields.minutes) = (4, value)
+            case (true, .S): (rank, fields.seconds, fields.nanoseconds) = (5, value, fraction ?? 0)
             default: throw .expectedComponentDesignator
             }
+            guard rank > lastRank else { throw .componentOutOfOrder }
+            guard fraction == nil || rank == 5 else { throw .fractionNotOnSeconds }
+            lastRank = rank
+            hasComponent = true
+            hasTimeComponent = inTimePart
         }
         guard hasComponent else { throw .emptyDuration }
+        guard !inTimePart || hasTimeComponent else { throw .expectedComponentDesignator }
         do throws(ISO_8601.Duration.Error) {
             return try ISO_8601.Duration(
                 years: fields.years,

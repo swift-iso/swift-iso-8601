@@ -214,6 +214,46 @@ extension `ISO_8601.Duration Tests`.`Edge Case` {
             _ = try ISO_8601.Duration("PABC")
         }
     }
+
+    @Test
+    func `Reject fraction on a component other than seconds`() throws {
+        #expect(throws: __DurationParserError.fractionNotOnSeconds) {
+            _ = try ISO_8601.Duration("P1.5D")
+        }
+        #expect(throws: __DurationParserError.fractionNotOnSeconds) {
+            _ = try ISO_8601.Duration("PT1,5H")
+        }
+    }
+
+    @Test
+    func `Reject designators out of order`() throws {
+        #expect(throws: __DurationParserError.componentOutOfOrder) {
+            _ = try ISO_8601.Duration("P1D1Y")
+        }
+        #expect(throws: __DurationParserError.componentOutOfOrder) {
+            _ = try ISO_8601.Duration("PT1S1H")
+        }
+    }
+
+    @Test
+    func `Reject repeated designators`() throws {
+        #expect(throws: __DurationParserError.componentOutOfOrder) {
+            _ = try ISO_8601.Duration("PT1M2M")
+        }
+        #expect(throws: __DurationParserError.componentOutOfOrder) {
+            _ = try ISO_8601.Duration("P1Y2Y")
+        }
+        #expect(throws: __DurationParserError.componentOutOfOrder) {
+            _ = try ISO_8601.Duration("PT1HT2M")
+        }
+    }
+
+    @Test
+    func `Reject time designator without a time component`() throws {
+        #expect(throws: __DurationParserError.expectedComponentDesignator) {
+            _ = try ISO_8601.Duration("P1DT")
+        }
+    }
 }
 
 extension `ISO_8601.Duration Tests`.Integration {

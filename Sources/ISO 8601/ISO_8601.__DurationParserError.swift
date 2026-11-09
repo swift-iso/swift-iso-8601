@@ -6,6 +6,10 @@ public enum __DurationParserError: Swift::Error, Sendable, Equatable {
 
     case expectedComponentDesignator
 
+    case componentOutOfOrder
+
+    case fractionNotOnSeconds
+
     case invalidDigit
 
     case overflow
