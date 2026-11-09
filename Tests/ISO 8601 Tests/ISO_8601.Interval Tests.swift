@@ -247,6 +247,29 @@ extension `ISO_8601.Interval Tests`.`Edge Case` {
 extension `ISO_8601.Interval Tests`.Integration {
 
     @Test
+    func `Round-trip start-end interval keeps non-zero offsets`() throws {
+        let text = "2019-08-27T10:00:00+02:00/2019-08-29T09:30:00-05:30"
+        let original = try ISO_8601.Interval(text)
+        let formatted = original.description
+        let parsed = try ISO_8601.Interval(formatted)
+
+        #expect(formatted == text)
+        #expect(parsed == original)
+        #expect(parsed.start?.offset.seconds == 7_200)
+        #expect(parsed.end?.offset.seconds == -19_800)
+    }
+
+    @Test
+    func `Round-trip start-duration and duration-end intervals keep non-zero offsets`() throws {
+        for text in ["2019-08-27T10:00:00+02:00/P3D", "P3D/2019-08-29T09:30:00-05:30"] {
+            let parsed = try ISO_8601.Interval(text)
+
+            #expect(parsed.description == text)
+            #expect(try ISO_8601.Interval(parsed.description) == parsed)
+        }
+    }
+
+    @Test
     func `Round-trip start-end interval`() throws {
         let start = try ISO_8601.DateTime(year: 2019, month: 8, day: 27)
         let end = try ISO_8601.DateTime(year: 2019, month: 8, day: 29)
