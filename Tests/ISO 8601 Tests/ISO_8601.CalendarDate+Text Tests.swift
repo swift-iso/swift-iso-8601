@@ -12,6 +12,16 @@ import Testing
         #expect(ISO_8601.CalendarDate(extended: "2091-3-1") == nil)
     }
 
+    @Test func `a basic date is YYYYMMDD on a day the calendar has`() {
+        #expect(ISO_8601.CalendarDate(basic: "20920229")?.basic == "20920229")
+        #expect(ISO_8601.CalendarDate(basic: "20910229") == nil)
+        #expect(ISO_8601.CalendarDate(basic: "20911301") == nil)
+        #expect(ISO_8601.CalendarDate(basic: "2091-03-01") == nil)
+        #expect(ISO_8601.CalendarDate(basic: "209103011") == nil)
+        #expect(ISO_8601.CalendarDate(basic: "+0910301") == nil)
+        #expect(ISO_8601.CalendarDate(basic: "２０９１０３０１") == nil)
+    }
+
     @Test func `a sign is not a digit`() {
         #expect(ISO_8601.CalendarDate(extended: "+091-03-01") == nil)
         #expect(ISO_8601.CalendarDate(extended: "2091-+3-01") == nil)

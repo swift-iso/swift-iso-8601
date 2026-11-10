@@ -6,6 +6,7 @@ Use this package when you need to read or write ISO 8601 text: dates and times, 
 
 - Years run from 0000 to 9999 and are written with exactly four digits. A date outside that range is refused, including the local date of an instant shown at an offset.
 - `ISO_8601.DateTime.init(_:)` reads calendar, week and ordinal dates, in basic or extended form. A date containing W is a week date. A date with one hyphen, or seven characters and no hyphen, is an ordinal date. Anything else is a calendar date.
+- `ISO_8601.CalendarDate(extended:)` reads `YYYY-MM-DD` and `ISO_8601.CalendarDate(basic:)` reads `YYYYMMDD`, each with ASCII digits only and on a day the calendar has; anything else gives `nil`.
 - A date with no time means midnight. A date-time with no zone designator is taken as UTC.
 - The hour 24 is accepted only as 24:00:00 and becomes midnight of the next day.
 - `ISO_8601.DateTime` refuses second 60, so a leap second can't be parsed into one. `ISO_8601.Time` keeps second 60.

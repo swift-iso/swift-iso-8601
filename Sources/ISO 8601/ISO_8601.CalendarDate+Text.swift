@@ -14,6 +14,21 @@ extension ISO_8601.CalendarDate {
         }
     }
 
+    /// The date `YYYYMMDD` spells, or `nil` when it spells none.
+    public init?(basic text: some StringProtocol) {
+        let bytes = Array(text.utf8)
+        guard bytes.count == 8, Self.isDigits(text),
+            let year = Int(String(decoding: bytes[0..<4], as: UTF8.self)),
+            let month = Int(String(decoding: bytes[4..<6], as: UTF8.self)),
+            let day = Int(String(decoding: bytes[6..<8], as: UTF8.self))
+        else { return nil }
+        do throws(Error) {
+            try self.init(year: year, month: month, day: day)
+        } catch {
+            return nil
+        }
+    }
+
     /// `YYYY-MM-DD`.
     public var extended: String {
         Self.digits(year, 4) + "-" + Self.digits(month, 2) + "-" + Self.digits(day, 2)
