@@ -55,19 +55,21 @@ extension ISO_8601.CalendarDate: CustomStringConvertible {
     public var description: String { extended }
 }
 
-extension ISO_8601.CalendarDate: Codable {
+#if !hasFeature(Embedded)
+    extension ISO_8601.CalendarDate: Codable {
 
-    public init(from decoder: any Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        let text = try container.decode(String.self)
-        guard let date = Self(extended: text) else {
-            throw DecodingError.dataCorruptedError(in: container, debugDescription: "not a YYYY-MM-DD date: \(text)")
+        public init(from decoder: any Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let text = try container.decode(String.self)
+            guard let date = Self(extended: text) else {
+                throw DecodingError.dataCorruptedError(in: container, debugDescription: "not a YYYY-MM-DD date: \(text)")
+            }
+            self = date
         }
-        self = date
-    }
 
-    public func encode(to encoder: any Encoder) throws {
-        var container = encoder.singleValueContainer()
-        try container.encode(extended)
+        public func encode(to encoder: any Encoder) throws {
+            var container = encoder.singleValueContainer()
+            try container.encode(extended)
+        }
     }
-}
+#endif

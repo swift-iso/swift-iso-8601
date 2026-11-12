@@ -43,7 +43,7 @@ extension ISO_8601.CalendarDate {
 
 extension ISO_8601.CalendarDate.Reduced {
 
-    public enum Precision: String, Sendable, Hashable, CaseIterable, Codable {
+    public enum Precision: String, Sendable, Hashable, CaseIterable {
         case day
         case month
         case year
@@ -99,19 +99,25 @@ extension ISO_8601.CalendarDate.Reduced: CustomStringConvertible {
     public var description: String { extended }
 }
 
-extension ISO_8601.CalendarDate.Reduced: Codable {
+#if !hasFeature(Embedded)
+    extension ISO_8601.CalendarDate.Reduced: Codable {
 
-    public init(from decoder: any Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        let text = try container.decode(String.self)
-        guard let reduced = Self(extended: text) else {
-            throw DecodingError.dataCorruptedError(in: container, debugDescription: "not an ISO 8601 calendar date: \(text)")
+        public init(from decoder: any Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let text = try container.decode(String.self)
+            guard let reduced = Self(extended: text) else {
+                throw DecodingError.dataCorruptedError(in: container, debugDescription: "not an ISO 8601 calendar date: \(text)")
+            }
+            self = reduced
         }
-        self = reduced
-    }
 
-    public func encode(to encoder: any Encoder) throws {
-        var container = encoder.singleValueContainer()
-        try container.encode(extended)
+        public func encode(to encoder: any Encoder) throws {
+            var container = encoder.singleValueContainer()
+            try container.encode(extended)
+        }
     }
-}
+#endif
+
+#if !hasFeature(Embedded)
+    extension ISO_8601.CalendarDate.Reduced.Precision: Codable {}
+#endif

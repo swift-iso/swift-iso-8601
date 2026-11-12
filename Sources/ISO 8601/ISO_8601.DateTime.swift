@@ -154,17 +154,19 @@ extension ISO_8601.DateTime: CustomStringConvertible {
     }
 }
 
-extension ISO_8601.DateTime: Codable {
+#if !hasFeature(Embedded)
+    extension ISO_8601.DateTime: Codable {
 
-    public init(from decoder: any Decoder) throws {
-        self = try ISO_8601.DateTime(try decoder.singleValueContainer().decode(String.self))
-    }
+        public init(from decoder: any Decoder) throws {
+            self = try ISO_8601.DateTime(try decoder.singleValueContainer().decode(String.self))
+        }
 
-    public func encode(to encoder: any Encoder) throws {
-        var container = encoder.singleValueContainer()
-        try container.encode(description)
+        public func encode(to encoder: any Encoder) throws {
+            var container = encoder.singleValueContainer()
+            try container.encode(description)
+        }
     }
-}
+#endif
 
 extension ISO_8601.DateTime {
 

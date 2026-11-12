@@ -1,6 +1,6 @@
 extension ISO_8601 {
 
-    public enum Weekday: Int, Sendable, Hashable, CaseIterable, Codable {
+    public enum Weekday: Int, Sendable, Hashable, CaseIterable {
         case sunday = 0
         case monday = 1
         case tuesday = 2
@@ -34,3 +34,7 @@ extension ISO_8601.Weekday {
         rawValue
     }
 }
+
+#if !hasFeature(Embedded)
+    extension ISO_8601.Weekday: Codable {}
+#endif

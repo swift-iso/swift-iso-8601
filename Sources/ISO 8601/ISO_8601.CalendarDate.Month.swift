@@ -60,19 +60,21 @@ extension ISO_8601.CalendarDate.Month: CustomStringConvertible {
     public var description: String { extended }
 }
 
-extension ISO_8601.CalendarDate.Month: Codable {
+#if !hasFeature(Embedded)
+    extension ISO_8601.CalendarDate.Month: Codable {
 
-    public init(from decoder: any Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        let text = try container.decode(String.self)
-        guard let month = Self(extended: text) else {
-            throw DecodingError.dataCorruptedError(in: container, debugDescription: "not a YYYY-MM month: \(text)")
+        public init(from decoder: any Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let text = try container.decode(String.self)
+            guard let month = Self(extended: text) else {
+                throw DecodingError.dataCorruptedError(in: container, debugDescription: "not a YYYY-MM month: \(text)")
+            }
+            self = month
         }
-        self = month
-    }
 
-    public func encode(to encoder: any Encoder) throws {
-        var container = encoder.singleValueContainer()
-        try container.encode(extended)
+        public func encode(to encoder: any Encoder) throws {
+            var container = encoder.singleValueContainer()
+            try container.encode(extended)
+        }
     }
-}
+#endif

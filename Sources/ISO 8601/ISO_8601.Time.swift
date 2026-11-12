@@ -44,14 +44,16 @@ extension ISO_8601.Time: CustomStringConvertible {
     }
 }
 
-extension ISO_8601.Time: Codable {
+#if !hasFeature(Embedded)
+    extension ISO_8601.Time: Codable {
 
-    public init(from decoder: any Decoder) throws {
-        self = try Parser.parse(try decoder.singleValueContainer().decode(String.self))
-    }
+        public init(from decoder: any Decoder) throws {
+            self = try Parser.parse(try decoder.singleValueContainer().decode(String.self))
+        }
 
-    public func encode(to encoder: any Encoder) throws {
-        var container = encoder.singleValueContainer()
-        try container.encode(description)
+        public func encode(to encoder: any Encoder) throws {
+            var container = encoder.singleValueContainer()
+            try container.encode(description)
+        }
     }
-}
+#endif

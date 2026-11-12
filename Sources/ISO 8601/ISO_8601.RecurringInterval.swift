@@ -30,18 +30,20 @@ extension ISO_8601.RecurringInterval: CustomStringConvertible {
     }
 }
 
-extension ISO_8601.RecurringInterval: Codable {
-    public init(from decoder: any Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        let string = try container.decode(String.self)
-        self = try ISO_8601.RecurringInterval(string)
-    }
+#if !hasFeature(Embedded)
+    extension ISO_8601.RecurringInterval: Codable {
+        public init(from decoder: any Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let string = try container.decode(String.self)
+            self = try ISO_8601.RecurringInterval(string)
+        }
 
-    public func encode(to encoder: any Encoder) throws {
-        var container = encoder.singleValueContainer()
-        try container.encode(description)
+        public func encode(to encoder: any Encoder) throws {
+            var container = encoder.singleValueContainer()
+            try container.encode(description)
+        }
     }
-}
+#endif
 
 extension ISO_8601.RecurringInterval {
 
